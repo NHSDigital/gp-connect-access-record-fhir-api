@@ -45,9 +45,7 @@ _dist_include="pytest.ini poetry.lock poetry.toml pyproject.toml Makefile build/
 release: clean publish build-proxy
 	mkdir -p dist
 	for f in $(_dist_include); do cp -r $$f dist; done
-	cp ecs-proxies-deploy.yml dist/ecs-deploy-sandbox.yml
-	cp ecs-proxies-deploy.yml dist/ecs-deploy-internal-qa-sandbox.yml
-	cp ecs-proxies-deploy.yml dist/ecs-deploy-internal-dev-sandbox.yml
+	cp ecs-proxies-deploy.yml dist/ecs-deploy-internal-dev.yml
 
 test:
 #	this target should be used for local unit tests ..  runs as part of the build pipeline
