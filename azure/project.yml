@@ -1,0 +1,4 @@
+variables:
+  service_name: gp-connect-access-record-fhir-api
+  short_service_name: gcarfa
+  service_base_path: gp-connect-access-record-fhir-api
