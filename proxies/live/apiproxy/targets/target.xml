@@ -16,10 +16,11 @@
         <Name>OauthV2.VerifyAccessToken</Name>
       </Step>
       <Step>
-        <Name>Quota</Name>
+        <Name>FlowCallout.ApplyRateLimiting</Name>
       </Step>
       <Step>
-        <Name>SpikeArrest</Name>
+        <Name>AssignMessage.AddPayloadToPing</Name>
+        <Condition>(proxy.pathsuffix MatchesPath "/AllergyIntolerance")</Condition>
       </Step>
     </Request>
   </PreFlow>
