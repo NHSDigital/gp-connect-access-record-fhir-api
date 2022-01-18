@@ -137,6 +137,133 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "SDS GET ToASID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Get ACID of GP and populate it as environment variable\", () => {",
+              "    const toAcid = getToAsid(pm.response.json())",
+              "",
+              "    pm.environment.set(\"to_acid\", toAcid)",
+              "})",
+              "",
+              "function getToAsid(bundle) {",
+              "    if (bundle[\"total\"] === 0) return null",
+              "",
+              "    const device = bundle[\"entry\"][0][\"resource\"]",
+              "    const acidIds = device[\"identifier\"].filter(item => item[\"system\"] === \"https://fhir.nhs.uk/Id/nhsSpineASID\")",
+              "",
+              "    return acidIds[0][\"value\"]",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{client_id}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://{{env}}.api.service.nhs.uk/spine-directory/FHIR/R4/Device?organization=https://fhir.nhs.uk/Id/ods-organization-code|{{ods}}&identifier=https://fhir.nhs.uk/Id/nhsServiceInteractionId|urn:nhs:names:services:gpconnect:fhir:operation:gpc.getstructuredrecord-1",
+          "protocol": "https",
+          "host": [
+            "{{env}}",
+            "api",
+            "service",
+            "nhs",
+            "uk"
+          ],
+          "path": [
+            "spine-directory",
+            "FHIR",
+            "R4",
+            "Device"
+          ],
+          "query": [
+            {
+              "key": "organization",
+              "value": "https://fhir.nhs.uk/Id/ods-organization-code|{{ods}}"
+            },
+            {
+              "key": "identifier",
+              "value": "https://fhir.nhs.uk/Id/nhsServiceInteractionId|urn:nhs:names:services:gpconnect:fhir:operation:gpc.getstructuredrecord-1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SDS GET GP-URL",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Get URL of the GP and populate it as environment variable\", () => {",
+              "    const gpUrl = getGpUrl(pm.response.json())",
+              "",
+              "    pm.environment.set(\"gp_urll\", gpUrl)",
+              "})",
+              "",
+              "function getGpUrl(bundle) {",
+              "    if (bundle[\"total\"] === 0) return null",
+              "",
+              "    return bundle[\"entry\"][0][\"resource\"][\"address\"]",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{client_id}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://{{env}}.api.service.nhs.uk/spine-directory/FHIR/R4/Endpoint?organization=https://fhir.nhs.uk/Id/ods-organization-code|{{ods}}&identifier=https://fhir.nhs.uk/Id/nhsServiceInteractionId|urn:nhs:names:services:gpconnect:fhir:operation:gpc.getstructuredrecord-1",
+          "protocol": "https",
+          "host": [
+            "{{env}}",
+            "api",
+            "service",
+            "nhs",
+            "uk"
+          ],
+          "path": [
+            "spine-directory",
+            "FHIR",
+            "R4",
+            "Endpoint"
+          ],
+          "query": [
+            {
+              "key": "organization",
+              "value": "https://fhir.nhs.uk/Id/ods-organization-code|{{ods}}"
+            },
+            {
+              "key": "identifier",
+              "value": "https://fhir.nhs.uk/Id/nhsServiceInteractionId|urn:nhs:names:services:gpconnect:fhir:operation:gpc.getstructuredrecord-1"
+            }
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }
