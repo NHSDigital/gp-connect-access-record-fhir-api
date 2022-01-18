@@ -18,10 +18,6 @@
       <Step>
         <Name>FlowCallout.ApplyRateLimiting</Name>
       </Step>
-      <Step>
-        <Name>AssignMessage.AddPayloadToPing</Name>
-        <Condition>(proxy.pathsuffix MatchesPath "/AllergyIntolerance")</Condition>
-      </Step>
     </Request>
   </PreFlow>
   <!--
