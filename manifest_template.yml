@@ -2,10 +2,10 @@ SERVICE_NAME: gp-connect-access-record-fhir-api
 PRODUCT_DISPLAY_NAME: gp-connect-access-record-fhir-api
 DESCRIPTION: example description
 APIGEE_ENVIRONMENTS:
-  - name: internal-dev
-    display_name: Internal Development
-  - name: int
-    display_name: Integration Testing
+    - name: internal-dev
+      display_name: Internal Development
+    - name: int
+      display_name: Integration Testing
 ---
 meta:
   api:
