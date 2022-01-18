@@ -79,6 +79,28 @@
             ],
             "type": "text/javascript"
           }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Get ODS of GP and populate it as environment variable\", () => {",
+              "    const ods = getGpOds(pm.response.json())",
+              "",
+              "    pm.environment.set(\"ods\", ods)",
+              "})",
+              "",
+              "function getGpOds(patient) {",
+              "    gp = patient[\"generalPractitioner\"]",
+              "    if (!gp) return",
+              "",
+              "    const odsIds = gp.filter(item => item[\"identifier\"][\"system\"] === \"https://fhir.nhs.uk/Id/ods-organization-code\")",
+              "",
+              "    return odsIds[0][\"identifier\"][\"value\"] // There must be only one match if any",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
         }
       ],
       "request": {
