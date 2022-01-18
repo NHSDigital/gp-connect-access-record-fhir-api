@@ -6,7 +6,6 @@ APIGEE_ENVIRONMENTS:
     display_name: Internal Development
   - name: int
     display_name: Integration Testing
-
 ---
 meta:
   api:
