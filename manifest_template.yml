@@ -4,26 +4,20 @@ DESCRIPTION: example description
 APIGEE_ENVIRONMENTS:
   - name: internal-dev
     display_name: Internal Development
-  - name: internal-dev-sandbox
-    display_name: Internal Development Sandbox
-  - name: internal-qa
-    display_name: Internal QA
-  - name: internal-qa-sandbox
-    display_name: Internal QA Sandbox
-  - name: ref
-    display_name: Reference
-  - name: sandbox
-    display_name: Sandbox
+  # - name: internal-qa-sandbox
+  #   display_name: Internal QA Sandbox
+  # - name: ref
+  #   display_name: Reference
 # Enable int environment when ready by uncommenting:
-#   - name: int
-#     display_name: Integration Testing
+  - name: int
+    display_name: Integration Testing
 ---
 meta:
   api:
     name: gp-connect-access-record-fhir-api
-    guid: 59e07fe0-4b7d-44a8-b8e1-c3e35bcff88b
+    guid: 6ebd45d0-7ef0-465f-a5bf-3654b58513a6
     spec_guids:
-      - 19bf0fa8-2b4a-42a1-a890-83abca9e7623
+      - 307341b1-885b-4ae0-9cd6-3c8bfba3eb59
   schema_version: 1.3
 apigee:
   environments:
