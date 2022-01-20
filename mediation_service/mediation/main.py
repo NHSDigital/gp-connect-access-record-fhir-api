@@ -12,7 +12,7 @@ def status():
 
 
 @app.get("/allergyintollerance")
-def status():
+def allergyintollerance():
     return Response(status_code=HTTP_200_OK)
 
 
