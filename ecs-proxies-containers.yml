@@ -1,4 +1,4 @@
 docker_containers:
-  - name: mediation
+  - name: docker
     dockerfile: "mediation_service/Dockerfile"
     path: "mediation_service"
