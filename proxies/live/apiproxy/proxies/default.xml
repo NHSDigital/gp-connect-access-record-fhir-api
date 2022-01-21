@@ -1,5 +1,22 @@
 <ProxyEndpoint name="default">
   <Flows>
+    <Flow name="AllergyIntolerance">
+          <!--
+          This Flow and the corresponding RouteRule should be deleted once we have got a backend (mediation app)! 
+          The only purpose of this flow is being able to check authentication and authorization using NHS-LOGIN
+        -->
+        <Description/>
+        <Request/>
+        <Response>
+            <Step>
+                <Name>OauthV2.VerifyAccessToken</Name>
+            </Step>
+            <Step>
+                <Name>AssignMessage.AddPayloadToPing</Name>
+            </Step>
+        </Response>
+        <Condition>(proxy.pathsuffix MatchesPath "/AllergyIntolerance")</Condition>
+    </Flow>
     <Flow name="OptionsPreFlight">
       <Request/>
       <Response>
@@ -50,6 +67,12 @@
     <BasePath>{{ SERVICE_BASE_PATH }}</BasePath>
     <VirtualHost>secure</VirtualHost>
   </HTTPProxyConnection>
+  <RouteRule name="NoRouteAllergyIntolerance">
+        <!--
+          This routerule needs to be deleted when a the mediation app (backend) is implemented...
+        -->
+      <Condition>(proxy.pathsuffix MatchesPath "/AllergyIntolerance")</Condition>
+  </RouteRule>
   <RouteRule name="NoRoute">
     <Condition>(request.verb = "OPTIONS") and (request.header.origin != null) and (request.header.Access-Control-Request-Method != null)</Condition>
   </RouteRule>
