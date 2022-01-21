@@ -11,6 +11,8 @@ authors = ["NHS Digital - APIM"]
 python = "^3.8"
 fastapi = "^0.72.0"
 uvicorn = "^0.17.0"
+requests = "^2.27.1"
+PyJWT = "^2.3.0"
 
 [tool.poetry.dev-dependencies]
 

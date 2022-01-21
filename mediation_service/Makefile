@@ -6,3 +6,6 @@ run:
 
 docker-build:
 	docker build -t mediation:latest .
+
+docker-run:
+	docker run -p 9001:9000 mediation:latest

@@ -20,7 +20,7 @@ def allergyintollerance():
 
 @app.get("/test")
 def test():
-    return len(os.environ["GPC_PRIVATE_KEY"])
+    return len(os.environ.get("GPC_PRIVATE_KEY", "foo"))
 
 
 if __name__ == '__main__':
