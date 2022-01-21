@@ -13,7 +13,7 @@ def status():
     return Response(status_code=HTTP_200_OK)
 
 
-@app.get("/allergyintollerance")
+@app.get("/AllergyIntolerance")
 def allergyintollerance():
     return Response(status_code=HTTP_200_OK)
 
