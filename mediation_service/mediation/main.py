@@ -1,3 +1,5 @@
+import os
+
 import uvicorn
 from fastapi import FastAPI
 from starlette.responses import Response
@@ -14,6 +16,11 @@ def status():
 @app.get("/allergyintollerance")
 def allergyintollerance():
     return Response(status_code=HTTP_200_OK)
+
+
+@app.get("/test")
+def test():
+    return len(os.environ["GPC_PRIVATE_KEY"])
 
 
 if __name__ == '__main__':
