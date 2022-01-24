@@ -34,5 +34,5 @@ extends:
     service_base_path: ${{ variables.service_base_path }}
     apigee_deployments:
       - environment: internal-dev
-        post_deploy:
-          - template: ./templates/run-smoke-tests.yml
+        # post_deploy:
+        #   - template: ./templates/run-smoke-tests.yml
