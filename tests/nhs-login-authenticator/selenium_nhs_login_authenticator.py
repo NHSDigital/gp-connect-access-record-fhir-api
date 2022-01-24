@@ -8,6 +8,7 @@ import ast
 import json
 import os
 import requests
+import urllib.parse
 
 
 client_id = os.environ["CLIENT_ID"]
@@ -30,9 +31,16 @@ driver = webdriver.Chrome(
 )
 
 # hit identity-service on INT
-driver.get(
-    f"https://int.api.service.nhs.uk/oauth2/authorize?response_type=code&client_id={client_id}&state=123&scope=nhs-login&redirect_uri=https%3A%2F%2Fnhsd-apim-testing-int.herokuapp.com%2Fcallback"
-)
+params = {
+    "response_type": "code",
+    "client_id": client_id,
+    "state": 123,
+    "scope": "nhs-login",
+    "redirect_uri": "https://nhsd-apim-testing-int.herokuapp.com/callback",
+}
+base_url = "https://int.api.service.nhs.uk/oauth2/authorize?"
+url = base_url + urllib.parse.urlencode(params)
+driver.get(url)
 
 # wait for the username input element to be available
 username = WebDriverWait(driver=driver, timeout=10).until(
