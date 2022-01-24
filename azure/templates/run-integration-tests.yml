@@ -26,9 +26,9 @@ steps:
       export STATUS_ENDPOINT_API_KEY="$(status-endpoint-api-key)"
       export CLIENT_ID="$(CLIENT_ID_INT)"
       export CLIENT_SECRET="$(CLIENT_SECRET_INT)"
-      export USER="$(NHS_LOGIN_USER)"
-      export PASSWORD="(NHS_LOGIN_PASSWORD)"
-      export OTP_CODE="(NHS_LOGIN_OTP_CODE)"
+      export NHS_LOGIN_USER="$(NHS_LOGIN_USER)"
+      export NHS_LOGIN_PASSWORD="(NHS_LOGIN_PASSWORD)"
+      export NHS_LOGIN_OTP_CODE="(NHS_LOGIN_OTP_CODE)"
 
       make setup-test
       make test
