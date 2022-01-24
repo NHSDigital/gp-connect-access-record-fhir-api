@@ -38,4 +38,4 @@ extends:
         depends_on:
           - internal_dev
         post_deploy:
-          - template: ./templates/run-smoke-tests.yml
+          - template: ./templates/run-integration-tests.yml
