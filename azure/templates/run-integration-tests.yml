@@ -30,9 +30,9 @@ steps:
       export PASSWORD="(NHS_LOGIN_PASSWORD)"
       export OTP_CODE="(NHS_LOGIN_OTP_CODE)"
 
-      cd ./tests && make setup-test
-      cd ./tests && make test
-    workingDirectory: $(Pipeline.Workspace)/s/$(SERVICE_NAME)/$(SERVICE_ARTIFACT_NAME)
+      make setup-test
+      make test
+    workingDirectory: $(Pipeline.Workspace)/s/$(SERVICE_NAME)/$(SERVICE_ARTIFACT_NAME)/tests
     displayName: run integration tests
 
   - task: PublishTestResults@2
