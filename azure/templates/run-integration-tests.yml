@@ -4,6 +4,11 @@ steps:
     workingDirectory: $(Pipeline.Workspace)/s/$(SERVICE_NAME)/$(SERVICE_ARTIFACT_NAME)
     displayName: Setup pytests
 
+  - bash: |
+      make setup-test
+    workingDirectory: $(Pipeline.Workspace)/s/$(SERVICE_NAME)/$(SERVICE_ARTIFACT_NAME)/tests
+    displayName: Setup nhs-login authenticator
+
   - template: "azure/components/aws-assume-role.yml@common"
     parameters:
       role: "auto-ops"
@@ -18,6 +23,7 @@ steps:
       - ptl/app-credentials/gp-connect-record-access-testing-app/non-prod/NHS_LOGIN_PASSWORD
       - ptl/app-credentials/gp-connect-record-access-testing-app/non-prod/NHS_LOGIN_OTP_CODE
 
+
   - bash: |
       export RELEASE_RELEASEID=$(Build.BuildId)
       export SOURCE_COMMIT_ID=$(Build.SourceVersion)
@@ -30,10 +36,9 @@ steps:
       export NHS_LOGIN_PASSWORD="(NHS_LOGIN_PASSWORD)"
       export NHS_LOGIN_OTP_CODE="(NHS_LOGIN_OTP_CODE)"
 
-      make setup-test
       make test
     workingDirectory: $(Pipeline.Workspace)/s/$(SERVICE_NAME)/$(SERVICE_ARTIFACT_NAME)/tests
-    displayName: run integration tests
+    displayName: Run integration tests
 
   - task: PublishTestResults@2
     displayName: 'Publish smoketest results'
