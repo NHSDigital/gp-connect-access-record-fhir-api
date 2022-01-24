@@ -45,6 +45,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "assertpy"
+version = "1.1"
+description = "Simple assertion library for unit testing in python with a fluent API"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "async-timeout"
 version = "3.0.1"
 description = "Timeout context manager for asyncio programs"
@@ -570,7 +578,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "4ed451b60774dd765c24a542725380c43a137f103fc5626edc0c56587f676717"
+content-hash = "e7488074e09e71b4a7d04a76f6db4f7c4bfb8521fefedc590c59c898f8169b56"
 
 [metadata.files]
 aiohttp = [
@@ -616,6 +624,9 @@ api-test-utils = []
 appdirs = [
     {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
     {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
+]
+assertpy = [
+    {file = "assertpy-1.1.tar.gz", hash = "sha256:acc64329934ad71a3221de185517a43af33e373bb44dc05b5a9b174394ef4833"},
 ]
 async-timeout = [
     {file = "async-timeout-3.0.1.tar.gz", hash = "sha256:0c3c816a028d47f659d6ff5c745cb2acf1f966da1fe5c19c77a70282b25f4c5f"},
