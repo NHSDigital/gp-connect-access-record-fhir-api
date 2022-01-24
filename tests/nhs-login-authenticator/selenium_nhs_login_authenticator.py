@@ -54,17 +54,17 @@ username.clear()
 username.send_keys(nhs_login_user)
 
 # submit user
-WebDriverWait(driver=driver, timeout=10).until(
+WebDriverWait(driver=driver, timeout=20).until(
     EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
 ).click()
 
 # click the 'continue' button again to accept stuff
-WebDriverWait(driver=driver, timeout=10).until(
+WebDriverWait(driver=driver, timeout=20).until(
     EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
 ).click()
 
 # wait for the password input element to be ready
-password = WebDriverWait(driver=driver, timeout=10).until(
+password = WebDriverWait(driver=driver, timeout=20).until(
     EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='password']"))
 )
 
@@ -75,12 +75,12 @@ password.clear()
 password.send_keys(nhs_login_password)
 
 # submit password
-WebDriverWait(driver=driver, timeout=10).until(
+WebDriverWait(driver=driver, timeout=20).until(
     EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
 ).click()
 
 # wait for the otp element to be ready
-otp_code = WebDriverWait(driver=driver, timeout=10).until(
+otp_code = WebDriverWait(driver=driver, timeout=20).until(
     EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='otp']"))
 )
 
@@ -91,12 +91,12 @@ otp_code.clear()
 otp_code.send_keys(nhs_login_otp_code)
 
 # submit otp
-WebDriverWait(driver=driver, timeout=10).until(
+WebDriverWait(driver=driver, timeout=20).until(
     EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
 ).click()
 
 # wait for callback url
-token = WebDriverWait(driver=driver, timeout=10).until(
+token = WebDriverWait(driver=driver, timeout=20).until(
     EC.element_to_be_clickable((By.XPATH, "/html/body/div/div/pre"))
 )
 
