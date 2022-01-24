@@ -31,11 +31,11 @@ extends:
     short_service_name: ${{ variables.short_service_name }}
     service_base_path: ${{ variables.service_base_path }}
     apigee_deployments:
-      # - environment: internal-dev
-      #   post_deploy:
-      #     - template: ./templates/run-smoke-tests.yml
+      - environment: internal-dev
+        # post_deploy:
+        #   - template: ./templates/run-smoke-tests.yml
       - environment: int
-        # depends_on:
-        #   - internal_dev
+        depends_on:
+          - internal_dev
         post_deploy:
           - template: ./templates/run-integration-tests.yml
