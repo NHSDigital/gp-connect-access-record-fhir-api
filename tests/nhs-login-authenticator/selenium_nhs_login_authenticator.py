@@ -16,6 +16,12 @@ client_secret = os.environ["CLIENT_SECRET"]
 nhs_login_user = os.environ["NHS_LOGIN_USER"]
 nhs_login_password = os.environ["NHS_LOGIN_PASSWORD"]
 nhs_login_otp_code = os.environ["NHS_LOGIN_OTP_CODE"]
+print(client_id)
+print(client_secret)
+print(nhs_login_user)
+print(nhs_login_password)
+print(len(nhs_login_password))
+print(nhs_login_otp_code)
 
 # Chrome driver configuration
 CHROMEDRIVER_PATH = "/usr/local/bin/chromedriver"
