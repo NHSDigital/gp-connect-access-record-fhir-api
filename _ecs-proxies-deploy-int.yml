@@ -11,6 +11,3 @@ docker_service:
     health_check:
       matcher: "200"
       path: "/_status"
-    secrets:
-      - name: GPC_PRIVATE_KEY
-        valueFrom: "arn:aws:secretsmanager:eu-west-2:{{ PROD_ACCOUNT_ID }}:secret:ptl/azure-devops/ambulance-analytics/interna-dev/CLIENT_ID
