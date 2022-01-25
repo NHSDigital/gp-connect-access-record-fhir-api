@@ -35,13 +35,13 @@ steps:
       export NHS_LOGIN_USER="$(NHS_LOGIN_USER)"
       export NHS_LOGIN_PASSWORD=`echo "$(NHS_LOGIN_PASSWORD)" | base64 --decode`
       export NHS_LOGIN_OTP_CODE="$(NHS_LOGIN_OTP_CODE)"
-      
-      make test
+
+      make -s test
     workingDirectory: $(Pipeline.Workspace)/s/$(SERVICE_NAME)/$(SERVICE_ARTIFACT_NAME)/tests
     displayName: Run integration tests
 
   - task: PublishTestResults@2
-    displayName: 'Publish smoketest results'
+    displayName: 'Publish integration tests results'
     condition: always()
     inputs:
       testResultsFiles: '$(Pipeline.Workspace)/s/$(SERVICE_NAME)/$(SERVICE_ARTIFACT_NAME)/smoketest-report.xml'
