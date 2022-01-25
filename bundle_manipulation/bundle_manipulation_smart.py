@@ -3,11 +3,14 @@ from fhirclient.models.patient import Patient
 import fhirclient.models.allergyintolerance as allergyintolerance
 import json
 
+
 def load_bundle(filepath):
     return _load_resource(filepath, Bundle)
 
+
 def load_patient(filepath):
     return _load_resource(filepath, Patient)
+
 
 def filter_bundle(bundle_object: Bundle):
     # create new bundle
@@ -31,9 +34,9 @@ def filter_bundle(bundle_object: Bundle):
 
 def bundle_as_json(bundle: Bundle):
     return json.dumps(bundle.as_json(), indent=1)
-    
+
 
 def _load_resource(filepath, resource):
-    with open(filepath, 'r') as response_json:
+    with open(filepath, "r") as response_json:
         bundle_js = json.load(response_json)
     return resource(bundle_js)
