@@ -33,9 +33,9 @@ steps:
       export CLIENT_ID="$(CLIENT_ID_INT)"
       export CLIENT_SECRET="$(CLIENT_SECRET_INT)"
       export NHS_LOGIN_USER="$(NHS_LOGIN_USER)"
-      export NHS_LOGIN_PASSWORD="$(NHS_LOGIN_PASSWORD)"
+      export NHS_LOGIN_PASSWORD=`echo "$(NHS_LOGIN_PASSWORD)" | base64 --decode`
       export NHS_LOGIN_OTP_CODE="$(NHS_LOGIN_OTP_CODE)"
-
+      
       make test
     workingDirectory: $(Pipeline.Workspace)/s/$(SERVICE_NAME)/$(SERVICE_ARTIFACT_NAME)/tests
     displayName: Run integration tests

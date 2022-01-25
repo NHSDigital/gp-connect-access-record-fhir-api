@@ -17,6 +17,8 @@ class TestAllergyIntolerance:
 
         # When
         response = requests.get(url=url, headers={"Authorization": f"Bearer {token}"})
+
+        # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
 
     def test_invalid_token(self, url):
