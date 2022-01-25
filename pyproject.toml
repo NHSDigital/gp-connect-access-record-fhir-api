@@ -17,6 +17,8 @@ keywords = ["healthcare", "uk", "nhs"] #TODO add additional keywords
 
 [tool.poetry.dependencies]
 python = "^3.8"
+fhirclient = "^3.2.0"
+"fhir.resources" = "^6.2.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7.9"
