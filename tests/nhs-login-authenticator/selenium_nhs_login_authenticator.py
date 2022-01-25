@@ -97,7 +97,7 @@ WebDriverWait(driver=driver, timeout=20).until(
 ).click()
 
 # wait for callback url
-token = WebDriverWait(driver=driver, timeout=20).until(
+callback_page = WebDriverWait(driver=driver, timeout=20).until(
     EC.element_to_be_clickable((By.XPATH, "/html/body/div/div/pre"))
 )
 
