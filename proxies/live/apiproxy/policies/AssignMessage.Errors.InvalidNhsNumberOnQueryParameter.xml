@@ -10,7 +10,7 @@
     </AssignVariable>
     <AssignVariable>
         <Name>service.error.coding.display</Name>
-        <Value>Nhs Number mismatch</Value>
+        <Value>NHS number mismatch</Value>
     </AssignVariable>
     <AssignVariable>
         <Name>service.error.diagnostics</Name>
