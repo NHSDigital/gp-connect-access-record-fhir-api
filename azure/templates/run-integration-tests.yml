@@ -1,0 +1,48 @@
+steps:
+  - bash: |
+      make install-python
+    workingDirectory: $(Pipeline.Workspace)/s/$(SERVICE_NAME)/$(SERVICE_ARTIFACT_NAME)
+    displayName: Setup pytests
+
+  - bash: |
+      make setup-test
+    workingDirectory: $(Pipeline.Workspace)/s/$(SERVICE_NAME)/$(SERVICE_ARTIFACT_NAME)/tests
+    displayName: Setup nhs-login authenticator
+
+  - template: "azure/components/aws-assume-role.yml@common"
+    parameters:
+      role: "auto-ops"
+      profile: "apm_ptl"
+
+  - template: "azure/components/get-aws-secrets-and-ssm-params.yml@common"
+    parameters:
+     secret_ids:
+      - ptl/app-credentials/gp-connect-record-access-testing-app/non-prod/CLIENT_ID_INT
+      - ptl/app-credentials/gp-connect-record-access-testing-app/non-prod/CLIENT_SECRET_INT
+      - ptl/app-credentials/gp-connect-record-access-testing-app/non-prod/NHS_LOGIN_USER
+      - ptl/app-credentials/gp-connect-record-access-testing-app/non-prod/NHS_LOGIN_PASSWORD
+      - ptl/app-credentials/gp-connect-record-access-testing-app/non-prod/NHS_LOGIN_OTP_CODE
+
+
+  - bash: |
+      export RELEASE_RELEASEID=$(Build.BuildId)
+      export SOURCE_COMMIT_ID=$(Build.SourceVersion)
+      export APIGEE_ENVIRONMENT="$(ENVIRONMENT)"
+      export SERVICE_BASE_PATH="$(SERVICE_BASE_PATH)"
+      export STATUS_ENDPOINT_API_KEY="$(status-endpoint-api-key)"
+      export CLIENT_ID="$(CLIENT_ID_INT)"
+      export CLIENT_SECRET="$(CLIENT_SECRET_INT)"
+      export NHS_LOGIN_USER="$(NHS_LOGIN_USER)"
+      export NHS_LOGIN_PASSWORD=`echo "$(NHS_LOGIN_PASSWORD)" | base64 --decode`
+      export NHS_LOGIN_OTP_CODE="$(NHS_LOGIN_OTP_CODE)"
+
+      make -s test
+    workingDirectory: $(Pipeline.Workspace)/s/$(SERVICE_NAME)/$(SERVICE_ARTIFACT_NAME)/tests
+    displayName: Run integration tests
+
+  - task: PublishTestResults@2
+    displayName: 'Publish integration tests results'
+    condition: always()
+    inputs:
+      testResultsFiles: '$(Pipeline.Workspace)/s/$(SERVICE_NAME)/$(SERVICE_ARTIFACT_NAME)/smoketest-report.xml'
+      failTaskOnFailedTests: true
