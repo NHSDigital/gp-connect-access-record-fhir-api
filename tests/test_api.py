@@ -10,14 +10,12 @@ class TestAllergyIntolerance:
             "https://int.api.service.nhs.uk/gp-connect-access-record/AllergyIntolerance"
         )
 
-    def test_happy_path(self, get_token, url):
+    def test_happy_path(self, apigee_token, url):
         # Given
-        token = get_token
+        token = apigee_token
         expected_status_code = 200
-
         # When
         response = requests.get(url=url, headers={"Authorization": f"Bearer {token}"})
-
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
 
@@ -25,9 +23,7 @@ class TestAllergyIntolerance:
         # Given
         token = "invalid"
         expected_status_code = 401
-
         # When
         response = requests.get(url=url, headers={"Authorization": f"Bearer {token}"})
-
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)

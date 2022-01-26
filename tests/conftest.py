@@ -4,7 +4,7 @@ import os
 
 
 @pytest.fixture(scope='session')
-def get_token():
+def apigee_token():
     """
         Reads the apigee token from an environment variable
 

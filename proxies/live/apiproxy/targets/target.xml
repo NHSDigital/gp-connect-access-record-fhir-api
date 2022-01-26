@@ -1,41 +1,60 @@
 <TargetEndpoint name="gp-connect-access-record-fhir-api-target">
   <FaultRules>
-    <FaultRule name="access_token_expired">
-      <Step>
-        <Name>ExtractVariables.OAuthErrorFaultString</Name>
-      </Step>
-      <Step>
-        <Name>AssignMessage.OAuthPolicyErrorResponse</Name>
-      </Step>
-      <Condition>oauthV2.OauthV2.VerifyAccessToken.failed</Condition>
-    </FaultRule>
+      <FaultRule name="access_token_expired">
+          <Condition>oauthV2.OauthV2.VerifyAccessToken.failed</Condition>
+          <Step>
+              <Name>ExtractVariables.OAuthErrorFaultString</Name>
+          </Step>
+          <Step>
+              <Name>AssignMessage.Errors.OauthPolicy</Name>
+          </Step>
+          <Step>
+              <Name>AssignMessage.Errors.CatchAllMessage</Name>
+          </Step>
+      </FaultRule>
+      <FaultRule name="non_matching_nhs_number">
+          <Condition>valid_nhs_number == false</Condition>
+          <Step>
+              <Name>AssignMessage.Errors.InvalidNhsNumberOnQueryParameter</Name>
+          </Step>
+          <Step>
+              <Name>AssignMessage.Errors.CatchAllMessage</Name>
+          </Step>
+      </FaultRule>
   </FaultRules>
   <PreFlow>
     <Request>
-      <Step>
-        <Name>OauthV2.VerifyAccessToken</Name>
-      </Step>
-      <Step>
-        <Name>Quota</Name>
-      </Step>
-      <Step>
-        <Name>SpikeArrest</Name>
-      </Step>
+        <Step>
+            <Name>OauthV2.VerifyAccessToken</Name>
+        </Step>
+        <Step>
+            <Name>Quota</Name>
+        </Step>
+        <Step>
+            <Name>SpikeArrest</Name>
+        </Step>
+        <Step>
+            <Name>DecodeJWT.DecodeIdToken</Name>
+        </Step>
+        <Step>
+            <Name>JavaScript.ValidateNhsNumber</Name>
+        </Step>
+        <Step>
+            <Name>RaiseFault.403Forbidden</Name>
+            <Condition>valid_nhs_number == false</Condition>
+        </Step>
     </Request>
+    <Response/>
   </PreFlow>
-  <!--
-    To point to a named target server as this is how it SHOULD be implemented:
-    For example:
-    <HTTPTargetConnection>
-      <SSLInfo>
-        <Enabled>true</Enabled>
-      </SSLInfo>
-      <LoadBalancer>
-        <Server name="gp-connect-access-record-fhir-api" />
-      </LoadBalancer>
-    </HTTPTargetConnection>
-  -->
-    <HTTPTargetConnection>
-        {{ HOSTED_TARGET_CONNECTION }}
-    </HTTPTargetConnection>
+  <HTTPTargetConnection>
+      {{ HOSTED_TARGET_CONNECTION }}
+  </HTTPTargetConnection>
+  <DefaultFaultRule>
+      <Step>
+          <Name>AssignMessage.Errors.Defaults</Name>
+      </Step>
+      <Step>
+          <Name>AssignMessage.Errors.CatchAllMessage</Name>
+      </Step>
+  </DefaultFaultRule>
 </TargetEndpoint>
