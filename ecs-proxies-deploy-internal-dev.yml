@@ -13,4 +13,4 @@ docker_service:
       path: "/_status"
     secrets:
       - name: GPC_CLIENT_ID
-      valueFrom: "arn:aws:secretsmanager:eu-west-2:{{ PTL_ACCOUNT_ID }}:secret:ptl/app-credentials/gp-connect-record-access-testing-app/non-prod/CLIENT_ID_INT"
+        valueFrom: "arn:aws:secretsmanager:eu-west-2:{{ PTL_ACCOUNT_ID }}:secret:ptl/app-credentials/gp-connect-record-access-testing-app/non-prod/CLIENT_ID_INT"
