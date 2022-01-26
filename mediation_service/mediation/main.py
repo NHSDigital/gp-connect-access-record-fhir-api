@@ -25,7 +25,7 @@ def test():
 
 @app.get("/test2")
 def test():
-    return len(os.environ.get("GPC_PRVIVATE_KEY_INT", "foo"))
+    return len(os.environ.get("GPC_PRIVATE_KEY_INT", "foobar"))
 
 
 if __name__ == '__main__':
