@@ -24,7 +24,7 @@ def test():
 
 
 @app.get("/test2")
-def test():
+def test2():
     return len(os.environ.get("GPC_PRIVATE_KEY_INT", "foobar"))
 
 
