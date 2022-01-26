@@ -1,3 +1,6 @@
+"""
+Tests for using fhir.resources library
+"""
 import os
 from pydantic import ValidationError
 
@@ -69,5 +72,32 @@ def test_bundle_as_json():
     filtered_bundle_json = bundle_as_json(filtered_bundle)
 
     path_to_write = os.path.join(dir_path, "files/filtered_bundle_output_fr.json")
+    with open(path_to_write, 'w') as output_json:
+        output_json.write(filtered_bundle_json)
+
+
+def test_load_bundle_from_int():
+    # example from int
+    file_path = os.path.join(dir_path, "files/example_int.json")
+    original_bundle = load_bundle(file_path)
+
+    assert isinstance(original_bundle, Bundle)
+
+
+def test_filter_bundle_int():
+    # using example_int
+    file_path = os.path.join(dir_path, "files/example_int.json")
+    original_bundle = load_bundle(file_path)
+
+    assert isinstance(original_bundle, Bundle)
+
+    filtered_bundle = filter_bundle(original_bundle)
+    assert isinstance(filtered_bundle, Bundle)
+    assert filtered_bundle.type == 'collection'
+    assert len(filtered_bundle.entry) == 1
+
+    filtered_bundle_json = bundle_as_json(filtered_bundle)
+
+    path_to_write = os.path.join(dir_path, "files/filtered_int_bundle_output_fr.json")
     with open(path_to_write, 'w') as output_json:
         output_json.write(filtered_bundle_json)

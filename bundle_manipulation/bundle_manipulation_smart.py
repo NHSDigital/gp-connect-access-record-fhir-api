@@ -1,3 +1,6 @@
+"""
+Trial using SMART on FHIR library
+"""
 from fhirclient.models.bundle import Bundle, BundleEntry
 from fhirclient.models.patient import Patient
 import fhirclient.models.allergyintolerance as allergyintolerance

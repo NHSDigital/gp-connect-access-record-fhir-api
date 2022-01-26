@@ -1,3 +1,6 @@
+"""
+Trial using fhir.resources library
+"""
 from fhir.resources.STU3.bundle import Bundle, BundleEntry
 from fhir.resources.STU3.patient import Patient
 from fhir.resources.STU3.allergyintolerance import AllergyIntolerance

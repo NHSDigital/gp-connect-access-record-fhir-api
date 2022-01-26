@@ -1,3 +1,6 @@
+"""
+Tests for using SMART on FHIR library
+"""
 from fhirclient.models.bundle import Bundle
 from fhirclient.models.patient import Patient
 from fhirclient.models.fhirabstractbase import FHIRValidationError
@@ -59,5 +62,31 @@ def test_bundle_as_json():
     filtered_bundle_json = bundle_as_json(filtered_bundle)
 
     path_to_write = os.path.join(dir_path, "files/filtered_bundle_output_smart.json")
+    with open(path_to_write, 'w') as output_json:
+        output_json.write(filtered_bundle_json)
+
+
+def test_load_bundle_from_int():
+    # response from  int
+    # is successfully
+    file_path = os.path.join(dir_path, "files/example_int.json")
+    original_bundle = load_bundle(file_path)
+
+    assert isinstance(original_bundle, Bundle)
+
+
+def test_filter_bundle_from_int():
+    # using example_response.json
+    file_path = os.path.join(dir_path, "files/example_int.json")
+    original_bundle = load_bundle(file_path)
+
+    assert isinstance(original_bundle, Bundle)
+
+    filtered_bundle = filter_bundle(original_bundle)
+    assert isinstance(filtered_bundle, Bundle)
+    assert len(filtered_bundle.entry) == 1
+
+    filtered_bundle_json = bundle_as_json(filtered_bundle)
+    path_to_write = os.path.join(dir_path, "files/filtered_int_bundle_output_smart.json")
     with open(path_to_write, 'w') as output_json:
         output_json.write(filtered_bundle_json)

@@ -1,0 +1,83 @@
+{
+ "entry": [
+  {
+   "resource": {
+    "id": "29",
+    "meta": {
+     "profile": [
+      "https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-GPC-AllergyIntolerance-1"
+     ]
+    },
+    "assertedDate": "1963-07-27T12:00:00+01:00",
+    "category": [
+     "environment"
+    ],
+    "clinicalStatus": "active",
+    "code": {
+     "coding": [
+      {
+       "extension": [
+        {
+         "extension": [
+          {
+           "url": "descriptionId",
+           "valueId": "148720012"
+          }
+         ],
+         "url": "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-coding-sctdescid"
+        }
+       ],
+       "code": "89707004",
+       "display": "Sesame oil (substance)",
+       "system": "http://snomed.info/sct"
+      }
+     ]
+    },
+    "identifier": [
+     {
+      "system": "https://fhir.nhs.uk/Id/cross-care-setting-identifier",
+      "value": "2bfc391c-4ffe-11ec-9cc3-00505692d4aa"
+     }
+    ],
+    "onsetDateTime": "1963-07-27T12:00:00+01:00",
+    "patient": {
+     "reference": "Patient/2"
+    },
+    "reaction": [
+     {
+      "manifestation": [
+       {
+        "coding": [
+         {
+          "extension": [
+           {
+            "extension": [
+             {
+              "url": "descriptionId",
+              "valueId": "344917018"
+             }
+            ],
+            "url": "https://fhir.hl7.org.uk/STU3/StructureDefinition/Extension-coding-sctdescid"
+           }
+          ],
+          "code": "230145002",
+          "display": "Difficulty breathing",
+          "system": "http://snomed.info/sct"
+         }
+        ]
+       }
+      ],
+      "severity": "severe"
+     }
+    ],
+    "recorder": {
+     "reference": "Practitioner/1"
+    },
+    "verificationStatus": "unconfirmed",
+    "resourceType": "AllergyIntolerance"
+   }
+  }
+ ],
+ "type": "collection",
+ "resourceType": "Bundle"
+}
