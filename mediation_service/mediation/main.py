@@ -49,5 +49,10 @@ def test():
     return len(os.environ.get("GPC_PRIVATE_KEY", "foo"))
 
 
+@app.get("/test2")
+def test2():
+    return len(os.environ.get("GPC_PRIVATE_KEY_INT", "foobar"))
+
+
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=9000)
