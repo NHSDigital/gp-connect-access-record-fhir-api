@@ -46,7 +46,7 @@ def allergy_intolerance(_pds_client: PdsClient = Depends(pds_client)):
 
 @app.get("/test")
 def test():
-    return len(os.environ.get("GPC_PRIVATE_KEY", "foo"))
+    return len(os.environ.get("SDS_SECRET_CLIENT_KEY", "foo"))
 
 
 if __name__ == '__main__':
