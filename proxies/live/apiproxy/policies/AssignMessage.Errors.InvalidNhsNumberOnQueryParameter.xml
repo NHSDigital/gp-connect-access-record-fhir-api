@@ -10,11 +10,11 @@
     </AssignVariable>
     <AssignVariable>
         <Name>service.error.coding.display</Name>
-        <Value>NHS number mismatch</Value>
+        <Value>User cannot perform this action</Value>
     </AssignVariable>
     <AssignVariable>
         <Name>service.error.diagnostics</Name>
-        <Template>The NHS number on the request does not match the NHS number of the authenticated user.</Template>
+        <Template>The NHS number on the "patient" query parameter does not match the NHS number of the authenticated user.</Template>
     </AssignVariable>
     <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
 </AssignMessage>
