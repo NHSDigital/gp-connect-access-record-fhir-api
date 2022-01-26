@@ -2,6 +2,8 @@ FROM python:3.8
 
 WORKDIR /opt/app
 
+ENV SECRET_ID = ptl/app-credentials/gp-connect-record-access-testing-app/non-prod/CLIENT_ID_INT
+
 COPY mediation .
 COPY pyproject.toml .
 COPY poetry.lock .
