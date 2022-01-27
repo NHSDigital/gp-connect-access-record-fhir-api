@@ -8,7 +8,7 @@ import requests
 class AuthClientCredentials:
     __client_assertion_type: str = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
 
-    def __init__(self, auth_url: str, private_key_file: str = "", client_id: str = "", aud: str = "",
+    def __init__(self, auth_url: str, private_key_content: str = "", client_id: str = "", aud: str = "",
                  headers: dict = None,
                  alg="RS512") -> None:
         self.__auth_url = auth_url
@@ -16,10 +16,7 @@ class AuthClientCredentials:
         self.__aud = aud
         self.__headers = headers
         self.__alg = alg
-
-        if private_key_file:
-            with open(private_key_file, "r") as f:
-                self.__signing_key = f.read()
+        self.__signing_key = self.__reformat_private_key(private_key_content)
 
     def get_access_token(self):
         _jwt = self.__create_jwt(self.__signing_key, self.__client_id, self.__aud, self.__headers, self.__alg)
@@ -46,3 +43,17 @@ class AuthClientCredentials:
         }
 
         return jwt.encode(claims, signing_key, headers=headers, algorithm=alg)
+
+    @staticmethod
+    def __reformat_private_key(key):
+        """Private key that is passed via environment variable replaces new-lines with spaces.
+        This function fixes the issue"""
+
+        begin = "-----BEGIN RSA PRIVATE KEY-----"
+        end = "-----END RSA PRIVATE KEY-----"
+
+        key = key.replace(begin, "")
+        key = key.replace(end, "")
+        key = key.replace(" ", "\n")
+
+        return f"{begin}{key}{end}"

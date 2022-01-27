@@ -1,4 +1,3 @@
-import argparse
 import os
 
 import uvicorn
@@ -9,27 +8,39 @@ from starlette.status import HTTP_200_OK
 from client_credentials import AuthClientCredentials
 from pds_client import PdsClient
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--jwt-key", help="Absolute path to jwt private key file")
-parser.add_argument("--client-id", help="Client ID of apigee app")
-parser.add_argument("--kid", help="Key id for PDS client credentials")
-parser.add_argument("--apigee-env", help="Apigee environment")
+
+def init_dev():
+    try:
+        private_key = os.environ["GPC_PRIVATE_KEY_INT"]
+        client_id = os.environ["GPC_CLIENT_ID"]
+        kid = os.environ["KID"]
+        apigee_env = os.environ["APIGEE_ENVIRONMENT"]
+    except KeyError as e:
+        raise Exception(f"Environment variable is required: {e}")
+
+    return {
+        "private_key": private_key,
+        "client_id": client_id,
+        "kid": kid,
+        "apigee_env": apigee_env
+    }
+
 
 app = FastAPI()
 
 
 def pds_client() -> PdsClient:
-    args = parser.parse_args()
-    auth_url = f"https://{args.apigee_env}.api.service.nhs.uk/oauth2"
+    config = init_dev()
+    auth_url = f"https://{config['apigee_env']}.api.service.nhs.uk/oauth2"
     aud = f"{auth_url}/token"
 
     auth_client = AuthClientCredentials(auth_url=auth_url,
-                                        private_key_file=args.jwt_key,
-                                        client_id=args.client_id,
-                                        headers={"kid": args.kid},
+                                        private_key_content=config["private_key"],
+                                        client_id=config["client_id"],
+                                        headers={"kid": config["kid"]},
                                         aud=aud)
 
-    return PdsClient(auth=auth_client, env=args.apigee_env)
+    return PdsClient(auth=auth_client, env=config["apigee_env"])
 
 
 @app.get("/_status")
