@@ -13,7 +13,7 @@
             </Step>
         </FaultRule>
         <FaultRule name="incorrect_url_on_patient_query_parameter">
-            <Condition>valid_patient_query_parameter == false</Condition>
+            <Condition>is_valid_patient_query_parameter == false</Condition>
             <Step>
                 <Name>AssignMessage.Errors.InvalidPatientQueryParameter</Name>
             </Step>
@@ -22,7 +22,7 @@
             </Step>
         </FaultRule>
         <FaultRule name="non_matching_nhs_number">
-            <Condition>valid_nhs_number == false</Condition>
+            <Condition>is_valid_nhs_number == false</Condition>
             <Step>
                 <Name>AssignMessage.Errors.InvalidNhsNumberOnQueryParameter</Name>
             </Step>
@@ -50,11 +50,11 @@
         </Step>
         <Step>
             <Name>RaiseFault.400BadRequest</Name>
-            <Condition>valid_patient_query_parameter == false</Condition>
+            <Condition>is_valid_patient_query_parameter == false</Condition>
         </Step>
         <Step>
             <Name>RaiseFault.403Forbidden</Name>
-            <Condition>valid_nhs_number == false</Condition>
+            <Condition>is_valid_nhs_number == false</Condition>
         </Step>
     </Request>
     <Response/>
