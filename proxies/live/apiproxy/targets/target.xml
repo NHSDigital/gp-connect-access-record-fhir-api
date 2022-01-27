@@ -1,26 +1,35 @@
 <TargetEndpoint name="gp-connect-access-record-fhir-api-target">
   <FaultRules>
-      <FaultRule name="access_token_expired">
-          <Condition>oauthV2.OauthV2.VerifyAccessToken.failed</Condition>
-          <Step>
-              <Name>ExtractVariables.OAuthErrorFaultString</Name>
-          </Step>
-          <Step>
-              <Name>AssignMessage.Errors.OauthPolicy</Name>
-          </Step>
-          <Step>
-              <Name>AssignMessage.Errors.CatchAllMessage</Name>
-          </Step>
-      </FaultRule>
-      <FaultRule name="non_matching_nhs_number">
-          <Condition>valid_nhs_number == false</Condition>
-          <Step>
-              <Name>AssignMessage.Errors.InvalidNhsNumberOnQueryParameter</Name>
-          </Step>
-          <Step>
-              <Name>AssignMessage.Errors.CatchAllMessage</Name>
-          </Step>
-      </FaultRule>
+        <FaultRule name="access_token_expired">
+            <Condition>oauthV2.OauthV2.VerifyAccessToken.failed</Condition>
+            <Step>
+                <Name>ExtractVariables.OAuthErrorFaultString</Name>
+            </Step>
+            <Step>
+                <Name>AssignMessage.Errors.OauthPolicy</Name>
+            </Step>
+            <Step>
+                <Name>AssignMessage.Errors.CatchAllMessage</Name>
+            </Step>
+        </FaultRule>
+        <FaultRule name="incorrect_url_on_patient_query_parameter">
+            <Condition>valid_patient_query_parameter == false</Condition>
+            <Step>
+                <Name>AssignMessage.Errors.InvalidPatientQueryParameter</Name>
+            </Step>
+            <Step>
+                <Name>AssignMessage.Errors.CatchAllMessage</Name>
+            </Step>
+        </FaultRule>
+        <FaultRule name="non_matching_nhs_number">
+            <Condition>valid_nhs_number == false</Condition>
+            <Step>
+                <Name>AssignMessage.Errors.InvalidNhsNumberOnQueryParameter</Name>
+            </Step>
+            <Step>
+                <Name>AssignMessage.Errors.CatchAllMessage</Name>
+            </Step>
+        </FaultRule>
   </FaultRules>
   <PreFlow>
     <Request>
@@ -38,6 +47,10 @@
         </Step>
         <Step>
             <Name>JavaScript.ValidateNhsNumber</Name>
+        </Step>
+        <Step>
+            <Name>RaiseFault.400BadRequest</Name>
+            <Condition>valid_patient_query_parameter == false</Condition>
         </Step>
         <Step>
             <Name>RaiseFault.403Forbidden</Name>
