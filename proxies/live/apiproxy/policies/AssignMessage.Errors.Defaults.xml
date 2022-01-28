@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage name="AssignMessage.Errors.Defaults">
+    <AssignVariable>
+        <Name>service.error.code</Name>
+        <Ref>error.status.code</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>service.error.coding.code</Name>
+        <Value>UNKNOWN_ERROR</Value>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>service.error.coding.display</Name>
+        <Value>Unknown Error</Value>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>service.error.diagnostics</Name>
+        <Template>An unknown error occurred processing this request. Contact us for assistance diagnosing this issue: https://digital.nhs.uk/developer/help-and-support. (Message ID: {messageid})</Template>
+    </AssignVariable>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</AssignMessage>

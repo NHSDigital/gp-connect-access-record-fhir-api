@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage name="AssignMessage.Errors.InvalidPatientQueryParameter">
+    <AssignVariable>
+        <Name>service.error.code</Name>
+        <Ref>error.status.code</Ref>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>service.error.coding.code</Name>
+        <Value>BAD_REQUEST</Value>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>service.error.coding.display</Name>
+        <Value>Invalid query parameter</Value>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>service.error.diagnostics</Name>
+        <Template>The 'patient' query parameter URL does not match the specification. i.e 'https://fhir.nhs.uk/Id/{nhs-number}'</Template>
+    </AssignVariable>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</AssignMessage>
