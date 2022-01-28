@@ -1,4 +1,5 @@
 import os
+from idlelib.query import Query
 
 import uvicorn
 from fastapi import FastAPI, Depends
@@ -49,7 +50,7 @@ def status():
 
 
 @app.get("/AllergyIntolerance/{patient_id}")
-def allergy_intolerance(patient_id: str, _pds_client: PdsClient = Depends(pds_client)):
+def allergy_intolerance(patient_id: str = Query(..., min_length=3), _pds_client: PdsClient = Depends(pds_client)):
     ods = _pds_client.get_ods_for_patient("patient_id")
     print(ods)
     return Response(content=ods, status_code=HTTP_200_OK)
