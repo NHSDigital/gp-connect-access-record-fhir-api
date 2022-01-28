@@ -52,17 +52,7 @@ def status():
 def allergy_intolerance(_pds_client: PdsClient = Depends(pds_client)):
     ods = _pds_client.get_ods_for_patient("9691715791")
     print(ods)
-    return Response(status_code=HTTP_200_OK)
-
-
-@app.get("/test")
-def test():
-    return len(os.environ.get("SDS_SECRET_CLIENT_KEY", "foo"))
-
-
-@app.get("/test2")
-def test2():
-    return len(os.environ.get("GPC_PRIVATE_KEY_INT", "foobar"))
+    return Response(content=ods, status_code=HTTP_200_OK)
 
 
 if __name__ == '__main__':
