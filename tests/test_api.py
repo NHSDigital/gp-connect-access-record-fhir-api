@@ -6,7 +6,7 @@ from assertpy import assert_that
 class TestAllergyIntolerance:
     @pytest.fixture()
     def url(self) -> str:
-        return "https://int.api.service.nhs.uk/gp-connect-access-record/AllergyIntolerance"
+        return "http://localhost:9001/AllergyIntolerance"
 
     def test_happy_path(self, apigee_token, url):
         # Given
