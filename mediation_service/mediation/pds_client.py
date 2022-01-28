@@ -11,7 +11,7 @@ class PdsClient:
         self.__auth = auth
         self.__env = env
 
-    def get_ods_for_patient(self, nhs_number):
+    def get_ods_for_nhs_number(self, nhs_number):
         access_token = self.__auth.get_access_token()
         headers = {
             "X-Request-ID": str(uuid4()),

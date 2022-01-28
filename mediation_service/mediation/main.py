@@ -1,7 +1,8 @@
 import os
+import re
 
 import uvicorn
-from fastapi import FastAPI, Depends, Query
+from fastapi import FastAPI, Depends
 from starlette.responses import Response
 from starlette.status import HTTP_200_OK
 
@@ -48,10 +49,19 @@ def status():
     return Response(status_code=HTTP_200_OK)
 
 
-@app.get("/AllergyIntolerance/")
-def allergy_intolerance(patient: str = Query(...), _pds_client: PdsClient = Depends(pds_client)):
-    ods = _pds_client.get_ods_for_patient(patient)
-    print(ods)
+def extract_nhs_number(q: str) -> str:
+    r = r"(\d){10}"
+    result = re.search(r, q)
+
+    return result.group(0) if result else ""
+
+
+@app.get("/AllergyIntolerance")
+def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_client)):
+    nhs_number = extract_nhs_number(patient)
+
+    ods = _pds_client.get_ods_for_nhs_number(nhs_number)
+
     return Response(content=ods, status_code=HTTP_200_OK)
 
 

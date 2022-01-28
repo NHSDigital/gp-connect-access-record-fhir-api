@@ -1,9 +1,11 @@
-import requests
 import pytest
+import requests
 from assertpy import assert_that
 
 
 class TestAllergyIntolerance:
+    valid_nhs_number = "9691715791"
+
     @pytest.fixture()
     def url(self) -> str:
         return "http://localhost:9001/AllergyIntolerance"
