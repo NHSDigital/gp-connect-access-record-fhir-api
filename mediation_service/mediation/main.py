@@ -48,9 +48,9 @@ def status():
     return Response(status_code=HTTP_200_OK)
 
 
-@app.get("/AllergyIntolerance")
-def allergy_intolerance(_pds_client: PdsClient = Depends(pds_client)):
-    ods = _pds_client.get_ods_for_patient("9691715791")
+@app.get("/AllergyIntolerance/{patient_id}")
+def allergy_intolerance(patient_id: str, _pds_client: PdsClient = Depends(pds_client)):
+    ods = _pds_client.get_ods_for_patient("patient_id")
     print(ods)
     return Response(content=ods, status_code=HTTP_200_OK)
 
