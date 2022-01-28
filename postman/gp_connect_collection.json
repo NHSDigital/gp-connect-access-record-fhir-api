@@ -6,12 +6,12 @@
   },
   "item": [
     {
-      "name": "Allergies",
+      "name": "AllergyIntolerance",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "https://{{env}}.api.service.nhs.uk/gp-connect-access-record/AllergyIntolerance?patient=http://fhir.nhs.uk/Id/9691715791",
+          "raw": "https://{{env}}.api.service.nhs.uk/gp-connect-access-record/AllergyIntolerance?patient=https://fhir.nhs.uk/Id/{{nhs_number}}",
           "protocol": "https",
           "host": [
             "{{env}}",
@@ -27,7 +27,7 @@
           "query": [
             {
               "key": "patient",
-              "value": "http://fhir.nhs.uk/Id/9691715791"
+              "value": "https://fhir.nhs.uk/Id/{{nhs_number}}"
             }
           ]
         }
