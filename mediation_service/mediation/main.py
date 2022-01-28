@@ -1,8 +1,7 @@
 import os
-from idlelib.query import Query
 
 import uvicorn
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Query
 from starlette.responses import Response
 from starlette.status import HTTP_200_OK
 
@@ -49,9 +48,9 @@ def status():
     return Response(status_code=HTTP_200_OK)
 
 
-@app.get("/AllergyIntolerance/{patient_id}")
-def allergy_intolerance(patient_id: str = Query(..., min_length=3), _pds_client: PdsClient = Depends(pds_client)):
-    ods = _pds_client.get_ods_for_patient(patient_id)
+@app.get("/AllergyIntolerance/")
+def allergy_intolerance(patient: str = Query(...), _pds_client: PdsClient = Depends(pds_client)):
+    ods = _pds_client.get_ods_for_patient(patient)
     print(ods)
     return Response(content=ods, status_code=HTTP_200_OK)
 
