@@ -5,12 +5,10 @@ from assertpy import assert_that
 
 class TestAllergyIntolerance:
     valid_nhs_number = "9661034524"
-    valid_local_nhs_number = "9691715791"
 
     @pytest.fixture()
     def url(self) -> str:
-        return "http://localhost:9000/AllergyIntolerance"
-        # return "https://int.api.service.nhs.uk/gp-connect-access-record/AllergyIntolerance"
+        return "https://int.api.service.nhs.uk/gp-connect-access-record/AllergyIntolerance"
 
     @pytest.mark.mediation
     @pytest.mark.debug
@@ -22,7 +20,7 @@ class TestAllergyIntolerance:
         response = requests.get(
             url=url,
             headers={"Authorization": f"Bearer {token}"},
-            params={"patient": f"https://fhir.nhs.uk/Id/9691715791"},
+            params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         ),
 
         # Then
