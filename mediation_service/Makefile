@@ -16,4 +16,4 @@ docker-build:
 	docker build -t mediation:latest .
 
 docker-run:
-	docker run -p 9001:9000 -e GPC_PRIVATE_KEY_INT="$(JWT_PRIVATE_KEY_CONTENT)" -e GPC_CLIENT_ID=$(GPC_CLIENT_ID) -e KID=$(KID) -e APIGEE_ENVIRONMENT=$(APIGEE_ENVIRONMENT) mediation:latest
+	docker run -p 9000:9000 -e GPC_PRIVATE_KEY_INT="$(JWT_PRIVATE_KEY_CONTENT)" -e GPC_CLIENT_ID=$(GPC_CLIENT_ID) -e KID=$(KID) -e APIGEE_ENVIRONMENT=$(APIGEE_ENVIRONMENT) mediation:latest

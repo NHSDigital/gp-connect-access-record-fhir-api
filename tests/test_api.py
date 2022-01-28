@@ -4,12 +4,16 @@ from assertpy import assert_that
 
 
 class TestAllergyIntolerance:
-    valid_nhs_number = "9691715791"
+    valid_nhs_number = "9661034524"
+    valid_local_nhs_number = "9691715791"
 
     @pytest.fixture()
     def url(self) -> str:
-        return "http://localhost:9001/AllergyIntolerance"
+        return "http://localhost:9000/AllergyIntolerance"
+        # return "https://int.api.service.nhs.uk/gp-connect-access-record/AllergyIntolerance"
 
+    @pytest.mark.mediation
+    @pytest.mark.debug
     def test_happy_path(self, apigee_token, url):
         # Given
         token = apigee_token
@@ -18,11 +22,13 @@ class TestAllergyIntolerance:
         response = requests.get(
             url=url,
             headers={"Authorization": f"Bearer {token}"},
-            params={"patient": "https://fhir.nhs.uk/Id/9661034524"},
-        )
-        # Then
-        assert_that(expected_status_code).is_equal_to(response.status_code)
+            params={"patient": f"https://fhir.nhs.uk/Id/9691715791"},
+        ),
 
+        # Then
+        assert_that(expected_status_code).is_equal_to(response[0].status_code)
+
+    @pytest.mark.mediation
     def test_nhs_number_not_matching(self, apigee_token, url):
         # Given
         token = apigee_token
