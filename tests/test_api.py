@@ -15,7 +15,6 @@ class TestAllergyIntolerance:
             return f"https://int.api.service.nhs.uk/gp-connect-access-record/{allergy_endpoint}"
 
     @pytest.mark.mediation
-    @pytest.mark.debug
     def test_happy_path(self, apigee_token, url):
         # Given
         token = apigee_token

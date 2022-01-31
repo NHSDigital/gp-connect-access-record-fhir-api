@@ -183,7 +183,7 @@
           }
         ],
         "url": {
-          "raw": "https://{{env}}.api.service.nhs.uk/personal-demographics/FHIR/R4/Patient/9691715791",
+          "raw": "https://{{env}}.api.service.nhs.uk/personal-demographics/FHIR/R4/Patient/{{nhs_number}}",
           "protocol": "https",
           "host": [
             "{{env}}",
@@ -197,7 +197,7 @@
             "FHIR",
             "R4",
             "Patient",
-            "9691715791"
+            "{{nhs_number}}"
           ]
         }
       },

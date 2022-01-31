@@ -4,8 +4,6 @@ KID = "test-1"
 
 -include .env
 
-test:
-	echo $(JWT_PRIVATE_KEY_CONTENT)
 install:
 	poetry install
 
