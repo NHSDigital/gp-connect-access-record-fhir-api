@@ -4,11 +4,15 @@ from assertpy import assert_that
 
 
 class TestAllergyIntolerance:
-    valid_nhs_number = "9661034524"
+    valid_nhs_number = "9690937286"
 
     @pytest.fixture()
-    def url(self) -> str:
-        return "https://int.api.service.nhs.uk/gp-connect-access-record/AllergyIntolerance"
+    def url(self, apigee_token) -> str:
+        allergy_endpoint = "AllergyIntolerance"
+        if not apigee_token:
+            return f"http://localhost:9000/{allergy_endpoint}"
+        else:
+            return f"https://int.api.service.nhs.uk/gp-connect-access-record/{allergy_endpoint}"
 
     @pytest.mark.mediation
     @pytest.mark.debug
