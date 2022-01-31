@@ -1,13 +1,20 @@
-import requests
 import pytest
+import requests
 from assertpy import assert_that
 
 
 class TestAllergyIntolerance:
-    @pytest.fixture()
-    def url(self) -> str:
-        return "https://int.api.service.nhs.uk/gp-connect-access-record/AllergyIntolerance"
+    valid_nhs_number = "9690937286"
 
+    @pytest.fixture()
+    def url(self, apigee_token) -> str:
+        allergy_endpoint = "AllergyIntolerance"
+        if not apigee_token:
+            return f"http://localhost:9000/{allergy_endpoint}"
+        else:
+            return f"https://int.api.service.nhs.uk/gp-connect-access-record/{allergy_endpoint}"
+
+    @pytest.mark.mediation
     def test_happy_path(self, apigee_token, url):
         # Given
         token = apigee_token
@@ -16,11 +23,13 @@ class TestAllergyIntolerance:
         response = requests.get(
             url=url,
             headers={"Authorization": f"Bearer {token}"},
-            params={"patient": "https://fhir.nhs.uk/Id/9661034524"},
-        )
-        # Then
-        assert_that(expected_status_code).is_equal_to(response.status_code)
+            params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
+        ),
 
+        # Then
+        assert_that(expected_status_code).is_equal_to(response[0].status_code)
+
+    @pytest.mark.mediation
     def test_nhs_number_not_matching(self, apigee_token, url):
         # Given
         token = apigee_token

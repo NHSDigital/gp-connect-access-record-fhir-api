@@ -8,11 +8,11 @@ docker_service:
         value: "{{ 'debug' if APIGEE_ENVIRONMENT == 'internal-dev' else 'info' }}"
       - name: VERSION_INFO
         value: "{{ version_info | to_json }}"
+    health_check:
+      matcher: "200"
+      path: "/_status"
     secrets:
       - name: GPC_CLIENT_ID
         valueFrom: "arn:aws:secretsmanager:eu-west-2:{{ PTL_ACCOUNT_ID }}:secret:ptl/app-credentials/gp-connect-record-access-testing-app/non-prod/CLIENT_ID_INT"
       - name: GPC_PRIVATE_KEY_INT
         valueFrom: "arn:aws:secretsmanager:eu-west-2:{{ PTL_ACCOUNT_ID }}:secret:ptl/gp-connect-access-record-fhir-api/gp-connect-mediation-app/jwtRS512.key"
-    health_check:
-      matcher: "200"
-      path: "/_status"

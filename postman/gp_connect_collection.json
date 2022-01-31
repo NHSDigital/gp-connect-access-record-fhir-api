@@ -6,6 +6,67 @@
   },
   "item": [
     {
+      "name": "AllergyIntolerance",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://{{env}}.api.service.nhs.uk/gp-connect-access-record/AllergyIntolerance?patient=https://fhir.nhs.uk/Id/{{nhs_number}}",
+          "protocol": "https",
+          "host": [
+            "{{env}}",
+            "api",
+            "service",
+            "nhs",
+            "uk"
+          ],
+          "path": [
+            "gp-connect-access-record",
+            "AllergyIntolerance"
+          ],
+          "query": [
+            {
+              "key": "patient",
+              "value": "https://fhir.nhs.uk/Id/{{nhs_number}}"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET _status",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{status_apikey}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://{{env}}.api.service.nhs.uk/gp-connect-access-record/_status",
+          "protocol": "https",
+          "host": [
+            "{{env}}",
+            "api",
+            "service",
+            "nhs",
+            "uk"
+          ],
+          "path": [
+            "gp-connect-access-record",
+            "_status"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "PDS GET Patient",
       "event": [
         {
@@ -87,6 +148,7 @@
               "pm.test(\"Get ODS of GP and populate it as environment variable\", () => {",
               "    const ods = getGpOds(pm.response.json())",
               "",
+              "    console.log(\"ods code: \", ods)",
               "    pm.environment.set(\"ods\", ods)",
               "})",
               "",
@@ -104,6 +166,9 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "noauth"
+        },
         "method": "GET",
         "header": [
           {
@@ -118,7 +183,7 @@
           }
         ],
         "url": {
-          "raw": "https://{{env}}.api.service.nhs.uk/personal-demographics/FHIR/R4/Patient/9691715791",
+          "raw": "https://{{env}}.api.service.nhs.uk/personal-demographics/FHIR/R4/Patient/{{nhs_number}}",
           "protocol": "https",
           "host": [
             "{{env}}",
@@ -132,7 +197,7 @@
             "FHIR",
             "R4",
             "Patient",
-            "9691715791"
+            "{{nhs_number}}"
           ]
         }
       },
@@ -148,6 +213,7 @@
               "pm.test(\"Get ACID of GP and populate it as environment variable\", () => {",
               "    const toAcid = getToAsid(pm.response.json())",
               "",
+              "    console.log(\"to_acid code: \", toAcid)",
               "    pm.environment.set(\"to_acid\", toAcid)",
               "})",
               "",
@@ -165,6 +231,9 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "noauth"
+        },
         "method": "GET",
         "header": [
           {
@@ -213,6 +282,7 @@
               "pm.test(\"Get URL of the GP and populate it as environment variable\", () => {",
               "    const gpUrl = getGpUrl(pm.response.json())",
               "",
+              "    console.log(\"GP-URL\", gpUrl)",
               "    pm.environment.set(\"gp_urll\", gpUrl)",
               "})",
               "",
@@ -227,6 +297,9 @@
         }
       ],
       "request": {
+        "auth": {
+          "type": "noauth"
+        },
         "method": "GET",
         "header": [
           {
@@ -264,6 +337,86 @@
         }
       },
       "response": []
+    }
+  ],
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "tokenName",
+        "value": "gpc_access_token",
+        "type": "string"
+      },
+      {
+        "key": "state",
+        "value": "{{$guid}}",
+        "type": "string"
+      },
+      {
+        "key": "useBrowser",
+        "value": false,
+        "type": "boolean"
+      },
+      {
+        "key": "client_authentication",
+        "value": "body",
+        "type": "string"
+      },
+      {
+        "key": "clientSecret",
+        "value": "{{gpc_client_secret}}",
+        "type": "string"
+      },
+      {
+        "key": "clientId",
+        "value": "{{gpc_client_id}}",
+        "type": "string"
+      },
+      {
+        "key": "scope",
+        "value": "{{scope}}",
+        "type": "string"
+      },
+      {
+        "key": "accessTokenUrl",
+        "value": "https://{{env}}.api.service.nhs.uk/oauth2/token",
+        "type": "string"
+      },
+      {
+        "key": "redirect_uri",
+        "value": "https://nhsd-apim-testing-{{env}}.herokuapp.com/callback",
+        "type": "string"
+      },
+      {
+        "key": "authUrl",
+        "value": "https://{{env}}.api.service.nhs.uk/oauth2/authorize",
+        "type": "string"
+      },
+      {
+        "key": "addTokenTo",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
     }
   ]
 }
