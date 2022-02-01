@@ -2,6 +2,10 @@ docker_service:
   - name: docker
     expose: true
     environment:
+      - name: KID
+        value: "test-1"
+      - name: APIGEE_ENVIRONMENT
+        value: "{{ APIGEE_ENVIRONMENT }}"
       - name: NODE_ENV
         value: production
       - name: LOG_LEVEL
