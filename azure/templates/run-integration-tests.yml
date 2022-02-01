@@ -33,7 +33,7 @@ steps:
       export CLIENT_ID="$(CLIENT_ID_INT)"
       export CLIENT_SECRET="$(CLIENT_SECRET_INT)"
       export NHS_LOGIN_USER="$(NHS_LOGIN_USER)"
-      export NHS_LOGIN_PASSWORD=`echo "$(NHS_LOGIN_PASSWORD)" | base64 --decode`
+      export NHS_LOGIN_PASSWORD_B64=$(NHS_LOGIN_PASSWORD)
       export NHS_LOGIN_OTP_CODE="$(NHS_LOGIN_OTP_CODE)"
 
       make -s test

@@ -1,22 +1,23 @@
 # Selenium imports here
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 import ast
+import base64
 import json
 import os
-import requests
 import urllib.parse
 
+import requests
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 client_id = os.environ["CLIENT_ID"]
 client_secret = os.environ["CLIENT_SECRET"]
 nhs_login_user = os.environ["NHS_LOGIN_USER"]
-nhs_login_password = os.environ["NHS_LOGIN_PASSWORD"]
+nhs_login_password_b64 = os.environ["NHS_LOGIN_PASSWORD_B64"]
+nhs_login_password = base64.b64decode(nhs_login_password_b64).decode('utf-8')
 nhs_login_otp_code = os.environ["NHS_LOGIN_OTP_CODE"]
-
 
 # Chrome driver configuration
 CHROMEDRIVER_PATH = "/usr/local/bin/chromedriver"

@@ -23,7 +23,7 @@ RUN wget -N https://chromedriver.storage.googleapis.com/97.0.4692.71/chromedrive
     && chown root:root /usr/local/bin/chromedriver \
     && chmod 0755 /usr/local/bin/chromedriver
 
-# INSTALL SELENIUM
+# INSTALL SELENIUM AND REQUESTS
 RUN pip install selenium requests
 
 # RUN TEST SCRIPT
