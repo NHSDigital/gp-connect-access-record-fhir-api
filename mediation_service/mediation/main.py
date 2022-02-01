@@ -61,7 +61,7 @@ def test():
                                         client_id=config["client_id"],
                                         headers={"kid": config["kid"]},
                                         aud=aud)
-    client = PdsClient(auth=auth_client, env=config["apigee_env"])
+    # PdsClient(auth=auth_client, env=config["apigee_env"])
 
     response = {}
     at = ""
