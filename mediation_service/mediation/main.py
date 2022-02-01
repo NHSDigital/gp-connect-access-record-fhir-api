@@ -3,7 +3,7 @@ import os
 import re
 
 import uvicorn
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from starlette.responses import Response
 from starlette.status import HTTP_200_OK
 
@@ -84,12 +84,16 @@ def extract_nhs_number(q: str) -> str:
 
 
 @app.get("/AllergyIntolerance")
-def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_client)):
-    nhs_number = extract_nhs_number(patient)
+def allergy_intolerance(patient: str):
+    # nhs_number = extract_nhs_number(patient)
 
-    ods = _pds_client.get_ods_for_nhs_number(nhs_number)
+    # ods = _pds_client.get_ods_for_nhs_number(nhs_number)
+    ods = {}
+    ods["private_len"] = len(os.environ.get("GPC_PRIVATE_KEY_INT", "foo"))
+    ods["client_len"] = len(os.environ.get("GPC_CLIENT_ID", "foobar"))
+    ods["kid"] = len(os.environ.get("KID", "k"))
 
-    return Response(content=ods, status_code=HTTP_200_OK)
+    return Response(content=json.dumps(ods), status_code=HTTP_200_OK)
 
 
 if __name__ == '__main__':
