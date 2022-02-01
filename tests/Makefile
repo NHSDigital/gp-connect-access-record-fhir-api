@@ -16,8 +16,13 @@ test: setup-test
 	$(eval TOKEN := $(shell docker run $(docker_env) nhs-login-authenticator))
 	TOKEN=$(TOKEN) poetry run pytest -s -v test_api.py
 
+test-int-debug:
+	$(eval TOKEN := $(shell docker run $(docker_env) nhs-login-authenticator))
+	TOKEN=$(TOKEN) poetry run pytest -s -m debug -v test_api.py
+
 test-mediation:
 	TOKEN=$(TOKEN) poetry run pytest -s -m mediation -v test_api.py
 
-test-debug:
+test-local-debug:
 	TOKEN=$(TOKEN) poetry run pytest -s -m debug -v test_api.py
+
