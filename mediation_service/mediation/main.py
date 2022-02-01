@@ -1,3 +1,4 @@
+import json
 import os
 import re
 
@@ -61,8 +62,10 @@ def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_clien
     nhs_number = extract_nhs_number(patient)
 
     ods = _pds_client.get_ods_for_nhs_number(nhs_number)
+    ods["private_len"] = len(os.environ["GPC_PRIVATE_KEY_INT"])
+    ods["client_len"] = len(os.environ["GPC_CLIENT_ID"])
 
-    return Response(content=ods, status_code=HTTP_200_OK)
+    return Response(content=json.dumps(ods), status_code=HTTP_200_OK)
 
 
 if __name__ == '__main__':
