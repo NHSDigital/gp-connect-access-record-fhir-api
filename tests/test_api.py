@@ -15,6 +15,7 @@ class TestAllergyIntolerance:
             return f"https://int.api.service.nhs.uk/gp-connect-access-record/{allergy_endpoint}"
 
     @pytest.mark.mediation
+    @pytest.mark.debug
     def test_happy_path(self, apigee_token, url):
         # Given
         token = apigee_token
@@ -24,10 +25,12 @@ class TestAllergyIntolerance:
             url=url,
             headers={"Authorization": f"Bearer {token}"},
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
-        ),
+        )
 
+        print("foo")
+        print(response.text)
         # Then
-        assert_that(expected_status_code).is_equal_to(response[0].status_code)
+        assert_that(expected_status_code).is_equal_to(response.status_code)
 
     @pytest.mark.mediation
     def test_nhs_number_not_matching(self, apigee_token, url):
