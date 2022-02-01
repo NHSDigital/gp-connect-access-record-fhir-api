@@ -10,7 +10,7 @@ class TestAllergyIntolerance:
     def url(self, apigee_token) -> str:
         allergy_endpoint = "AllergyIntolerance"
         if not apigee_token:
-            return f"http://localhost:9000/{allergy_endpoint}"
+            return "http://localhost:9000/test"
         else:
             return f"https://int.api.service.nhs.uk/gp-connect-access-record/{allergy_endpoint}"
 

@@ -50,6 +50,32 @@ def status():
     return Response(status_code=HTTP_200_OK)
 
 
+@app.get("/test")
+def test():
+    config = init_dev()
+    auth_url = f"https://{config['apigee_env']}.api.service.nhs.uk/oauth2"
+    aud = f"{auth_url}/token"
+
+    auth_client = AuthClientCredentials(auth_url=auth_url,
+                                        private_key_content=config["private_key"],
+                                        client_id=config["client_id"],
+                                        headers={"kid": config["kid"]},
+                                        aud=aud)
+    # PdsClient(auth=auth_client, env=config["apigee_env"])
+
+    response = {}
+    at = ""
+
+    try:
+        at = auth_client.get_access_token()
+    except Exception as e:
+        response["exception"] = str(e)
+
+    response["at"] = at
+
+    return Response(content=json.dumps(response), status_code=HTTP_200_OK)
+
+
 def extract_nhs_number(q: str) -> str:
     r = r"(\d){10}"
     result = re.search(r, q)
