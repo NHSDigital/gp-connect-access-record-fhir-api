@@ -51,7 +51,7 @@ def status():
 
 
 @app.get("/test")
-def status():
+def test():
     config = init_dev()
     auth_url = f"https://{config['apigee_env']}.api.service.nhs.uk/oauth2"
     aud = f"{auth_url}/token"
