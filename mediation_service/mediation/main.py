@@ -42,10 +42,10 @@ async def env_var_exception_handler(request: Request, exc: KeyError):
 
 def pds_client() -> PdsClient:
     config = init_env()
-    auth_url = f"https://{config['apigee_env']}.api.service.nhs.uk/oauth2"
+    auth_url = "https://internal-dev.api.service.nhs.uk/oauth2"
     aud = f"{auth_url}/token"
 
-    auth_client = AuthClientCredentials(auth_url=auth_url,
+    auth_client = AuthClientCredentials(auth_url="https://internal-dev.api.service.nhs.uk/oauth2/",
                                         private_key_content=config["private_key"],
                                         client_id=config["client_id"],
                                         headers={"kid": config["kid"]},
