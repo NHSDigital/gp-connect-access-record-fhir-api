@@ -17,7 +17,7 @@ try:
     client_secret = os.environ["CLIENT_SECRET"]
     nhs_login_user = os.environ["NHS_LOGIN_USER"]
     nhs_login_password_b64 = os.environ["NHS_LOGIN_PASSWORD_B64"]
-    nhs_login_password = base64.b64decode(nhs_login_password_b64).decode('utf-8')
+    nhs_login_password = base64.b64decode(nhs_login_password_b64).decode("utf-8")
     nhs_login_otp_code = os.environ["NHS_LOGIN_OTP_CODE"]
     apigee_environment = os.environ["APIGEE_ENVIRONMENT"]
 except KeyError as e:
@@ -132,14 +132,14 @@ if apigee_environment == "int":
     print(dictionary["access_token"])
 
 elif apigee_environment == "internal-dev":
-    '''
+    """
         For internal-dev we use the default testing app credentials for now...
         This is because this code is SHOULD be replaced when the new mock-oidc
         is implemented for nhs-login...
-    '''
+    """
     params = {
         "response_type": "code",
-        "client_id": 'Too5BdPayTQACdw1AJK1rD4nKUD0Ag7J',
+        "client_id": "Too5BdPayTQACdw1AJK1rD4nKUD0Ag7J",
         "state": 123,
         "scope": "nhs-login",
         "redirect_uri": "https://nhsd-apim-testing-internal-dev.herokuapp.com/callback",
@@ -150,16 +150,22 @@ elif apigee_environment == "internal-dev":
     url = base_url + urllib.parse.urlencode(params)
     driver.get(url)
 
-    # Select P9 authentication 
-    WebDriverWait(driver=driver, timeout=10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "input[id='P9']"))).click()
+    # Select P9 authentication
+    WebDriverWait(driver=driver, timeout=10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[id='P9']"))
+    ).click()
 
     # Submit
-    WebDriverWait(driver=driver, timeout=10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))).click()
+    WebDriverWait(driver=driver, timeout=10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
+    ).click()
 
     # Get the token from the callback heroku app
-    response = WebDriverWait(driver=driver, timeout=10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div/div/pre")))
+    response = WebDriverWait(driver=driver, timeout=10).until(
+        EC.element_to_be_clickable((By.XPATH, "/html/body/div/div/pre"))
+    )
 
     response = ast.literal_eval(response.text)
-    print(response['access_token'])
+    print(response["access_token"])
 
 driver.close()
