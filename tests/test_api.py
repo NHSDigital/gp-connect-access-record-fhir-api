@@ -16,6 +16,24 @@ class TestAllergyIntolerance:
 
     @pytest.mark.mediation
     @pytest.mark.debug
+    def test_error_handling(self, apigee_token, url):
+        # Given
+        url = "http://localhost:9000/error"
+        token = apigee_token
+        expected_status_code = 200
+        # When
+        response = requests.get(
+            url=url,
+            headers={"Authorization": f"Bearer {token}"},
+            params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
+        )
+
+        print("foo")
+        print(response.text)
+        # Then
+        assert_that(expected_status_code).is_equal_to(response.status_code)
+
+    @pytest.mark.mediation
     @pytest.mark.skip(reason="This tests must be skipping for now, to avoid errors on the pipeline")
     def test_happy_path(self, apigee_token, url):
         # Given
