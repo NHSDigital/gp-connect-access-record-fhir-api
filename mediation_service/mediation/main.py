@@ -21,12 +21,16 @@ def init_env():
     except KeyError as e:
         raise KeyError(f"Environment variable is required: {e}")
 
-    return {
+    config = {
         "private_key": private_key,
         "client_id": client_id,
         "kid": kid,
         "apigee_env": apigee_env
     }
+
+    empty = {k: v for k, v in config.items() if v}
+
+    return config
 
 
 app = FastAPI()
@@ -96,7 +100,7 @@ def health():
 @app.get("/test")
 def test():
     config = init_env()
-    auth_url = f"https://{config['apigee_env']}.api.service.nhs.uk/oauth2"
+    auth_url = "https://int.api.service.nhs.uk/oauth2"
     aud = f"{auth_url}/token"
 
     auth_client = AuthClientCredentials(auth_url=auth_url,
