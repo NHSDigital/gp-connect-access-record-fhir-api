@@ -74,7 +74,6 @@ def pds_client() -> PdsClient:
                                         client_id=config["client_id"],
                                         headers={"kid": config["kid"]},
                                         aud=aud)
-    auth_client.get_access_token()
 
     return PdsClient(auth=auth_client, env=config["apigee_env"])
 
