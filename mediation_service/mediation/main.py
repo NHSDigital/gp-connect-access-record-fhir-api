@@ -33,10 +33,34 @@ app = FastAPI()
 
 
 @app.exception_handler(KeyError)
-async def env_var_exception_handler(request: Request, exc: KeyError):
+async def env_var_exception_handler(_: Request, exc: KeyError):
     return JSONResponse(
-        status_code=418,
+        status_code=500,
         content={"message": str(exc)},
+    )
+
+
+@app.exception_handler(HTTPException)
+async def http_client_exception_handler(_: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=500,
+        content={"message": f"Http request failed with status code {exc.status_code} and message: {exc.detail}"},
+    )
+
+
+@app.exception_handler(ValueError)
+async def value_exception_handler(_: Request, exc: ValueError):
+    return JSONResponse(
+        status_code=500,
+        content={"message": f"ValueError: {exc}"},
+    )
+
+
+@app.exception_handler(Exception)
+async def value_exception_handler(_: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"message": f"Unhandled Error: {exc}"},
     )
 
 
@@ -50,6 +74,7 @@ def pds_client() -> PdsClient:
                                         client_id=config["client_id"],
                                         headers={"kid": config["kid"]},
                                         aud=aud)
+    auth_client.get_access_token()
 
     return PdsClient(auth=auth_client, env=config["apigee_env"])
 

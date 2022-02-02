@@ -25,4 +25,3 @@ test-mediation:
 
 test-local-debug:
 	TOKEN=$(TOKEN) poetry run pytest -s -m debug -v test_api.py
-
