@@ -28,7 +28,7 @@ def init_env():
         "apigee_env": apigee_env
     }
 
-    empty = {k: v for k, v in config.items() if v}
+    # empty = {k: v for k, v in config.items() if v}
 
     return config
 
