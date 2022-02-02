@@ -109,7 +109,7 @@ def get_env_vars():
 
 
 @app.get("/testPdsClientInt")
-def test_pds_client( _pds_client: PdsClient = Depends(pds_client)):
+def test_pds_client(_pds_client: PdsClient = Depends(pds_client)):
     try:
         ods = _pds_client.get_ods_for_nhs_number(9690937286)
     except Exception as e:
