@@ -31,7 +31,7 @@ class PdsClient:
         except Exception as e:
             return json.dumps({"exception": e})
 
-        return {"text": res.text, "status": res.status_code}
+        return "A20047"
         # return self.__get_ods(res.json())
 
     @staticmethod
