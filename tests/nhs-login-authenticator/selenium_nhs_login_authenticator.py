@@ -12,12 +12,16 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
-client_id = os.environ["CLIENT_ID"]
-client_secret = os.environ["CLIENT_SECRET"]
-nhs_login_user = os.environ["NHS_LOGIN_USER"]
-nhs_login_password_b64 = os.environ["NHS_LOGIN_PASSWORD_B64"]
-nhs_login_password = base64.b64decode(nhs_login_password_b64).decode('utf-8')
-nhs_login_otp_code = os.environ["NHS_LOGIN_OTP_CODE"]
+try:
+    client_id = os.environ["CLIENT_ID"]
+    client_secret = os.environ["CLIENT_SECRET"]
+    nhs_login_user = os.environ["NHS_LOGIN_USER"]
+    nhs_login_password_b64 = os.environ["NHS_LOGIN_PASSWORD_B64"]
+    nhs_login_password = base64.b64decode(nhs_login_password_b64).decode('utf-8')
+    nhs_login_otp_code = os.environ["NHS_LOGIN_OTP_CODE"]
+    apigee_environment = os.environ["APIGEE_ENVIRONMENT"]
+except KeyError as e:
+    raise Exception(f"Environment variable is required: {e}")
 
 # Chrome driver configuration
 CHROMEDRIVER_PATH = "/usr/local/bin/chromedriver"
@@ -32,97 +36,130 @@ driver = webdriver.Chrome(
     executable_path=CHROMEDRIVER_PATH, chrome_options=chrome_options
 )
 
-# hit identity-service on INT
-params = {
-    "response_type": "code",
-    "client_id": client_id,
-    "state": 123,
-    "scope": "nhs-login",
-    "redirect_uri": "https://nhsd-apim-testing-int.herokuapp.com/callback",
-}
-base_url = "https://int.api.service.nhs.uk/oauth2/authorize?"
-url = base_url + urllib.parse.urlencode(params)
-driver.get(url)
+if apigee_environment == "int":
+    # hit identity-service on INT
+    params = {
+        "response_type": "code",
+        "client_id": client_id,
+        "state": 123,
+        "scope": "nhs-login",
+        "redirect_uri": "https://nhsd-apim-testing-int.herokuapp.com/callback",
+    }
+    base_url = "https://int.api.service.nhs.uk/oauth2/authorize?"
+    url = base_url + urllib.parse.urlencode(params)
+    driver.get(url)
 
-# wait for the username input element to be available
-username = WebDriverWait(driver=driver, timeout=10).until(
-    EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='email']"))
-)
+    # wait for the username input element to be available
+    username = WebDriverWait(driver=driver, timeout=10).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='email']"))
+    )
 
-# clear the username input element
-username.clear()
+    # clear the username input element
+    username.clear()
 
-# populate the username element
-username.send_keys(nhs_login_user)
+    # populate the username element
+    username.send_keys(nhs_login_user)
 
-# submit user
-WebDriverWait(driver=driver, timeout=20).until(
-    EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
-).click()
+    # submit user
+    WebDriverWait(driver=driver, timeout=20).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
+    ).click()
 
-# click the 'continue' button again to accept stuff
-WebDriverWait(driver=driver, timeout=20).until(
-    EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
-).click()
+    # click the 'continue' button again to accept stuff
+    WebDriverWait(driver=driver, timeout=20).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
+    ).click()
 
-# wait for the password input element to be ready
-password = WebDriverWait(driver=driver, timeout=20).until(
-    EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='password']"))
-)
+    # wait for the password input element to be ready
+    password = WebDriverWait(driver=driver, timeout=20).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='password']"))
+    )
 
-# clear the password input element
-password.clear()
+    # clear the password input element
+    password.clear()
 
-# populate the password element
-password.send_keys(nhs_login_password)
+    # populate the password element
+    password.send_keys(nhs_login_password)
 
-# submit password
-WebDriverWait(driver=driver, timeout=20).until(
-    EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
-).click()
+    # submit password
+    WebDriverWait(driver=driver, timeout=20).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
+    ).click()
 
-# wait for the otp element to be ready
-otp_code = WebDriverWait(driver=driver, timeout=20).until(
-    EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='otp']"))
-)
+    # wait for the otp element to be ready
+    otp_code = WebDriverWait(driver=driver, timeout=20).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[name='otp']"))
+    )
 
-# clear the otp element
-otp_code.clear()
+    # clear the otp element
+    otp_code.clear()
 
-# populate ods element
-otp_code.send_keys(nhs_login_otp_code)
+    # populate ods element
+    otp_code.send_keys(nhs_login_otp_code)
 
-# submit otp
-WebDriverWait(driver=driver, timeout=20).until(
-    EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
-).click()
+    # submit otp
+    WebDriverWait(driver=driver, timeout=20).until(
+        EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))
+    ).click()
 
-# wait for callback url
-callback_page = WebDriverWait(driver=driver, timeout=20).until(
-    EC.element_to_be_clickable((By.XPATH, "/html/body/div/div/pre"))
-)
+    # wait for callback url
+    callback_page = WebDriverWait(driver=driver, timeout=20).until(
+        EC.element_to_be_clickable((By.XPATH, "/html/body/div/div/pre"))
+    )
 
-# access callback url to get the code
-current_url = driver.current_url
+    # access callback url to get the code
+    current_url = driver.current_url
 
-query = requests.utils.urlparse(current_url).query
-params = dict(x.split("=") for x in query.split("&"))
-code = params["code"]
+    query = requests.utils.urlparse(current_url).query
+    params = dict(x.split("=") for x in query.split("&"))
+    code = params["code"]
 
-url = "https://int.api.service.nhs.uk/oauth2/token"
+    url = "https://int.api.service.nhs.uk/oauth2/token"
 
-# post code to identity service
-data = {
-    "grant_type": "authorization_code",
-    "code": code,
-    "redirect_uri": "https://nhsd-apim-testing-int.herokuapp.com/callback",
-    "client_id": client_id,
-    "client_secret": client_secret,
-}
+    # post code to identity service
+    data = {
+        "grant_type": "authorization_code",
+        "code": code,
+        "redirect_uri": "https://nhsd-apim-testing-int.herokuapp.com/callback",
+        "client_id": client_id,
+        "client_secret": client_secret,
+    }
 
-response = requests.post(url, data=data)
-response = json.dumps(response.json(), indent=2)
-dictionary = ast.literal_eval(response)
+    response = requests.post(url, data=data)
+    response = json.dumps(response.json(), indent=2)
+    dictionary = ast.literal_eval(response)
 
-print(dictionary["access_token"])
+    print(dictionary["access_token"])
+
+elif apigee_environment == "internal-dev":
+    '''
+        For internal-dev we use the default testing app credentials for now...
+        This is because this code is SHOULD be replaced when the new mock-oidc
+        is implemented for nhs-login...
+    '''
+    params = {
+        "response_type": "code",
+        "client_id": 'Too5BdPayTQACdw1AJK1rD4nKUD0Ag7J',
+        "state": 123,
+        "scope": "nhs-login",
+        "redirect_uri": "https://nhsd-apim-testing-internal-dev.herokuapp.com/callback",
+    }
+
+    # Hit identity-service on internal-dev
+    base_url = "https://internal-dev.api.service.nhs.uk/oauth2/authorize?"
+    url = base_url + urllib.parse.urlencode(params)
+    driver.get(url)
+
+    # Select P9 authentication 
+    WebDriverWait(driver=driver, timeout=10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "input[id='P9']"))).click()
+
+    # Submit
+    WebDriverWait(driver=driver, timeout=10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[type='submit']"))).click()
+
+    # Get the token from the callback heroku app
+    response = WebDriverWait(driver=driver, timeout=10).until(EC.element_to_be_clickable((By.XPATH, "/html/body/div/div/pre")))
+
+    response = ast.literal_eval(response.text)
+    print(response['access_token'])
+
 driver.close()

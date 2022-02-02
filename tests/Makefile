@@ -7,7 +7,8 @@ docker_env := -e CLIENT_ID=$(CLIENT_ID) \
 -e CLIENT_SECRET=$(CLIENT_SECRET) \
 -e NHS_LOGIN_USER=$(NHS_LOGIN_USER) \
 -e NHS_LOGIN_PASSWORD_B64="$(NHS_LOGIN_PASSWORD_B64)"  \
--e NHS_LOGIN_OTP_CODE=$(NHS_LOGIN_OTP_CODE)
+-e NHS_LOGIN_OTP_CODE=$(NHS_LOGIN_OTP_CODE) \
+-e APIGEE_ENVIRONMENT=$(APIGEE_ENVIRONMENT)
 
 token: setup-test
 	docker run $(docker_env)  nhs-login-authenticator
