@@ -1,3 +1,4 @@
+import json
 from uuid import uuid4
 
 import requests
@@ -12,17 +13,26 @@ class PdsClient:
         self.__env = env
 
     def get_ods_for_nhs_number(self, nhs_number):
-        access_token = self.__auth.get_access_token()
+        try:
+            access_token = self.__auth.get_access_token()
+        except Exception as e:
+            return {"key is not": str(e)}
+
         headers = {
             "X-Request-ID": str(uuid4()),
             "Authorization": f"Bearer {access_token}"
         }
 
-        res = requests.get(
-            f"https://{self.__env}.api.service.nhs.uk/personal-demographics/FHIR/R4/Patient/{nhs_number}",
-            headers=headers)
+        try:
+            res = requests.get(
+                f"https://{self.__env}.api.service.nhs.uk/personal-demographics/FHIR/R4/Patient/{nhs_number}",
+                headers=headers)
 
-        return self.__get_ods(res.json())
+        except Exception as e:
+            return json.dumps({"exception": e})
+
+        return {"text": res.text, "status": res.status_code}
+        # return self.__get_ods(res.json())
 
     @staticmethod
     def __get_ods(patient: dict) -> str:
