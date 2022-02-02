@@ -46,6 +46,10 @@
             <Name>DecodeJWT.DecodeIdToken</Name>
         </Step>
         <Step>
+            <Name>JavaScript.OverriteNHSNumber</Name>
+            <Condition>environment.name == "internal-dev"</Condition>
+        </Step>
+        <Step>
             <Name>JavaScript.ValidateNhsNumber</Name>
         </Step>
         <Step>
