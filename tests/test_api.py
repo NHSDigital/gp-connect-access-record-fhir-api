@@ -1,5 +1,6 @@
 import pytest
 import requests
+import os
 from assertpy import assert_that
 
 
@@ -8,33 +9,18 @@ class TestAllergyIntolerance:
 
     @pytest.fixture()
     def url(self, apigee_token) -> str:
+        environment = os.environ["APIGEE_ENVIRONMENT"]
         allergy_endpoint = "AllergyIntolerance"
         if not apigee_token:
-            return "http://localhost:9000/test"
+            return f"http://localhost:9000/{allergy_endpoint}"
         else:
-            return f"https://int.api.service.nhs.uk/gp-connect-access-record/{allergy_endpoint}"
+            return f"https://{environment}.api.service.nhs.uk/gp-connect-access-record/{allergy_endpoint}"
 
     @pytest.mark.mediation
     @pytest.mark.debug
-    def test_error_handling(self, apigee_token, url):
-        # Given
-        url = "http://localhost:9000/error"
-        token = apigee_token
-        expected_status_code = 200
-        # When
-        response = requests.get(
-            url=url,
-            headers={"Authorization": f"Bearer {token}"},
-            params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
-        )
-
-        print("foo")
-        print(response.text)
-        # Then
-        assert_that(expected_status_code).is_equal_to(response.status_code)
-
-    @pytest.mark.mediation
-    @pytest.mark.skip(reason="This tests must be skipping for now, to avoid errors on the pipeline")
+    @pytest.mark.skip(
+        reason="This tests must be skipping for now, to avoid errors on the pipeline"
+    )
     def test_happy_path(self, apigee_token, url):
         # Given
         token = apigee_token
@@ -46,8 +32,6 @@ class TestAllergyIntolerance:
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
 
-        print("foo")
-        print(response.text)
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
 
