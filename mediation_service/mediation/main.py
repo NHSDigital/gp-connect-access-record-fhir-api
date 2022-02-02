@@ -89,6 +89,11 @@ def status():
     return Response(status_code=HTTP_200_OK)
 
 
+@app.get("/healthcheck")
+def health():
+    return Response(status_code=HTTP_200_OK)
+
+
 @app.get("/test")
 def test():
     config = init_env()

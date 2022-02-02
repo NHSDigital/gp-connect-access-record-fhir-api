@@ -15,9 +15,10 @@ class TestAllergyIntolerance:
             return f"https://int.api.service.nhs.uk/gp-connect-access-record/{allergy_endpoint}"
 
     @pytest.mark.mediation
-    @pytest.mark.skip(reason="This tests must be skipping for now, to avoid errors on the pipeline")
+    @pytest.mark.debug
     def test_happy_path(self, apigee_token, url):
         # Given
+        url = "https://internal-dev.api.service.nhs.uk/gp-connect-access-record-pr-40/error"
         token = apigee_token
         expected_status_code = 200
         # When
