@@ -57,7 +57,7 @@ async def value_exception_handler(_: Request, exc: ValueError):
 
 
 @app.exception_handler(Exception)
-async def value_exception_handler(_: Request, exc: Exception):
+async def unhandled_exception_handler(_: Request, exc: Exception):
     return JSONResponse(
         status_code=500,
         content={"message": f"Unhandled Error: {exc}"},
