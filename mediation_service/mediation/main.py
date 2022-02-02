@@ -3,7 +3,8 @@ import os
 import re
 
 import uvicorn
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse
 from starlette.responses import Response
 from starlette.status import HTTP_200_OK
 
@@ -11,14 +12,14 @@ from client_credentials import AuthClientCredentials
 from pds_client import PdsClient
 
 
-def init_dev():
+def init_env():
     try:
         private_key = os.environ["GPC_PRIVATE_KEY_INT"]
         client_id = os.environ["GPC_CLIENT_ID"]
         kid = os.environ["KID"]
         apigee_env = os.environ["APIGEE_ENVIRONMENT"]
     except KeyError as e:
-        raise Exception(f"Environment variable is required: {e}")
+        raise KeyError(f"Environment variable is required: {e}")
 
     return {
         "private_key": private_key,
@@ -31,8 +32,16 @@ def init_dev():
 app = FastAPI()
 
 
+@app.exception_handler(KeyError)
+async def env_var_exception_handler(request: Request, exc: KeyError):
+    return JSONResponse(
+        status_code=418,
+        content={"message": str(exc)},
+    )
+
+
 def pds_client() -> PdsClient:
-    config = init_dev()
+    config = init_env()
     auth_url = f"https://{config['apigee_env']}.api.service.nhs.uk/oauth2"
     aud = f"{auth_url}/token"
 
@@ -45,6 +54,11 @@ def pds_client() -> PdsClient:
     return PdsClient(auth=auth_client, env=config["apigee_env"])
 
 
+@app.get("/error")
+def error(_pds_client: PdsClient = Depends(pds_client)):
+    return Response(content=json.dumps({"message": "no error"}), status_code=HTTP_200_OK)
+
+
 @app.get("/_status")
 def status():
     return Response(status_code=HTTP_200_OK)
@@ -52,7 +66,7 @@ def status():
 
 @app.get("/test")
 def test():
-    config = init_dev()
+    config = init_env()
     auth_url = f"https://{config['apigee_env']}.api.service.nhs.uk/oauth2"
     aud = f"{auth_url}/token"
 
@@ -95,7 +109,7 @@ def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_clien
 @app.get("/testEnvVars")
 def get_env_vars():
     try:
-        config = init_dev()
+        config = init_env()
     except Exception as e:
         raise HTTPException(status_code=404, detail=e)
 
