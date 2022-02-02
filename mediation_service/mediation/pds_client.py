@@ -23,13 +23,13 @@ class PdsClient:
             "Authorization": f"Bearer {access_token}"
         }
 
-        # try:
-        #     res = requests.get(
-        #         f"https://{self.__env}.api.service.nhs.uk/personal-demographics/FHIR/R4/Patient/{nhs_number}",
-        #         headers=headers)
-        #
-        # except Exception as e:
-        #     return json.dumps({"exception": e})
+        try:
+            res = requests.get(
+                f"https://{self.__env}.api.service.nhs.uk/personal-demographics/FHIR/R4/Patient/{nhs_number}",
+                headers=headers)
+
+        except Exception as e:
+            return json.dumps({"exception": e, "PDS": res})
 
         return "A20047"
         # return self.__get_ods(res.json())
