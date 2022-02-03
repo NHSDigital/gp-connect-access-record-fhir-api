@@ -2,6 +2,7 @@ import json
 import os
 import re
 
+import requests
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -21,28 +22,56 @@ def init_env():
     except KeyError as e:
         raise KeyError(f"Environment variable is required: {e}")
 
-    return {
+    config = {
         "private_key": private_key,
         "client_id": client_id,
         "kid": kid,
         "apigee_env": apigee_env
     }
 
+    # empty = {k: v for k, v in config.items() if v}
+
+    return config
+
 
 app = FastAPI()
 
 
 @app.exception_handler(KeyError)
-async def env_var_exception_handler(request: Request, exc: KeyError):
+async def env_var_exception_handler(_: Request, exc: KeyError):
     return JSONResponse(
-        status_code=418,
+        status_code=500,
         content={"message": str(exc)},
+    )
+
+
+@app.exception_handler(HTTPException)
+async def http_client_exception_handler(_: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=500,
+        content={"message": f"Http request failed with status code {exc.status_code} and message: {exc.detail}"},
+    )
+
+
+@app.exception_handler(ValueError)
+async def value_exception_handler(_: Request, exc: ValueError):
+    return JSONResponse(
+        status_code=500,
+        content={"message": f"ValueError: {exc}"},
+    )
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(_: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"message": f"Unhandled Error: {exc}"},
     )
 
 
 def pds_client() -> PdsClient:
     config = init_env()
-    auth_url = "https://internal-dev.api.service.nhs.uk/oauth2"
+    auth_url = "https://int.api.service.nhs.uk/oauth2"
     aud = f"{auth_url}/token"
 
     auth_client = AuthClientCredentials(auth_url="https://internal-dev.api.service.nhs.uk/oauth2/",
@@ -64,10 +93,15 @@ def status():
     return Response(status_code=HTTP_200_OK)
 
 
+@app.get("/healthcheck")
+def health():
+    return Response(status_code=HTTP_200_OK)
+
+
 @app.get("/test")
 def test():
     config = init_env()
-    auth_url = f"https://{config['apigee_env']}.api.service.nhs.uk/oauth2"
+    auth_url = "https://int.api.service.nhs.uk/oauth2"
     aud = f"{auth_url}/token"
 
     auth_client = AuthClientCredentials(auth_url=auth_url,
@@ -106,20 +140,18 @@ def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_clien
     return Response(content=ods, status_code=HTTP_200_OK)
 
 
-@app.get("/testEnvVars")
-def get_env_vars():
-    try:
-        config = init_env()
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=e)
+@app.get("/id")
+def get_id():
+    response = requests.get("https://int.api.service.nhs.uk/oauth2/_ping")
 
-    private_key_content = config["private_key"],
-    client_id = config["client_id"],
-    kid = config["kid"]
+    return Response(content=str(response.status_code), status_code=HTTP_200_OK)
 
-    ods = {"private_key": private_key_content, "client_id": client_id, "kid": kid}
 
-    return Response(content=ods, status_code=HTTP_200_OK)
+@app.get("/pds")
+def get_pds():
+    response = requests.get("https://int.api.service.nhs.uk/personal-demographics/FHIR/R4/_ping")
+
+    return Response(content=str(response.status_code), status_code=HTTP_200_OK)
 
 
 @app.get("/testPdsClientInt")
