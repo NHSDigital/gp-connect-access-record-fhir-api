@@ -21,28 +21,56 @@ def init_env():
     except KeyError as e:
         raise KeyError(f"Environment variable is required: {e}")
 
-    return {
+    config = {
         "private_key": private_key,
         "client_id": client_id,
         "kid": kid,
         "apigee_env": apigee_env
     }
 
+    # empty = {k: v for k, v in config.items() if v}
+
+    return config
+
 
 app = FastAPI()
 
 
 @app.exception_handler(KeyError)
-async def env_var_exception_handler(request: Request, exc: KeyError):
+async def env_var_exception_handler(_: Request, exc: KeyError):
     return JSONResponse(
-        status_code=418,
+        status_code=500,
         content={"message": str(exc)},
+    )
+
+
+@app.exception_handler(HTTPException)
+async def http_client_exception_handler(_: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=500,
+        content={"message": f"Http request failed with status code {exc.status_code} and message: {exc.detail}"},
+    )
+
+
+@app.exception_handler(ValueError)
+async def value_exception_handler(_: Request, exc: ValueError):
+    return JSONResponse(
+        status_code=500,
+        content={"message": f"ValueError: {exc}"},
+    )
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(_: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"message": f"Unhandled Error: {exc}"},
     )
 
 
 def pds_client() -> PdsClient:
     config = init_env()
-    auth_url = f"https://{config['apigee_env']}.api.service.nhs.uk/oauth2"
+    auth_url = "https://int.api.service.nhs.uk/oauth2"
     aud = f"{auth_url}/token"
 
     auth_client = AuthClientCredentials(auth_url=auth_url,
@@ -64,10 +92,15 @@ def status():
     return Response(status_code=HTTP_200_OK)
 
 
+@app.get("/healthcheck")
+def health():
+    return Response(status_code=HTTP_200_OK)
+
+
 @app.get("/test")
 def test():
     config = init_env()
-    auth_url = f"https://{config['apigee_env']}.api.service.nhs.uk/oauth2"
+    auth_url = "https://int.api.service.nhs.uk/oauth2"
     aud = f"{auth_url}/token"
 
     auth_client = AuthClientCredentials(auth_url=auth_url,

@@ -1,6 +1,7 @@
+import os
+
 import pytest
 import requests
-import os
 from assertpy import assert_that
 
 
@@ -18,11 +19,9 @@ class TestAllergyIntolerance:
 
     @pytest.mark.mediation
     @pytest.mark.debug
-    @pytest.mark.skip(
-        reason="This tests must be skipping for now, to avoid errors on the pipeline"
-    )
     def test_happy_path(self, apigee_token, url):
         # Given
+        url = "https://internal-dev.api.service.nhs.uk/gp-connect-access-record-pr-40/test"
         token = apigee_token
         expected_status_code = 200
         # When

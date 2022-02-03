@@ -10,20 +10,21 @@ docker_env := -e CLIENT_ID=$(CLIENT_ID) \
 -e NHS_LOGIN_OTP_CODE=$(NHS_LOGIN_OTP_CODE) \
 -e APIGEE_ENVIRONMENT=$(APIGEE_ENVIRONMENT)
 
+env := APIGEE_ENVIRONMENT=$(APIGEE_ENVIRONMENT) TOKEN=$(TOKEN)
+
 token: setup-test
 	docker run $(docker_env)  nhs-login-authenticator
 
 test: setup-test
 	$(eval TOKEN := $(shell docker run $(docker_env) nhs-login-authenticator))
-	TOKEN=$(TOKEN) poetry run pytest -s -v test_api.py
+	$(env) poetry run pytest -s -v test_api.py
 
 test-int-debug:
 	$(eval TOKEN := $(shell docker run $(docker_env) nhs-login-authenticator))
-	TOKEN=$(TOKEN) poetry run pytest -s -m debug -v test_api.py
+	$(env) poetry run pytest -s -m debug -v test_api.py
 
 test-mediation:
-	TOKEN=$(TOKEN) poetry run pytest -s -m mediation -v test_api.py
+	$(evn) TOKEN=$(TOKEN) poetry run pytest -s -m mediation -v test_api.py
 
 test-local-debug:
-	TOKEN=$(TOKEN) poetry run pytest -s -m debug -v test_api.py
-
+	$(env) poetry run pytest -s -m debug -v test_api.py
