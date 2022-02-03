@@ -2,6 +2,7 @@ import json
 import os
 import re
 
+import requests
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -139,20 +140,18 @@ def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_clien
     return Response(content=ods, status_code=HTTP_200_OK)
 
 
-@app.get("/testEnvVars")
-def get_env_vars():
-    try:
-        config = init_env()
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=e)
+@app.get("/id")
+def get_id():
+    response = requests.get("https://int.api.service.nhs.uk/oauth2/_ping")
 
-    private_key_content = config["private_key"],
-    client_id = config["client_id"],
-    kid = config["kid"]
+    return Response(content=str(response.status_code), status_code=HTTP_200_OK)
 
-    ods = {"private_key": private_key_content, "client_id": client_id, "kid": kid}
 
-    return Response(content=ods, status_code=HTTP_200_OK)
+@app.get("/pds")
+def get_id():
+    response = requests.get("https://int.api.service.nhs.uk/personal-demographics/FHIR/R4/_ping")
+
+    return Response(content=str(response.status_code), status_code=HTTP_200_OK)
 
 
 @app.get("/testPdsClientInt")
