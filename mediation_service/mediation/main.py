@@ -150,7 +150,6 @@ def get_id():
 @app.get("/pds")
 def get_pds():
     response = requests.get("https://int.api.service.nhs.uk/personal-demographics/FHIR/R4/_ping")
-
     return Response(content=str(response.status_code), status_code=HTTP_200_OK)
 
 
