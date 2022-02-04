@@ -1,5 +1,3 @@
-import os
-
 import pytest
 import requests
 from assertpy import assert_that
@@ -9,43 +7,37 @@ class TestAllergyIntolerance:
     valid_nhs_number = "9690937286"
 
     @pytest.fixture()
-    def url(self, apigee_token) -> str:
-        environment = os.environ["APIGEE_ENVIRONMENT"]
+    def url(self, proxy_url: str) -> str:
         allergy_endpoint = "AllergyIntolerance"
-        if not apigee_token:
-            return f"http://localhost:9000/{allergy_endpoint}"
-        else:
-            return f"https://{environment}.api.service.nhs.uk/gp-connect-access-record/{allergy_endpoint}"
+
+        return f"{proxy_url}/{allergy_endpoint}"
 
     @pytest.mark.mediation
-    @pytest.mark.debug
-    @pytest.mark.skip(
-        reason="This tests must be skipping for now, to avoid errors on the pipeline"
-    )
-    def test_happy_path(self, apigee_token, url):
+    def test_happy_path(self, access_token, url):
         # Given
-        url = "https://internal-dev.api.service.nhs.uk/gp-connect-access-record-pr-40/test"
-        token = apigee_token
         expected_status_code = 200
+        expected_content = "B82617"
+
         # When
         response = requests.get(
             url=url,
-            headers={"Authorization": f"Bearer {token}"},
+            headers={"Authorization": f"Bearer {access_token}"},
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
 
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
+        assert_that(expected_content).is_equal_to(response.text)
 
     @pytest.mark.mediation
-    def test_nhs_number_not_matching(self, apigee_token, url):
+    @pytest.mark.debug
+    def test_nhs_number_not_matching(self, access_token, url):
         # Given
-        token = apigee_token
         expected_status_code = 403
         # When
         response = requests.get(
             url=url,
-            headers={"Authorization": f"Bearer {token}"},
+            headers={"Authorization": f"Bearer {access_token}"},
             params={"patient": "https://fhir.nhs.uk/Id/0000000000"},
         )
         # Then
@@ -60,14 +52,13 @@ class TestAllergyIntolerance:
             "",
         ],
     )
-    def test_invalid_patient_query_parameter(self, apigee_token, url, patient):
+    def test_invalid_patient_query_parameter(self, access_token, url, patient):
         # Given
-        token = apigee_token
         expected_status_code = 400
         # When
         response = requests.get(
             url=url,
-            headers={"Authorization": f"Bearer {token}"},
+            headers={"Authorization": f"Bearer {access_token}"},
             params={"patient": f"{patient}"},
         )
         # Then
