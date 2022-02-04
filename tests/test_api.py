@@ -17,7 +17,6 @@ class TestAllergyIntolerance:
         # Given
         expected_status_code = 200
         expected_content = "B82617"
-        print(url)
 
         # When
         response = requests.get(
