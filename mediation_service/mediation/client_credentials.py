@@ -21,7 +21,6 @@ class AuthClientCredentials:
 
     def get_access_token(self):
         _jwt = self.__create_jwt(self.__signing_key, self.__client_id, self.__aud, self.__headers, self.__alg)
-        print("encode successful")
         data = {
             "client_assertion": _jwt,
             "client_assertion_type": self.__client_assertion_type,
@@ -30,7 +29,6 @@ class AuthClientCredentials:
         res = requests.post(f"{self.__auth_url}/token", data)
 
         if res.status_code != 200:
-            print("not 200")
             raise HTTPException(status_code=res.status_code, detail="Client credentials failed.")
 
         return res.json()["access_token"]
