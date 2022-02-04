@@ -21,9 +21,9 @@ class TestAllergyIntolerance:
     @pytest.mark.debug
     def test_happy_path(self, apigee_token, url):
         # Given
-        # url = "https://internal-dev.api.service.nhs.uk/gp-connect-access-record-pr-47/AllergyIntolerance"
+        url = "https://internal-dev.api.service.nhs.uk/gp-connect-access-record-pr-47/AllergyIntolerance"
         # url = "https://internal-dev.api.service.nhs.uk/gp-connect-access-record-pr-47/test"
-        url = "http://localhost:9000/test"
+        # url = "http://localhost:9000/test"
         token = apigee_token
         expected_status_code = 200
         # When

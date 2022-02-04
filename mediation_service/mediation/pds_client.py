@@ -25,7 +25,7 @@ class PdsClient:
 
         try:
             res = requests.get(
-                f"https://{self.__env}.api.service.nhs.uk/personal-demographics/FHIR/R4/Patient/{nhs_number}",
+                f"https://int.api.service.nhs.uk/personal-demographics/FHIR/R4/Patient/{nhs_number}",
                 headers=headers)
 
         except Exception as e:
