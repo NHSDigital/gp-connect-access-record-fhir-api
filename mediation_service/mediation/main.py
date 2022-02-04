@@ -2,7 +2,6 @@ import json
 import os
 import re
 
-import requests
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -83,21 +82,6 @@ def pds_client() -> PdsClient:
     return PdsClient(auth=auth_client, env=config["apigee_env"])
 
 
-@app.get("/error")
-def error(_pds_client: PdsClient = Depends(pds_client)):
-    return Response(content=json.dumps({"message": "no error"}), status_code=HTTP_200_OK)
-
-
-@app.get("/_status")
-def status():
-    return Response(status_code=HTTP_200_OK)
-
-
-@app.get("/healthcheck")
-def health():
-    return Response(status_code=HTTP_200_OK)
-
-
 @app.get("/test")
 def test():
     config = init_env()
@@ -112,16 +96,15 @@ def test():
     # PdsClient(auth=auth_client, env=config["apigee_env"])
 
     response = {}
-    at = ""
-
-    try:
-        at = auth_client.get_access_token()
-    except Exception as e:
-        response["exception"] = str(e)
-
+    at = auth_client.get_access_token()
     response["at"] = at
 
     return Response(content=json.dumps(response), status_code=HTTP_200_OK)
+
+
+@app.get("/_status")
+def status():
+    return Response(status_code=HTTP_200_OK)
 
 
 def extract_nhs_number(q: str) -> str:
@@ -138,29 +121,6 @@ def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_clien
     ods = _pds_client.get_ods_for_nhs_number(nhs_number)
 
     return Response(content=str(ods), status_code=HTTP_200_OK)
-
-
-@app.get("/id")
-def get_id():
-    response = requests.get("https://int.api.service.nhs.uk/oauth2/_ping")
-
-    return Response(content=str(response.status_code), status_code=HTTP_200_OK)
-
-
-@app.get("/pds")
-def get_pds():
-    response = requests.get("https://int.api.service.nhs.uk/personal-demographics/FHIR/R4/_ping")
-    return Response(content=str(response.status_code), status_code=HTTP_200_OK)
-
-
-@app.get("/testPdsClientInt")
-def test_pds_client(_pds_client: PdsClient = Depends(pds_client)):
-    try:
-        ods = _pds_client.get_ods_for_nhs_number(9690937286)
-    except Exception as e:
-        raise HTTPException(status_code=404, detail=e)
-
-    return Response(content=ods, status_code=HTTP_200_OK)
 
 
 if __name__ == '__main__':

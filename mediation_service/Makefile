@@ -1,4 +1,3 @@
-JWT_PRIVATE_KEY_FILE ?= $(shell pwd)/jwtRS512.key
 JWT_PRIVATE_KEY_CONTENT ?= $(shell cat `pwd`/jwtRS512.key)
 KID = "test-1"
 

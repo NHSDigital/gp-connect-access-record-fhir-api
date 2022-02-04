@@ -19,12 +19,11 @@ class TestAllergyIntolerance:
 
     @pytest.mark.mediation
     @pytest.mark.debug
-    @pytest.mark.skip(
-        reason="This tests must be skipping for now, to avoid errors on the pipeline"
-    )
     def test_happy_path(self, apigee_token, url):
         # Given
-        url = "https://internal-dev.api.service.nhs.uk/gp-connect-access-record-pr-40/test"
+        # url = "https://internal-dev.api.service.nhs.uk/gp-connect-access-record-pr-47/AllergyIntolerance"
+        # url = "https://internal-dev.api.service.nhs.uk/gp-connect-access-record-pr-47/test"
+        url = "http://localhost:9000/test"
         token = apigee_token
         expected_status_code = 200
         # When
@@ -34,6 +33,7 @@ class TestAllergyIntolerance:
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
 
+        print(response.text)
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
 
