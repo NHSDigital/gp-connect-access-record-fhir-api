@@ -137,7 +137,7 @@ def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_clien
 
     ods = _pds_client.get_ods_for_nhs_number(nhs_number)
 
-    return Response(content=ods, status_code=HTTP_200_OK)
+    return Response(content=str(ods), status_code=HTTP_200_OK)
 
 
 @app.get("/id")
