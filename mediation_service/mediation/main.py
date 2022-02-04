@@ -1,4 +1,3 @@
-import json
 import os
 import re
 
@@ -21,16 +20,12 @@ def init_env():
     except KeyError as e:
         raise KeyError(f"Environment variable is required: {e}")
 
-    config = {
+    return {
         "private_key": private_key,
         "client_id": client_id,
         "kid": kid,
         "apigee_env": apigee_env
     }
-
-    # empty = {k: v for k, v in config.items() if v}
-
-    return config
 
 
 app = FastAPI()
@@ -80,26 +75,6 @@ def pds_client() -> PdsClient:
                                         aud=aud)
 
     return PdsClient(auth=auth_client, env=config["apigee_env"])
-
-
-@app.get("/test")
-def test():
-    config = init_env()
-    auth_url = "https://int.api.service.nhs.uk/oauth2"
-    aud = f"{auth_url}/token"
-
-    auth_client = AuthClientCredentials(auth_url=auth_url,
-                                        private_key_content=config["private_key"],
-                                        client_id=config["client_id"],
-                                        headers={"kid": config["kid"]},
-                                        aud=aud)
-    # PdsClient(auth=auth_client, env=config["apigee_env"])
-
-    response = {}
-    at = auth_client.get_access_token()
-    response["at"] = at
-
-    return Response(content=json.dumps(response), status_code=HTTP_200_OK)
 
 
 @app.get("/_status")
