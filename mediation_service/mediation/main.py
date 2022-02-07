@@ -9,6 +9,7 @@ from starlette.status import HTTP_200_OK
 
 from client_credentials import AuthClientCredentials
 from pds_client import PdsClient
+from ssp_client import SspClient
 
 
 def init_env():
@@ -96,6 +97,15 @@ def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_clien
     ods = _pds_client.get_ods_for_nhs_number(nhs_number)
 
     return Response(content=str(ods), status_code=HTTP_200_OK)
+
+
+@app.get("/AllergyIntoleranceBundle")
+def allergy_intolerance_bundle():
+    _ssp_client = SspClient()
+    #missing parameters TBC
+    allergy_bundle = _ssp_client.get_allergy_intolerance_bundle()
+
+    return Response(content=allergy_bundle, status_code=HTTP_200_OK)
 
 
 if __name__ == '__main__':
