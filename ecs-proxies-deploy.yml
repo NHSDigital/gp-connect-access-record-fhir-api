@@ -20,3 +20,5 @@ docker_service:
         valueFrom: "arn:aws:secretsmanager:eu-west-2:{{ PTL_ACCOUNT_ID }}:secret:ptl/gp-connect-access-record-fhir-api/gp-connect-mediation-app/CLIENT_ID_INT"
       - name: GPC_PRIVATE_KEY_INT
         valueFrom: "arn:aws:secretsmanager:eu-west-2:{{ PTL_ACCOUNT_ID }}:secret:ptl/gp-connect-access-record-fhir-api/gp-connect-mediation-app/jwtRS512.key"
+      - name: UPSTREAM
+        valueFrom: "/{{ account }}/platform-common/egress/hosts/apigee-{{ APIGEE_ENVIRONMENT }}"
