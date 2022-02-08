@@ -70,7 +70,7 @@ async def unhandled_exception_handler(_: Request, exc: Exception):
 def pds_client() -> PdsClient:
     config = init_env()
     auth_url = f"https://{config['apigee_url']}/oauth2"
-    aud = "https://int.api.service.nhs.uk/token"
+    aud = "https://int.api.service.nhs.uk/oauth2/token"
 
     auth_client = AuthClientCredentials(auth_url=auth_url,
                                         private_key_content=config["private_key"],
