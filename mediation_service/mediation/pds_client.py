@@ -24,7 +24,7 @@ class PdsClient:
         }
 
         res = requests.get(
-            f"{self.__url}/personal-demographics/FHIR/R4/Patient/{nhs_number}",
+            f"https://{self.__url}/personal-demographics/FHIR/R4/Patient/{nhs_number}",
             headers=headers)
 
         return self.__get_ods(res.json())

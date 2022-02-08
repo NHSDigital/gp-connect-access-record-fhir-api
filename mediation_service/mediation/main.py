@@ -70,7 +70,7 @@ async def unhandled_exception_handler(_: Request, exc: Exception):
 
 def pds_client() -> PdsClient:
     config = init_env()
-    auth_url = "https://int.api.service.nhs.uk/oauth2"
+    auth_url = f"https://{config['apigee_url']}/oauth2"
     aud = f"{auth_url}/token"
 
     auth_client = AuthClientCredentials(auth_url=auth_url,
@@ -95,12 +95,25 @@ def status():
     return Response(res.text, status_code=HTTP_200_OK)
 
 
+@app.get("/test-ssp-url")
+def status():
+    config = init_env()
+
+    return Response(config["ssp_url"], status_code=HTTP_200_OK)
+
+
 @app.get("/test-is")
 def status():
     config = init_env()
     res = requests.get(f"https://{config['apigee_url']}/oauth2/_ping")
 
     return Response(res.text, status_code=HTTP_200_OK)
+
+
+@app.get("/test-is-url")
+def status():
+    config = init_env()
+    return Response(config["apigee_url"], status_code=HTTP_200_OK)
 
 
 def extract_nhs_number(q: str) -> str:
