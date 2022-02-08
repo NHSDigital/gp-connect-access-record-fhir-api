@@ -1,7 +1,6 @@
 import os
 import re
 
-import requests
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -71,7 +70,7 @@ async def unhandled_exception_handler(_: Request, exc: Exception):
 def pds_client() -> PdsClient:
     config = init_env()
     auth_url = f"https://{config['apigee_url']}/oauth2"
-    aud = f"{auth_url}/token"
+    aud = "https://int.api.service.nhs.uk/token"
 
     auth_client = AuthClientCredentials(auth_url=auth_url,
                                         private_key_content=config["private_key"],
@@ -85,35 +84,6 @@ def pds_client() -> PdsClient:
 @app.get("/_status")
 def status():
     return Response(status_code=HTTP_200_OK)
-
-
-@app.get("/test-ssp")
-def ssp():
-    config = init_env()
-    res = requests.get(f"https://{config['ssp_url']}")
-
-    return Response(res.text, status_code=HTTP_200_OK)
-
-
-@app.get("/test-ssp-url")
-def ssp_url():
-    config = init_env()
-
-    return Response(config["ssp_url"], status_code=HTTP_200_OK)
-
-
-@app.get("/test-is")
-def iden():
-    config = init_env()
-    res = requests.get(f"https://{config['apigee_url']}/oauth2/_ping")
-
-    return Response(res.text, status_code=HTTP_200_OK)
-
-
-@app.get("/test-is-url")
-def iden_url():
-    config = init_env()
-    return Response(config["apigee_url"], status_code=HTTP_200_OK)
 
 
 def extract_nhs_number(q: str) -> str:
