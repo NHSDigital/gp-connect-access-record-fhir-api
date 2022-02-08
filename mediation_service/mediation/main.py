@@ -1,4 +1,3 @@
-import json
 import os
 import re
 
@@ -64,14 +63,19 @@ def extract_nhs_number(q: str) -> str:
 
 
 @app.get("/AllergyIntolerance")
-def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_client)):
+def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_client), _sds_client: SdsClient = Depends(sds_client)):
     nhs_number = extract_nhs_number(patient)
 
     ods = _pds_client.get_ods_for_nhs_number(nhs_number)
     ods["private_len"] = len(os.environ["GPC_PRIVATE_KEY_INT"])
     ods["client_len"] = len(os.environ["GPC_CLIENT_ID"])
 
-    return Response(content=json.dumps(ods), status_code=HTTP_200_OK)
+    to_ASID = _sds_client.get_toASID(ods)
+    GPConnect_URL = _sds_client.get_URL(ods)
+
+    values = {"to_ASID": to_ASID, "GPConnect_URL": GPConnect_URL}
+
+    return Response(content=values, status_code=HTTP_200_OK)
 
 
 if __name__ == '__main__':
