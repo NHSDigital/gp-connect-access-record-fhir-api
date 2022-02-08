@@ -88,7 +88,7 @@ def status():
 
 
 @app.get("/test-ssp")
-def status():
+def ssp():
     config = init_env()
     res = requests.get(f"https://{config['ssp_url']}")
 
@@ -96,14 +96,14 @@ def status():
 
 
 @app.get("/test-ssp-url")
-def status():
+def ssp_url():
     config = init_env()
 
     return Response(config["ssp_url"], status_code=HTTP_200_OK)
 
 
 @app.get("/test-is")
-def status():
+def iden():
     config = init_env()
     res = requests.get(f"https://{config['apigee_url']}/oauth2/_ping")
 
@@ -111,7 +111,7 @@ def status():
 
 
 @app.get("/test-is-url")
-def status():
+def iden_url():
     config = init_env()
     return Response(config["apigee_url"], status_code=HTTP_200_OK)
 
