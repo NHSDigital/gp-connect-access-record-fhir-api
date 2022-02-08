@@ -3,6 +3,7 @@ from uuid import uuid4
 
 import jwt
 import requests
+from fastapi import HTTPException
 
 
 class AuthClientCredentials:
@@ -28,7 +29,7 @@ class AuthClientCredentials:
         res = requests.post(f"{self.__auth_url}/token", data)
 
         if res.status_code != 200:
-            raise Exception("Authenticating with client credentials failed", res)
+            raise HTTPException(status_code=res.status_code, detail="Client credentials failed.")
 
         return res.json()["access_token"]
 

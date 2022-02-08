@@ -3,7 +3,9 @@ docker_service:
     expose: true
     environment:
       - name: KID
-        value: test-1
+        value: "test-1"
+      - name: APIGEE_ENVIRONMENT
+        value: "{{ APIGEE_ENVIRONMENT }}"
       - name: NODE_ENV
         value: production
       - name: LOG_LEVEL
@@ -15,6 +17,6 @@ docker_service:
       path: "/_status"
     secrets:
       - name: GPC_CLIENT_ID
-        valueFrom: "arn:aws:secretsmanager:eu-west-2:{{ PTL_ACCOUNT_ID }}:secret:ptl/app-credentials/gp-connect-record-access-testing-app/non-prod/CLIENT_ID_INT"
+        valueFrom: "arn:aws:secretsmanager:eu-west-2:{{ PTL_ACCOUNT_ID }}:secret:ptl/gp-connect-access-record-fhir-api/gp-connect-mediation-app/CLIENT_ID_INT"
       - name: GPC_PRIVATE_KEY_INT
         valueFrom: "arn:aws:secretsmanager:eu-west-2:{{ PTL_ACCOUNT_ID }}:secret:ptl/gp-connect-access-record-fhir-api/gp-connect-mediation-app/jwtRS512.key"
