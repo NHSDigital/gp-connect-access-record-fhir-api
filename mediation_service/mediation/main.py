@@ -106,7 +106,7 @@ def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_clien
 
     values = {"to_ASID": to_ASID, "GPConnect_URL": GPConnect_URL}
 
-    return Response(content=values, status_code=HTTP_200_OK)
+    return JSONResponse(content=values, status_code=HTTP_200_OK)
 
 
 if __name__ == '__main__':
