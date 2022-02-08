@@ -7,9 +7,10 @@ from client_credentials import AuthClientCredentials
 
 class PdsClient:
 
-    def __init__(self, auth: AuthClientCredentials, env: str) -> None:
+    def __init__(self, url: str, auth: AuthClientCredentials, env: str) -> None:
         self.__auth = auth
         self.__env = env
+        self.__url = url
 
     def get_ods_for_nhs_number(self, nhs_number):
         try:

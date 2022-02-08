@@ -17,6 +17,8 @@ def init_env():
         client_id = os.environ["GPC_CLIENT_ID"]
         kid = os.environ["KID"]
         apigee_env = os.environ["APIGEE_ENVIRONMENT"]
+        apigee_url = os.environ["APIGEE_URL"]
+        ssp_url = os.environ["SSP_URL"]
     except KeyError as e:
         raise KeyError(f"Environment variable is required: {e}")
 
@@ -24,7 +26,9 @@ def init_env():
         "private_key": private_key,
         "client_id": client_id,
         "kid": kid,
-        "apigee_env": apigee_env
+        "apigee_env": apigee_env,
+        "apigee_url": apigee_url,
+        "ssp_url": ssp_url,
     }
 
 
@@ -74,7 +78,7 @@ def pds_client() -> PdsClient:
                                         headers={"kid": config["kid"]},
                                         aud=aud)
 
-    return PdsClient(auth=auth_client, env=config["apigee_env"])
+    return PdsClient(url=config["apigee_url"], auth=auth_client, env=config["apigee_env"])
 
 
 @app.get("/_status")
