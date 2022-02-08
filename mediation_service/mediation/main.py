@@ -1,6 +1,7 @@
 import os
 import re
 
+import requests
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -84,6 +85,22 @@ def pds_client() -> PdsClient:
 @app.get("/_status")
 def status():
     return Response(status_code=HTTP_200_OK)
+
+
+@app.get("/test-ssp")
+def status():
+    config = init_env()
+    res = requests.get(f"https://{config['ssp_url']}")
+
+    return Response(res.text, status_code=HTTP_200_OK)
+
+
+@app.get("/test-is")
+def status():
+    config = init_env()
+    res = requests.get(f"https://{config['apigee_url']}/oauth2/_ping")
+
+    return Response(res.text, status_code=HTTP_200_OK)
 
 
 def extract_nhs_number(q: str) -> str:

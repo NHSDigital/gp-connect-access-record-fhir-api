@@ -7,7 +7,7 @@ install:
 	poetry install
 
 run:
-	GPC_PRIVATE_KEY_INT="$(JWT_PRIVATE_KEY_CONTENT)" GPC_CLIENT_ID=$(GPC_CLIENT_ID) KID=$(KID) APIGEE_ENVIRONMENT=$(APIGEE_ENVIRONMENT) poetry run python mediation/main.py
+	GPC_PRIVATE_KEY_INT="$(JWT_PRIVATE_KEY_CONTENT)" GPC_CLIENT_ID=$(GPC_CLIENT_ID) KID=$(KID) APIGEE_ENVIRONMENT=$(APIGEE_ENVIRONMENT) SSP_URL=$(SSP_URL) APIGEE_URL=$(APIGEE_URL) poetry run python mediation/main.py
 
 docker-build:
 	docker build -t mediation:latest .
