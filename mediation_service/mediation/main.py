@@ -48,7 +48,9 @@ async def env_var_exception_handler(_: Request, exc: KeyError):
 async def http_client_exception_handler(_: Request, exc: HTTPException):
     return JSONResponse(
         status_code=500,
-        content={"message": f"Http request failed with status code {exc.status_code} and message: {exc.detail}"},
+        content={
+            "message": f"Http request failed with status code {exc.status_code} and message: {exc.detail}"
+        },
     )
 
 
@@ -73,13 +75,17 @@ def pds_client() -> PdsClient:
     auth_url = f"https://{config['apigee_url']}/oauth2"
     aud = "https://int.api.service.nhs.uk/oauth2/token"
 
-    auth_client = AuthClientCredentials(auth_url=auth_url,
-                                        private_key_content=config["private_key"],
-                                        client_id=config["client_id"],
-                                        headers={"kid": config["kid"]},
-                                        aud=aud)
+    auth_client = AuthClientCredentials(
+        auth_url=auth_url,
+        private_key_content=config["private_key"],
+        client_id=config["client_id"],
+        headers={"kid": config["kid"]},
+        aud=aud,
+    )
 
-    return PdsClient(url=config["apigee_url"], auth=auth_client, env=config["apigee_env"])
+    return PdsClient(
+        url=config["apigee_url"], auth=auth_client, env=config["apigee_env"]
+    )
 
 
 @app.get("/_status")
@@ -100,7 +106,11 @@ def extract_nhs_number(q: str) -> str:
 
 
 @app.get("/AllergyIntolerance")
-def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_client), _sds_client: SdsClient = Depends(sds_client)):
+def allergy_intolerance(
+    patient: str,
+    _pds_client: PdsClient = Depends(pds_client),
+    _sds_client: SdsClient = Depends(sds_client),
+):
     nhs_number = extract_nhs_number(patient)
 
     ods = _pds_client.get_ods_for_nhs_number(nhs_number)
@@ -113,5 +123,5 @@ def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_clien
     return JSONResponse(content=values, status_code=HTTP_200_OK)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=9000)
