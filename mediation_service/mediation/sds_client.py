@@ -2,9 +2,9 @@ import requests
 
 
 class SdsClient:
-    def __init__(self, client_id: str, env: str) -> None:
+    def __init__(self, client_id: str, apigee_url: str) -> None:
         self.__client_id = client_id
-        self.__env = env
+        self.__apigee_url = apigee_url
 
     def get_toASID(self, ods_code):
         headers = {"apikey": self.__client_id}
@@ -15,7 +15,7 @@ class SdsClient:
         }
 
         res = requests.get(
-            f"https://{self.__env}.api.service.nhs.uk/spine-directory/FHIR/R4/Device",
+            f"https://{self.__apigee_url}/spine-directory/FHIR/R4/Device",
             headers=headers,
             params=params,
         )
@@ -44,7 +44,7 @@ class SdsClient:
         }
 
         res = requests.get(
-            f"https://{self.__env}.api.service.nhs.uk/spine-directory/FHIR/R4/Endpoint",
+            f"https://{self.__apigee_url}/spine-directory/FHIR/R4/Endpoint",
             headers=headers,
             params=params,
         )

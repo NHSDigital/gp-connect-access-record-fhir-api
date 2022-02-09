@@ -95,7 +95,7 @@ def status():
 
 def sds_client() -> SdsClient:
     config = init_env()
-    return SdsClient(client_id=config["client_id"], env=config["apigee_env"])
+    return SdsClient(client_id=config["client_id"], apigee_url=config['apigee_url'])
 
 
 def extract_nhs_number(q: str) -> str:
