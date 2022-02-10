@@ -1,6 +1,5 @@
 import pytest
 import requests
-import json
 from assertpy import assert_that
 
 
