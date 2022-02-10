@@ -1,5 +1,3 @@
-import base64
-import json
 import jwt
 from datetime import datetime, timedelta
 
@@ -80,6 +78,3 @@ class OrangeJwt:
 
     def __init__(self) -> None:
         pass
-
-
-

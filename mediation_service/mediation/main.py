@@ -100,7 +100,8 @@ def extract_nhs_number(q: str) -> str:
 
 
 @app.get("/AllergyIntolerance")
-def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_client), _ssp_client: SspClient = Depends(ssp_client)):
+def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_client),
+                        _ssp_client: SspClient = Depends(ssp_client)):
     nhs_number = extract_nhs_number(patient)
 
     ods = _pds_client.get_ods_for_nhs_number(nhs_number)

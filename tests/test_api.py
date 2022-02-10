@@ -54,7 +54,6 @@ class TestAllergyIntolerance:
             "",
         ],
     )
-
     def test_invalid_patient_query_parameter(self, access_token, url, patient):
         # Given
         expected_status_code = 400

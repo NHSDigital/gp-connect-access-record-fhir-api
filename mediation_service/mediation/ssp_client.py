@@ -1,5 +1,3 @@
-import json
-
 import requests
 
 from orange_jwt import create_orange_jwt
@@ -22,7 +20,7 @@ class SspClient:
         }
 
         _body = self.__get_orange_payload()
-        #ODS code on the request is hardcoded --- need to be changed
+        # ODS code on the request is hardcoded --- need to be changed
         res = requests.post(
             f"https://{self._url}/B82617/STU3/1/gpconnect/structured/fhir/Patient/$gpc.getstructuredrecord",
             headers=headers,
