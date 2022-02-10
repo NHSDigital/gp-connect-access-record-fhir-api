@@ -14,6 +14,7 @@ class TestAllergyIntolerance:
         return f"{proxy_url}/{allergy_endpoint}"
 
     @pytest.mark.mediation
+    @pytest.mark.debug
     def test_happy_path(self, access_token, url):
         # Given
         expected_status_code = 200
