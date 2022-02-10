@@ -1,4 +1,3 @@
-import json
 import os
 import re
 
@@ -83,6 +82,11 @@ def pds_client() -> PdsClient:
     return PdsClient(url=config["apigee_url"], auth=auth_client, env=config["apigee_env"])
 
 
+def ssp_client() -> SspClient:
+    config = init_env()
+    return SspClient(url=config["ssp_url"])
+
+
 @app.get("/_status")
 def status():
     return Response(status_code=HTTP_200_OK)
@@ -96,12 +100,12 @@ def extract_nhs_number(q: str) -> str:
 
 
 @app.get("/AllergyIntolerance")
-def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_client)):
+def allergy_intolerance(patient: str, _pds_client: PdsClient = Depends(pds_client), _ssp_client: SspClient = Depends(ssp_client)):
     nhs_number = extract_nhs_number(patient)
 
     ods = _pds_client.get_ods_for_nhs_number(nhs_number)
 
-    allergy_bundle = SspClient().get_allergy_intolerance_bundle(ods)
+    allergy_bundle = _ssp_client.get_allergy_intolerance_bundle(ods)
 
     return Response(content=allergy_bundle, status_code=HTTP_200_OK)
 

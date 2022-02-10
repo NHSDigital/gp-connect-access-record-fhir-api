@@ -7,8 +7,8 @@ from orange_jwt import create_orange_jwt
 
 class SspClient:
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, url: str) -> None:
+        self._url = url
 
     def get_allergy_intolerance_bundle(self, ods: str):
         headers = {
@@ -22,9 +22,9 @@ class SspClient:
         }
 
         _body = self.__get_orange_payload()
-
+        #ODS code on the request is hardcoded --- need to be changed
         res = requests.post(
-            f"https://orange.testlab.nhs.uk/B82617/STU3/1/gpconnect/structured/fhir/Patient/$gpc.getstructuredrecord",
+            f"https://{self._url}/B82617/STU3/1/gpconnect/structured/fhir/Patient/$gpc.getstructuredrecord",
             headers=headers,
             data=_body,
             verify=False

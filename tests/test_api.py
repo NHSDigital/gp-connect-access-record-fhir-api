@@ -33,7 +33,6 @@ class TestAllergyIntolerance:
 
     @pytest.mark.mediation
     @pytest.mark.debug
-    @pytest.mark.skip
     def test_nhs_number_not_matching(self, access_token, url):
         # Given
         expected_status_code = 403
@@ -55,7 +54,7 @@ class TestAllergyIntolerance:
             "",
         ],
     )
-    @pytest.mark.skip
+
     def test_invalid_patient_query_parameter(self, access_token, url, patient):
         # Given
         expected_status_code = 400
@@ -68,7 +67,6 @@ class TestAllergyIntolerance:
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
 
-    @pytest.mark.skip
     def test_invalid_token(self, url):
         # Given
         token = "invalid"
