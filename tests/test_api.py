@@ -24,10 +24,10 @@ class TestAllergyIntolerance:
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
 
-        expected_resource_type = response.json()
+        expected_resource_type = self.__get_bundle(response.json())
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
-        assert_that(expected_resource_type["resourceType"]).is_equal_to("Bundle")
+        assert_that(expected_resource_type).is_equal_to("Bundle")
 
     @pytest.mark.mediation
     @pytest.mark.debug
@@ -72,3 +72,7 @@ class TestAllergyIntolerance:
         response = requests.get(url=url, headers={"Authorization": f"Bearer {token}"})
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
+
+    @staticmethod
+    def __get_bundle(resource: dict) -> str:
+        return resource["resourceType"]
