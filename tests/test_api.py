@@ -17,17 +17,18 @@ class TestAllergyIntolerance:
     def test_happy_path(self, access_token, url):
         # Given
         expected_status_code = 200
+        expected_resource_type_name = "Bundle"
         # When
         response = requests.get(
             url=url,
             headers={"Authorization": f"Bearer {access_token}"},
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
-        print(response.text)
+
         expected_resource_type = self.__get_bundle(response.json())
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
-        assert_that(expected_resource_type).is_equal_to("Bundle")
+        assert_that(expected_resource_type).is_equal_to(expected_resource_type_name)
 
     @pytest.mark.mediation
     @pytest.mark.debug
