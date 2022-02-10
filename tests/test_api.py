@@ -1,5 +1,6 @@
 import pytest
 import requests
+import json
 from assertpy import assert_that
 
 
@@ -16,7 +17,6 @@ class TestAllergyIntolerance:
     def test_happy_path(self, access_token, url):
         # Given
         expected_status_code = 200
-        expected_content = "B82617"
 
         # When
         response = requests.get(
@@ -25,12 +25,14 @@ class TestAllergyIntolerance:
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
 
+        response_as_dic = json.loads(response.text)
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
-        assert_that(expected_content).is_equal_to(response.text)
+        assert_that(response_as_dic["resourceType"]).is_equal_to("Bundle")
 
     @pytest.mark.mediation
     @pytest.mark.debug
+    @pytest.mark.skip
     def test_nhs_number_not_matching(self, access_token, url):
         # Given
         expected_status_code = 403
@@ -52,6 +54,7 @@ class TestAllergyIntolerance:
             "",
         ],
     )
+    @pytest.mark.skip
     def test_invalid_patient_query_parameter(self, access_token, url, patient):
         # Given
         expected_status_code = 400
@@ -64,6 +67,7 @@ class TestAllergyIntolerance:
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
 
+    @pytest.mark.skip
     def test_invalid_token(self, url):
         # Given
         token = "invalid"
