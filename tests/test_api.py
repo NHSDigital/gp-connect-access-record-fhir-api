@@ -17,7 +17,6 @@ class TestAllergyIntolerance:
     def test_happy_path(self, access_token, url):
         # Given
         expected_status_code = 200
-
         # When
         response = requests.get(
             url=url,
@@ -25,9 +24,10 @@ class TestAllergyIntolerance:
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
 
+        expected_resource_type = response.json()["resourceType"]
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
-        assert_that(response.json()["resourceType"]).is_equal_to("Bundle")
+        assert_that(expected_resource_type).is_equal_to("Bundle")
 
     @pytest.mark.mediation
     @pytest.mark.debug
