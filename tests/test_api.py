@@ -26,10 +26,9 @@ class TestAllergyIntolerance:
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
 
-        response_as_dic = json.loads(response.text)
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
-        assert_that(response_as_dic["resourceType"]).is_equal_to("Bundle")
+        assert_that(response.json()["resourceType"]).is_equal_to("Bundle")
 
     @pytest.mark.mediation
     @pytest.mark.debug
