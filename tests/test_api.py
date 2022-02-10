@@ -1,5 +1,6 @@
 import pytest
 import requests
+import json
 from assertpy import assert_that
 
 
@@ -23,7 +24,7 @@ class TestAllergyIntolerance:
             headers={"Authorization": f"Bearer {access_token}"},
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
-
+        print(response.text)
         expected_resource_type = self.__get_bundle(response.json())
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
