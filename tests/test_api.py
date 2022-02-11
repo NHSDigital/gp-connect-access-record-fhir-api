@@ -18,6 +18,7 @@ class TestAllergyIntolerance:
         # Given
         expected_status_code = 200
         expected_resource_type_name = "Bundle"
+
         # When
         response = requests.get(
             url=url,
@@ -29,6 +30,7 @@ class TestAllergyIntolerance:
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
         assert_that(expected_resource_type).is_equal_to(expected_resource_type_name)
+
 
     @pytest.mark.mediation
     @pytest.mark.debug

@@ -8,7 +8,8 @@ class SspClient:
     def __init__(self, url: str) -> None:
         self._url = url
 
-    def get_allergy_intolerance_bundle(self, ods: str):
+    def get_allergy_intolerance_bundle(self, ods: dict):
+        # update Ssp-From with to_ASID from dict
         headers = {
             "Accept": "application/fhir+json",
             "Ssp-From": "200000000359",
@@ -16,7 +17,7 @@ class SspClient:
             "Ssp-InteractionID": "urn:nhs:names:services:gpconnect:fhir:operation:gpc.getstructuredrecord-1",
             "Ssp-TraceID": "09a01679-2564-0fb4-5129-aecc81ea2706",
             "Content-Type": "application/fhir+json",
-            "Authorization": f"Bearer {create_orange_jwt(ods)}"
+            "Authorization": f"Bearer {create_orange_jwt(ods['to_ASID'])}"
         }
 
         _body = self.__get_orange_payload()
