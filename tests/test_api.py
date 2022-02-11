@@ -17,7 +17,10 @@ class TestAllergyIntolerance:
     def test_happy_path(self, access_token, url):
         # Given
         expected_status_code = 200
-        expected_content = "B82617"
+        expected_content = {
+            "to_ASID": "200000001329",
+            "GPConnect_URL": "https://gpconnect-win1.itblab.nic.cfh.nhs.uk/B82617/STU3/1/gpconnect/structured/fhir",
+        }
 
         # When
         response = requests.get(
@@ -28,7 +31,7 @@ class TestAllergyIntolerance:
 
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
-        assert_that(expected_content).is_equal_to(response.text)
+        assert_that(expected_content).is_equal_to(response.json())
 
     @pytest.mark.mediation
     @pytest.mark.debug
