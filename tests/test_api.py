@@ -30,8 +30,6 @@ class TestAllergyIntolerance:
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
         assert_that(expected_resource_type).is_equal_to(expected_resource_type_name)
-
-
     @pytest.mark.mediation
     @pytest.mark.debug
     def test_nhs_number_not_matching(self, access_token, url):
