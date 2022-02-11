@@ -1,3 +1,4 @@
+import json
 import os
 import re
 
@@ -10,6 +11,7 @@ from starlette.status import HTTP_200_OK
 from sds_client import SdsClient
 from client_credentials import AuthClientCredentials
 from pds_client import PdsClient
+from ssp_client import SspClient
 
 
 def init_env():
@@ -88,6 +90,11 @@ def pds_client() -> PdsClient:
     )
 
 
+def ssp_client() -> SspClient:
+    config = init_env()
+    return SspClient(url=config["ssp_url"])
+
+
 @app.get("/_status")
 def status():
     return Response(status_code=HTTP_200_OK)
@@ -106,11 +113,10 @@ def extract_nhs_number(q: str) -> str:
 
 
 @app.get("/AllergyIntolerance")
-def allergy_intolerance(
-    patient: str,
-    _pds_client: PdsClient = Depends(pds_client),
-    _sds_client: SdsClient = Depends(sds_client),
-):
+def allergy_intolerance(patient: str,
+                        _pds_client: PdsClient = Depends(pds_client),
+                        _ssp_client: SspClient = Depends(ssp_client),
+                        _sds_client: SdsClient = Depends(sds_client)):
     nhs_number = extract_nhs_number(patient)
 
     ods = _pds_client.get_ods_for_nhs_number(nhs_number)
@@ -120,7 +126,13 @@ def allergy_intolerance(
 
     values = {"to_ASID": to_ASID, "GPConnect_URL": GPConnect_URL}
 
-    return JSONResponse(content=values, status_code=HTTP_200_OK)
+    allergy_bundle = _ssp_client.get_allergy_intolerance_bundle(values)
+
+    _dict_bundle = json.loads(allergy_bundle)
+
+    response_for_test_while_using_orange_test = {"to_ASID": to_ASID, "GPConnect_URL": GPConnect_URL, "resourceType": _dict_bundle["resourceType"]}
+
+    return Response(content=json.dumps(response_for_test_while_using_orange_test), status_code=HTTP_200_OK)
 
 
 if __name__ == "__main__":

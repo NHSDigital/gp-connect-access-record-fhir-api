@@ -20,6 +20,7 @@ class TestAllergyIntolerance:
         expected_content = {
             "to_ASID": "200000001329",
             "GPConnect_URL": "https://gpconnect-win1.itblab.nic.cfh.nhs.uk/B82617/STU3/1/gpconnect/structured/fhir",
+            "resourceType": "Bundle"
         }
 
         # When
