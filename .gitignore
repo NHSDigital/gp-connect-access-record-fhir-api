@@ -16,5 +16,7 @@ __pycache__/
 **/.env/
 **/*.key
 
+### VS Code ###
+.vscode/
 
 smoketest-report.xml
