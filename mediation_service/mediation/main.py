@@ -1,3 +1,4 @@
+import json
 import os
 import re
 
@@ -127,7 +128,11 @@ def allergy_intolerance(patient: str,
 
     allergy_bundle = _ssp_client.get_allergy_intolerance_bundle(values)
 
-    return Response(content=allergy_bundle, status_code=HTTP_200_OK)
+    _dict_bundle = json.loads(allergy_bundle)
+
+    response_for_test_while_using_orange_test = {"to_ASID": to_ASID, "GPConnect_URL": GPConnect_URL, "resourceType": _dict_bundle["resourceType"]}
+
+    return Response(content=json.dumps(response_for_test_while_using_orange_test), status_code=HTTP_200_OK)
 
 
 if __name__ == "__main__":

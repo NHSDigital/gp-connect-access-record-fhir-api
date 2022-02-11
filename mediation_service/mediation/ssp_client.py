@@ -37,8 +37,3 @@ class SspClient:
             json_text = f.read()
 
         return json_text
-
-    @staticmethod
-    def __get_filtered_bundle(param):
-        # to use Hirra code to filter original bundle
-        return param

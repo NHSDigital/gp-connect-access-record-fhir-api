@@ -17,7 +17,11 @@ class TestAllergyIntolerance:
     def test_happy_path(self, access_token, url):
         # Given
         expected_status_code = 200
-        expected_resource_type_name = "Bundle"
+        expected_content = {
+            "to_ASID": "200000001329",
+            "GPConnect_URL": "https://gpconnect-win1.itblab.nic.cfh.nhs.uk/B82617/STU3/1/gpconnect/structured/fhir",
+            "resourceType": "Bundle"
+        }
 
         # When
         response = requests.get(
@@ -26,10 +30,9 @@ class TestAllergyIntolerance:
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
 
-        expected_resource_type = self.__get_bundle(response.json())
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
-        assert_that(expected_resource_type).is_equal_to(expected_resource_type_name)
+        assert_that(expected_content).is_equal_to(response.json())
 
     @pytest.mark.mediation
     @pytest.mark.debug
@@ -75,6 +78,3 @@ class TestAllergyIntolerance:
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
 
-    @staticmethod
-    def __get_bundle(resource: dict) -> str:
-        return resource["resourceType"]
