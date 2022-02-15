@@ -1,7 +1,8 @@
 import json
 import os
 import re
-from filter_bundle import filter_for_allergy_intolerance
+from filter_bundle import BundleFilter
+from fhirclient.models.allergyintolerance import AllergyIntolerance
 
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, Request
@@ -133,10 +134,9 @@ def allergy_intolerance(
         values
     )  # returned as a json str
 
-    # _dict_bundle = json.loads(allergy_bundle)
-    # response_for_test_while_using_orange_test = {"to_ASID": to_ASID, "GPConnect_URL": GPConnect_URL, "resourceType": _dict_bundle["resourceType"]}
+    bundle_filterer = BundleFilter(AllergyIntolerance)
+    filtered_bundle_json = bundle_filterer.filter_for_resource(allergy_bundle)
 
-    filtered_bundle_json = filter_for_allergy_intolerance(allergy_bundle)
     _dict_bundle = json.loads(filtered_bundle_json)
 
     response_for_test_while_using_orange_test = {
