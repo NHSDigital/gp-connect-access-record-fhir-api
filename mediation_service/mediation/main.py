@@ -1,6 +1,8 @@
 import json
 import os
 import re
+from filter_bundle import BundleFilter
+from fhirclient.models.allergyintolerance import AllergyIntolerance
 
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, Request
@@ -102,7 +104,7 @@ def status():
 
 def sds_client() -> SdsClient:
     config = init_env()
-    return SdsClient(client_id=config["client_id"], apigee_url=config['apigee_url'])
+    return SdsClient(client_id=config["client_id"], apigee_url=config["apigee_url"])
 
 
 def extract_nhs_number(q: str) -> str:
@@ -113,10 +115,12 @@ def extract_nhs_number(q: str) -> str:
 
 
 @app.get("/AllergyIntolerance")
-def allergy_intolerance(patient: str,
-                        _pds_client: PdsClient = Depends(pds_client),
-                        _ssp_client: SspClient = Depends(ssp_client),
-                        _sds_client: SdsClient = Depends(sds_client)):
+def allergy_intolerance(
+    patient: str,
+    _pds_client: PdsClient = Depends(pds_client),
+    _ssp_client: SspClient = Depends(ssp_client),
+    _sds_client: SdsClient = Depends(sds_client),
+):
     nhs_number = extract_nhs_number(patient)
 
     ods = _pds_client.get_ods_for_nhs_number(nhs_number)
@@ -126,13 +130,25 @@ def allergy_intolerance(patient: str,
 
     values = {"to_ASID": to_ASID, "GPConnect_URL": GPConnect_URL}
 
-    allergy_bundle = _ssp_client.get_allergy_intolerance_bundle(values)
+    allergy_bundle = _ssp_client.get_allergy_intolerance_bundle(
+        values
+    )  # returned as a json str
 
-    _dict_bundle = json.loads(allergy_bundle)
+    bundle_filterer = BundleFilter(AllergyIntolerance)
+    filtered_bundle_json = bundle_filterer.filter_for_resource(allergy_bundle)
 
-    response_for_test_while_using_orange_test = {"to_ASID": to_ASID, "GPConnect_URL": GPConnect_URL, "resourceType": _dict_bundle["resourceType"]}
+    _dict_bundle = json.loads(filtered_bundle_json)
 
-    return Response(content=json.dumps(response_for_test_while_using_orange_test), status_code=HTTP_200_OK)
+    response_for_test_while_using_orange_test = {
+        "to_ASID": to_ASID,
+        "GPConnect_URL": GPConnect_URL,
+        "response": _dict_bundle,
+    }
+
+    return Response(
+        content=json.dumps(response_for_test_while_using_orange_test),
+        status_code=HTTP_200_OK,
+    )
 
 
 if __name__ == "__main__":

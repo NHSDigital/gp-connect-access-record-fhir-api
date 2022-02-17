@@ -20,7 +20,7 @@ class TestAllergyIntolerance:
         expected_content = {
             "to_ASID": "200000001329",
             "GPConnect_URL": "https://gpconnect-win1.itblab.nic.cfh.nhs.uk/B82617/STU3/1/gpconnect/structured/fhir",
-            "resourceType": "Bundle"
+            "resourceType": "Bundle",
         }
 
         # When
@@ -29,10 +29,19 @@ class TestAllergyIntolerance:
             headers={"Authorization": f"Bearer {access_token}"},
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
+        response_dict = response.json()
+
+        response_resourceType = response_dict["response"]["resourceType"]
+        response_number_of_entries = len(response_dict["response"]["entry"])
+        response_entry_resourceType = response_dict["response"]["entry"][0]["resource"][
+            "resourceType"
+        ]
 
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
-        assert_that(expected_content).is_equal_to(response.json())
+        assert_that(expected_content["resourceType"]).is_equal_to(response_resourceType)
+        assert_that(1).is_equal_to(response_number_of_entries)
+        assert_that("AllergyIntolerance").is_equal_to(response_entry_resourceType)
 
     @pytest.mark.mediation
     @pytest.mark.debug
