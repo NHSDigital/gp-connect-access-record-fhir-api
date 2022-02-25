@@ -153,12 +153,10 @@ def allergy_intolerance(
 
     converted_bundle = _fhir_convert_client.convert(filtered_bundle_json, access_token)
 
-    _dict_bundle = json.loads(converted_bundle.text)
-
     response_for_test_while_using_orange_test = {
         "to_ASID": to_ASID,
         "GPConnect_URL": GPConnect_URL,
-        "response": _dict_bundle,
+        "response": converted_bundle.text,
     }
 
     return Response(
