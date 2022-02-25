@@ -30,7 +30,7 @@ class TestAllergyIntolerance:
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
 
-        response_dict = response.json()
+        response_dict = response.text
 
         response_resourceType = response_dict["response"]["resourceType"]
         response_number_of_entries = len(response_dict["response"]["entry"])
