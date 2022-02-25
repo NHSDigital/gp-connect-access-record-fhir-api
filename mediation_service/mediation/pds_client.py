@@ -2,8 +2,6 @@ from uuid import uuid4
 
 import requests
 
-from client_credentials import AuthClientCredentials
-
 
 class PdsClient:
 

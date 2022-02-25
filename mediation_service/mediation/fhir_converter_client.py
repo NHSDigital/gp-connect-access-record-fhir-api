@@ -1,8 +1,6 @@
 import requests
 import json
 
-from client_credentials import AuthClientCredentials
-
 
 class FhirConverter:
 

@@ -153,7 +153,6 @@ def allergy_intolerance(
 
     converted_bundle = _fhir_convert_client.convert(filtered_bundle_json, access_token)
 
-    #TODO to clean this  - just for tests reasons
     _dict_bundle = json.loads(converted_bundle.text)
 
     response_for_test_while_using_orange_test = {
