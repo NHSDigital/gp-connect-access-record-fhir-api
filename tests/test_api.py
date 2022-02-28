@@ -32,10 +32,11 @@ class TestAllergyIntolerance:
         )
 
         response_dict = json.loads(response.text)
+        bundleObj = json.loads(response_dict["response"])
 
-        response_resourceType = response_dict["response"]["resourceType"]
-        response_number_of_entries = len(response_dict["response"]["entry"])
-        response_entry_resourceType = response_dict["response"]["entry"][0]["resource"][
+        response_resourceType = bundleObj["resourceType"]
+        response_number_of_entries = len(bundleObj["entry"])
+        response_entry_resourceType = bundleObj["entry"][0]["resource"][
             "resourceType"
         ]
 
