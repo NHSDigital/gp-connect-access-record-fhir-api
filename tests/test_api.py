@@ -30,7 +30,7 @@ class TestAllergyIntolerance:
             headers={"Authorization": f"Bearer {access_token}"},
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
-        print(response.text)
+        print(response.status_code)
 
         response_dict = json.loads(response.text)
         print(type(response_dict))
