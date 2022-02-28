@@ -100,7 +100,7 @@ def pds_client() -> PdsClient:
 
 def fhir_convert_client() -> FhirConverter:
     config = init_env()
-    return FhirConverter(url=config["apigee_url"], env="int")
+    return FhirConverter(url=config["apigee_url"], env=config["apigee_env"])
 
 
 def ssp_client() -> SspClient:
