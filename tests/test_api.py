@@ -31,9 +31,9 @@ class TestAllergyIntolerance:
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
         print(response.status_code)
-
+        print(response)
         response_dict = json.loads(response.text)
-        print(type(response_dict))
+
 
         bundleObj = json.loads(response_dict["response"])
 
