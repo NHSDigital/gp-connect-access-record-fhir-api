@@ -148,15 +148,14 @@ def allergy_intolerance(
         values
     )  # returned as a json str
 
-    bundle_filterer = BundleFilter(AllergyIntolerance)
-    filtered_bundle_json = bundle_filterer.filter_for_resource(allergy_bundle)
-
+    # bundle_filterer = BundleFilter(AllergyIntolerance)
+    # filtered_bundle_json = bundle_filterer.filter_for_resource(allergy_bundle.text)
     # converted_bundle = _fhir_convert_client.convert(filtered_bundle_json, access_token)
 
     response_for_test_while_using_orange_test = {
         "to_ASID": to_ASID,
         "GPConnect_URL": GPConnect_URL,
-        "response": filtered_bundle_json,
+        "response": allergy_bundle.status_code,
     }
 
     return Response(
