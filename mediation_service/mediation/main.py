@@ -1,8 +1,6 @@
 import json
 import os
 import re
-from filter_bundle import BundleFilter
-from fhirclient.models.allergyintolerance import AllergyIntolerance
 
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, Request
