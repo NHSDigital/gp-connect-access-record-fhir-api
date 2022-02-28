@@ -151,7 +151,7 @@ def allergy_intolerance(
     bundle_filterer = BundleFilter(AllergyIntolerance)
     filtered_bundle_json = bundle_filterer.filter_for_resource(allergy_bundle)
 
-    converted_bundle = _fhir_convert_client.convert(filtered_bundle_json, access_token)
+    # converted_bundle = _fhir_convert_client.convert(filtered_bundle_json, access_token)
 
     _dict_bundle = json.loads(filtered_bundle_json)
 
