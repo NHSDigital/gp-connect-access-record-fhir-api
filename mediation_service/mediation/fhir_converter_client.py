@@ -17,7 +17,7 @@ class FhirConverter:
         }
 
         res = requests.post(
-            "https://int.api.service.nhs.uk/fhir-converter/$convert",
+            f"https://{self.__url}/fhir-converter/$convert",
             json=json.loads(bundle),
             headers=headers)
 
