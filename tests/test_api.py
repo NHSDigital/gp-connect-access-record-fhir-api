@@ -34,7 +34,6 @@ class TestAllergyIntolerance:
         print(response)
         response_dict = json.loads(response.text)
 
-
         bundleObj = json.loads(response_dict["response"])
 
         response_resourceType = bundleObj["resourceType"]
