@@ -155,12 +155,12 @@ def allergy_intolerance(
     response_for_test_while_using_orange_test = {
         "to_ASID": to_ASID,
         "GPConnect_URL": GPConnect_URL,
-        "response": converted_bundle,
+        "response": converted_bundle.text,
     }
 
     return Response(
         content=json.dumps(response_for_test_while_using_orange_test),
-        status_code=HTTP_200_OK,
+        status_code=converted_bundle.status_code,
     )
 
 

@@ -21,4 +21,4 @@ class FhirConverter:
             json=json.loads(bundle),
             headers=headers)
 
-        return res.text
+        return res
