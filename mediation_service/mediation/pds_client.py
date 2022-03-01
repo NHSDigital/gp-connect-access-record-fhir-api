@@ -2,21 +2,14 @@ from uuid import uuid4
 
 import requests
 
-from client_credentials import AuthClientCredentials
-
 
 class PdsClient:
 
-    def __init__(self, url: str, auth: AuthClientCredentials, env: str) -> None:
-        self.__auth = auth
+    def __init__(self, url: str, env: str) -> None:
         self.__env = env
         self.__url = url
 
-    def get_ods_for_nhs_number(self, nhs_number):
-        try:
-            access_token = self.__auth.get_access_token()
-        except Exception as e:
-            return {"key is not": str(e)}
+    def get_ods_for_nhs_number(self, nhs_number, access_token):
 
         headers = {
             "X-Request-ID": str(uuid4()),

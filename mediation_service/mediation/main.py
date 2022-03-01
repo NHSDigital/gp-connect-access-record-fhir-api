@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from starlette.responses import Response
 from starlette.status import HTTP_200_OK
 
+from fhir_converter_client import FhirConverter
 from sds_client import SdsClient
 from client_credentials import AuthClientCredentials
 from pds_client import PdsClient
@@ -74,7 +75,7 @@ async def unhandled_exception_handler(_: Request, exc: Exception):
     )
 
 
-def pds_client() -> PdsClient:
+def auth_client() -> AuthClientCredentials:
     config = init_env()
     auth_url = f"https://{config['apigee_url']}/oauth2"
     aud = "https://int.api.service.nhs.uk/oauth2/token"
@@ -86,10 +87,20 @@ def pds_client() -> PdsClient:
         headers={"kid": config["kid"]},
         aud=aud,
     )
+    return auth_client
+
+
+def pds_client() -> PdsClient:
+    config = init_env()
 
     return PdsClient(
-        url=config["apigee_url"], auth=auth_client, env=config["apigee_env"]
+        url=config["apigee_url"], env=config["apigee_env"]
     )
+
+
+def fhir_convert_client() -> FhirConverter:
+    config = init_env()
+    return FhirConverter(url=config["apigee_url"], env=config["apigee_env"])
 
 
 def ssp_client() -> SspClient:
@@ -120,10 +131,13 @@ def allergy_intolerance(
     _pds_client: PdsClient = Depends(pds_client),
     _ssp_client: SspClient = Depends(ssp_client),
     _sds_client: SdsClient = Depends(sds_client),
+    _fhir_convert_client: FhirConverter = Depends(fhir_convert_client),
+    _auth_client: AuthClientCredentials = Depends(auth_client)
 ):
     nhs_number = extract_nhs_number(patient)
+    access_token = _auth_client.get_access_token()
 
-    ods = _pds_client.get_ods_for_nhs_number(nhs_number)
+    ods = _pds_client.get_ods_for_nhs_number(nhs_number, access_token)
 
     to_ASID = _sds_client.get_toASID(ods)
     GPConnect_URL = _sds_client.get_URL(ods)
@@ -135,19 +149,18 @@ def allergy_intolerance(
     )  # returned as a json str
 
     bundle_filterer = BundleFilter(AllergyIntolerance)
-    filtered_bundle_json = bundle_filterer.filter_for_resource(allergy_bundle)
-
-    _dict_bundle = json.loads(filtered_bundle_json)
+    filtered_bundle_json = bundle_filterer.filter_for_resource(allergy_bundle.text)
+    converted_bundle = _fhir_convert_client.convert(filtered_bundle_json, access_token)
 
     response_for_test_while_using_orange_test = {
         "to_ASID": to_ASID,
         "GPConnect_URL": GPConnect_URL,
-        "response": _dict_bundle,
+        "response": converted_bundle.text,
     }
 
     return Response(
         content=json.dumps(response_for_test_while_using_orange_test),
-        status_code=HTTP_200_OK,
+        status_code=converted_bundle.status_code,
     )
 
 
