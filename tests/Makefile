@@ -24,7 +24,7 @@ cmd_opts = --service-name="$(SERVICE_NAME)" \
 
 run: setup-test
 	$(eval TOKEN := $(shell docker run $(docker_env) nhs-login-authenticator))
-	poetry run pytest -s -v $(cmd_opts) --access-token="$(TOKEN)" test_api.py
+	poetry run pytest -s -v $(cmd_opts) --access-token="$(TOKEN)"  $(f)
 
 run-%: setup-test
 	$(eval TOKEN := $(shell docker run $(docker_env) nhs-login-authenticator))
