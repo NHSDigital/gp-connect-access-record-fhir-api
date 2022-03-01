@@ -12,17 +12,19 @@ class BundleFilter:
 
         response_bundle = self._load_bundle(cleaned_response_dict)
 
-        filtered_bundle = self._filter_bundle(response_bundle)
+        filtered_bundle = self._filter_bundle(response_bundle, "searchset")
 
         filtered_bundle_json = self._bundle_as_json(filtered_bundle)
         return filtered_bundle_json
 
-    def _filter_bundle(self, original_bundle: Bundle):
-        """Extract a chosen resource from a bundle"""
+    def _filter_bundle(self, original_bundle: Bundle, new_bundle_type:str= ""):
+        """Extract a chosen resource from existing Bundle and return a new Bundle"""
         filtered_bundle = Bundle()
 
-        # take out type from the original bundle and add to new
-        filtered_bundle.type = original_bundle.type
+        if new_bundle_type:
+            filtered_bundle.type = new_bundle_type
+        else:
+            filtered_bundle.type = original_bundle.type
 
         filtered_bundle_entries = []
 
