@@ -26,17 +26,22 @@ def test_load_bundle(allergies_filterer: BundleFilter, example_allergies_respons
 
     assert isinstance(bundle, Bundle)
 
-example_types = [
-    ("", "collection"),
-    ("searchset", "searchset")
-]
+
+example_types = [("", "collection"), ("searchset", "searchset")]
+
+
 @pytest.mark.parametrize("new_bundle_type, expected_type", example_types)
 def test_filter_bundle_for_allergy_intolerance(
-    new_bundle_type, expected_type, allergies_filterer: BundleFilter, example_allergies_response
+    new_bundle_type,
+    expected_type,
+    allergies_filterer: BundleFilter,
+    example_allergies_response,
 ):
     response_bundle = allergies_filterer._load_bundle(example_allergies_response)
 
-    filtered_bundle = allergies_filterer._filter_bundle(response_bundle, new_bundle_type)
+    filtered_bundle = allergies_filterer._filter_bundle(
+        response_bundle, new_bundle_type
+    )
 
     assert isinstance(filtered_bundle, Bundle)
     assert filtered_bundle.type == expected_type

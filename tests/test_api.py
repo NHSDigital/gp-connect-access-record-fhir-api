@@ -38,9 +38,7 @@ class TestAllergyIntolerance:
         response_resourceType = bundleObj["resourceType"]
         response_bundle_type = bundleObj["type"]
         response_number_of_entries = len(bundleObj["entry"])
-        response_entry_resourceType = bundleObj["entry"][0]["resource"][
-            "resourceType"
-        ]
+        response_entry_resourceType = bundleObj["entry"][0]["resource"]["resourceType"]
 
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)

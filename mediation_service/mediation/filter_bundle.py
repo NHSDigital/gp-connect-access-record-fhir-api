@@ -17,7 +17,7 @@ class BundleFilter:
         filtered_bundle_json = self._bundle_as_json(filtered_bundle)
         return filtered_bundle_json
 
-    def _filter_bundle(self, original_bundle: Bundle, new_bundle_type:str= ""):
+    def _filter_bundle(self, original_bundle: Bundle, new_bundle_type: str = ""):
         """Extract a chosen resource from existing Bundle and return a new Bundle"""
         filtered_bundle = Bundle()
 
