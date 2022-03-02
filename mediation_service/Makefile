@@ -14,6 +14,3 @@ docker-build:
 
 docker-run: docker-build
 	docker run -p 9000:9000 -e GPC_PRIVATE_KEY_INT="$(JWT_PRIVATE_KEY_CONTENT)" -e GPC_CLIENT_ID=$(GPC_CLIENT_ID) -e KID=$(KID) -e APIGEE_ENVIRONMENT=$(APIGEE_ENVIRONMENT) -e APIGEE_URL=$(APIGEE_URL) -e SSP_URL=$(SSP_URL) mediation:latest
-
-test:
-	poetry run pytest -s -v tests/
