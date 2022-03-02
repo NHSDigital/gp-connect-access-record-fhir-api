@@ -1,6 +1,5 @@
 from fhirclient.models.bundle import Bundle, BundleEntry
 from fhirclient.models.resource import Resource
-from fhirclient.models.list import List
 import json
 
 

@@ -37,7 +37,7 @@ class BundleFilter:
                 list_resource = original_entry.resource
                 if list_resource.extension:
                     for extension in list_resource.extension:
-                        if(extension.url == "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-ListWarningCode-1" ):
+                        if(extension.url == "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-ListWarningCode-1"):
                             op_outcome = self.build_operationoutcome(extension)
                             filtered_bundle_entries.append(op_outcome)
 
