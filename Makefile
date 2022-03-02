@@ -50,6 +50,7 @@ release: clean publish build-proxy
 
 test:
 #	this target should be used for local unit tests ..  runs as part of the build pipeline
+	make install-python
 	poetry run pytest -s -v mediation_service/tests
 
 smoketest:
