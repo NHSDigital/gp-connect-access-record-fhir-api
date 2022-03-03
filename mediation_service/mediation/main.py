@@ -93,9 +93,7 @@ def auth_client() -> AuthClientCredentials:
 def pds_client() -> PdsClient:
     config = init_env()
 
-    return PdsClient(
-        url=config["apigee_url"], env=config["apigee_env"]
-    )
+    return PdsClient(url=config["apigee_url"], env=config["apigee_env"])
 
 
 def fhir_convert_client() -> FhirConverter:
@@ -132,7 +130,7 @@ def allergy_intolerance(
     _ssp_client: SspClient = Depends(ssp_client),
     _sds_client: SdsClient = Depends(sds_client),
     _fhir_convert_client: FhirConverter = Depends(fhir_convert_client),
-    _auth_client: AuthClientCredentials = Depends(auth_client)
+    _auth_client: AuthClientCredentials = Depends(auth_client),
 ):
     nhs_number = extract_nhs_number(patient)
     access_token = _auth_client.get_access_token()

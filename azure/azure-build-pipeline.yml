@@ -30,3 +30,7 @@ extends:
   parameters:
     service_name: ${{ variables.service_name }}
     short_service_name: ${{ variables.short_service_name }}
+    test_steps:
+      - bash: "make test"
+        displayName: Run unit tests
+        workingDirectory: "${{ variables.service_name }}"

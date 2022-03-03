@@ -50,7 +50,8 @@ release: clean publish build-proxy
 
 test:
 #	this target should be used for local unit tests ..  runs as part of the build pipeline
-	make --no-print-directory -C sandbox test
+	cd mediation_service && make install && \
+	poetry run pytest -s -v tests
 
 smoketest:
 #	this target is for end to end smoketests this would be run 'post deploy' to verify an environment is working

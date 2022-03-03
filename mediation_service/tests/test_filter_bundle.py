@@ -3,6 +3,7 @@ from mediation_service.mediation.filter_bundle import BundleFilter
 from fhirclient.models.allergyintolerance import AllergyIntolerance
 from fhirclient.models.bundle import Bundle
 import pytest
+import json
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -12,7 +13,7 @@ def example_allergies_response():
     file_path = os.path.join(dir_path, "resources/9690937286_allergies_response.json")
     with open(file=file_path, mode="r") as f:
         resource_str = f.read()
-    return resource_str
+    return json.loads(resource_str)
 
 
 @pytest.fixture
@@ -26,15 +27,24 @@ def test_load_bundle(allergies_filterer: BundleFilter, example_allergies_respons
     assert isinstance(bundle, Bundle)
 
 
+example_types = [("", "collection"), ("searchset", "searchset")]
+
+
+@pytest.mark.parametrize("new_bundle_type, expected_type", example_types)
 def test_filter_bundle_for_allergy_intolerance(
-    allergies_filterer: BundleFilter, example_allergies_response
+    new_bundle_type,
+    expected_type,
+    allergies_filterer: BundleFilter,
+    example_allergies_response,
 ):
     response_bundle = allergies_filterer._load_bundle(example_allergies_response)
 
-    filtered_bundle = allergies_filterer._filter_bundle(response_bundle)
+    filtered_bundle = allergies_filterer._filter_bundle(
+        response_bundle, new_bundle_type
+    )
 
     assert isinstance(filtered_bundle, Bundle)
-    assert filtered_bundle.type == "collection"
+    assert filtered_bundle.type == expected_type
     assert len(filtered_bundle.entry) == 1
 
 
