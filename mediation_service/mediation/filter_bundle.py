@@ -1,5 +1,14 @@
 from fhirclient.models.bundle import Bundle, BundleEntry
 from fhirclient.models.resource import Resource
+from fhirclient.models.list import List
+from fhirclient.models.extension import Extension
+from fhirclient.models.operationoutcome import OperationOutcome
+from fhirclient.models.operationoutcome import OperationOutcomeIssue
+from fhirclient.models.meta import Meta
+from fhirclient.models.fhirdate import FHIRDate
+from fhirclient.models.codeableconcept import CodeableConcept
+from fhirclient.models.coding import Coding
+import datetime
 import json
 
 
@@ -29,6 +38,17 @@ class BundleFilter:
         filtered_bundle_entries = []
 
         for original_entry in original_bundle.entry:
+            if isinstance(original_entry.resource, List):
+                list_resource = original_entry.resource
+                if list_resource.extension:
+                    for extension in list_resource.extension:
+                        if (
+                            extension.url == "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-ListWarningCode-1"):
+                            op_outcome = self._build_operationoutcome(extension)
+                            new_entry = BundleEntry()
+                            new_entry.resource = op_outcome
+                            filtered_bundle_entries.append(new_entry)
+
             if isinstance(original_entry.resource, self.resource):
                 new_entry = BundleEntry()
                 new_entry.resource = original_entry.resource
@@ -56,6 +76,53 @@ class BundleFilter:
             for key, value in json_obj.items()
             if key not in ["fhir_comments"]
         }
+
+    def _build_operationoutcome(self, extension: Extension) -> OperationOutcome:
+        op_outcome_issue_list = []
+        op_outcome_issue = OperationOutcomeIssue()
+        new_opoutcome = OperationOutcome()
+        meta = Meta()
+        fhir_date = FHIRDate()
+        codeable_concept = CodeableConcept()
+        coding_list = []
+        coding = Coding()
+
+        op_outcome_issue.code = "processing"
+        op_outcome_issue.severity = "warning"
+
+        fhir_date.date = datetime.datetime.now()
+        meta.lastUpdated = fhir_date
+        new_opoutcome.meta = meta
+
+        codeable_concept.system = "https://fhir.nhs.uk/CodeSystem/Spine-ErrorOrWarningCode"
+
+        if extension.valueCode == "confidential-items":
+            new_opoutcome.diagnostics = "Items excluded due to confidentiality and/or patient preferences."
+            coding.code = "CONFIDENTIAL_ITEMS"
+            coding_list.append(coding)
+            codeable_concept.coding = coding_list
+            codeable_concept.display = "Confidential Items"
+        if extension.valueCode == "data-in-transit":
+            new_opoutcome.diagnostics = "Patient record transfer from previous GP practice not yet complete; any information recorded before dd-mmm-yyyy has been excluded"
+            coding.code = "DATA_IN_TRANSIT"
+            coding_list.append(coding)
+            codeable_concept.coding = coding_list
+            codeable_concept.display = "Data in Transit"
+        if extension.valueCode == "data-awaiting-filing":
+            new_opoutcome.diagnostics = "Patient data may be incomplete as there is data supplied by a third party awaiting review before becoming available."
+            coding.code = "DATA_AWAITING_FILING"
+            coding_list.append(coding)
+            codeable_concept.coding = coding_list
+            codeable_concept.display = "Data Awaiting Filing"
+        op_outcome_issue.details = codeable_concept
+
+        location_list = ["/entry"]
+        op_outcome_issue.location = location_list
+
+        op_outcome_issue_list.append(op_outcome_issue)
+        new_opoutcome.issue = op_outcome_issue_list
+
+        return new_opoutcome
 
     @staticmethod
     def _load_bundle(response: dict):
