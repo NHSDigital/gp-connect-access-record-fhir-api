@@ -116,7 +116,6 @@ def test_converting_warnings_to_operationoutcome(
 
     response_as_json = json.loads(json.dumps(filtered_bundle.as_json()))
 
-    print(response_as_json["entry"][1]["resource"]["resourceType"])
     assert response_as_json["resourceType"] == "Bundle"
     assert len(response_as_json["entry"]) == 2
     assert response_as_json["entry"][1]["resource"]["resourceType"] == "OperationOutcome"

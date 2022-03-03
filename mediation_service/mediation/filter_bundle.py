@@ -40,25 +40,27 @@ class BundleFilter:
 
         for original_entry in original_bundle.entry:
             if isinstance(original_entry.resource, List):
-                list_resource = original_entry.resource
-                if list_resource.extension:
-                    for extension in list_resource.extension:
-                        if (
-                            extension.url == "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC"
-                                             "-ListWarningCode-1"):
-                            op_outcome = self._build_operationoutcome(extension)
-                            new_entry = BundleEntry()
-                            new_entry.resource = op_outcome
-                            filtered_bundle_entries.append(new_entry)
-
+                op_outcome = self._handle_warnings(original_entry.resource)
+                if op_outcome is not None:
+                    new_entry = BundleEntry()
+                    new_entry.resource = op_outcome
+                    filtered_bundle_entries.append(new_entry)
             if isinstance(original_entry.resource, self.resource):
                 new_entry = BundleEntry()
                 new_entry.resource = original_entry.resource
                 filtered_bundle_entries.append(new_entry)
-
         filtered_bundle.entry = filtered_bundle_entries
 
         return filtered_bundle
+
+    def _handle_warnings(self, resource: Resource):
+        list_resource = resource
+        if list_resource.extension:
+            for extension in list_resource.extension:
+                if (
+                    extension.url == "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC"
+                                     "-ListWarningCode-1"):
+                    return self._build_operationoutcome(extension)
 
     def _clean_response(self, response: str):
         """Remove any fhir_comments from json response before creating Bundle object"""
