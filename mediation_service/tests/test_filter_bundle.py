@@ -1,9 +1,11 @@
+import json
 import os
-from mediation_service.mediation.filter_bundle import BundleFilter
+
+import pytest
 from fhirclient.models.allergyintolerance import AllergyIntolerance
 from fhirclient.models.bundle import Bundle
-import pytest
-import json
+
+from mediation_service.mediation.filter_bundle import BundleFilter
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -91,6 +93,7 @@ example_responses = [
     ),
 ]
 
+
 @pytest.mark.parametrize("input, expected", example_responses)
 def test_clean_bundle(input, expected, allergies_filterer: BundleFilter):
     cleaned_dict = allergies_filterer._clean_response(input)
@@ -117,5 +120,3 @@ def test_converting_warnings_to_operationoutcome(
     assert response_as_json["resourceType"] == "Bundle"
     assert len(response_as_json["entry"]) == 2
     assert response_as_json["entry"][1]["resource"]["resourceType"] == "OperationOutcome"
-
-

@@ -1,15 +1,16 @@
-from fhirclient.models.bundle import Bundle, BundleEntry
-from fhirclient.models.resource import Resource
-from fhirclient.models.list import List
-from fhirclient.models.extension import Extension
-from fhirclient.models.operationoutcome import OperationOutcome
-from fhirclient.models.operationoutcome import OperationOutcomeIssue
-from fhirclient.models.meta import Meta
-from fhirclient.models.fhirdate import FHIRDate
-from fhirclient.models.codeableconcept import CodeableConcept
-from fhirclient.models.coding import Coding
 import datetime
 import json
+
+from fhirclient.models.bundle import Bundle, BundleEntry
+from fhirclient.models.codeableconcept import CodeableConcept
+from fhirclient.models.coding import Coding
+from fhirclient.models.extension import Extension
+from fhirclient.models.fhirdate import FHIRDate
+from fhirclient.models.list import List
+from fhirclient.models.meta import Meta
+from fhirclient.models.operationoutcome import OperationOutcome
+from fhirclient.models.operationoutcome import OperationOutcomeIssue
+from fhirclient.models.resource import Resource
 
 
 class BundleFilter:
@@ -43,7 +44,8 @@ class BundleFilter:
                 if list_resource.extension:
                     for extension in list_resource.extension:
                         if (
-                            extension.url == "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-ListWarningCode-1"):
+                            extension.url == "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC"
+                                             "-ListWarningCode-1"):
                             op_outcome = self._build_operationoutcome(extension)
                             new_entry = BundleEntry()
                             new_entry.resource = op_outcome
@@ -103,13 +105,15 @@ class BundleFilter:
             codeable_concept.coding = coding_list
             codeable_concept.display = "Confidential Items"
         if extension.valueCode == "data-in-transit":
-            new_opoutcome.diagnostics = "Patient record transfer from previous GP practice not yet complete; any information recorded before dd-mmm-yyyy has been excluded"
+            new_opoutcome.diagnostics = "Patient record transfer from previous GP practice not yet complete; any " \
+                                        "information recorded before dd-mmm-yyyy has been excluded "
             coding.code = "DATA_IN_TRANSIT"
             coding_list.append(coding)
             codeable_concept.coding = coding_list
             codeable_concept.display = "Data in Transit"
         if extension.valueCode == "data-awaiting-filing":
-            new_opoutcome.diagnostics = "Patient data may be incomplete as there is data supplied by a third party awaiting review before becoming available."
+            new_opoutcome.diagnostics = "Patient data may be incomplete as there is data supplied by a third party " \
+                                        "awaiting review before becoming available. "
             coding.code = "DATA_AWAITING_FILING"
             coding_list.append(coding)
             codeable_concept.coding = coding_list
