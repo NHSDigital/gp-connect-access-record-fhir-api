@@ -31,19 +31,19 @@ class TestAllergyIntolerance:
             params={"patient": f"https://fhir.nhs.uk/Id/{self.valid_nhs_number}"},
         )
 
-        response_dict = json.loads(response.text)
+        response_dict = response.json()
 
         bundleObj = json.loads(response_dict["response"])
 
         response_resourceType = bundleObj["resourceType"]
+        response_bundle_type = bundleObj["type"]
         response_number_of_entries = len(bundleObj["entry"])
-        response_entry_resourceType = bundleObj["entry"][0]["resource"][
-            "resourceType"
-        ]
+        response_entry_resourceType = bundleObj["entry"][0]["resource"]["resourceType"]
 
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
         assert_that(expected_content["resourceType"]).is_equal_to(response_resourceType)
+        assert_that("searchset").is_equal_to(response_bundle_type)
         assert_that(1).is_equal_to(response_number_of_entries)
         assert_that("AllergyIntolerance").is_equal_to(response_entry_resourceType)
 

@@ -18,6 +18,7 @@ requests = "^2.27.1"
 PyJWT = "^2.3.0"
 cryptography = "^36.0.1"
 fhirclient = "^3.2.0"
+pytest = "^7.0.1"
 
 [tool.poetry.dev-dependencies]
 
