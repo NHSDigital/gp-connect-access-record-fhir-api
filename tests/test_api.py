@@ -39,14 +39,16 @@ class TestAllergyIntolerance:
         response_resourceType = bundleObj["resourceType"]
         response_bundle_type = bundleObj["type"]
         response_number_of_entries = len(bundleObj["entry"])
-        response_entry_resourceType = bundleObj["entry"][0]["resource"]["resourceType"]
+        response_entry_resourceType_operationoutcome = bundleObj["entry"][0]["resource"]["resourceType"]
+        response_entry_resourceType_allergy = bundleObj["entry"][1]["resource"]["resourceType"]
 
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
         assert_that(expected_content["resourceType"]).is_equal_to(response_resourceType)
         assert_that("searchset").is_equal_to(response_bundle_type)
         assert_that(29).is_equal_to(response_number_of_entries)
-        assert_that("OperationOutcome").is_equal_to(response_entry_resourceType)
+        assert_that("OperationOutcome").is_equal_to(response_entry_resourceType_operationoutcome)
+        assert_that("AllergyIntolerance").is_equal_to(response_entry_resourceType_allergy)
 
     @pytest.mark.mediation
     @pytest.mark.debug
