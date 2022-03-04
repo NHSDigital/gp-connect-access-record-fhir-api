@@ -45,7 +45,6 @@ class BundleFilter:
                     new_entry = BundleEntry()
                     new_entry.resource = op_outcome
                     filtered_bundle_entries.append(new_entry)
-
             if isinstance(original_entry.resource, self.resource):
                 new_entry = BundleEntry()
                 new_entry.resource = original_entry.resource
