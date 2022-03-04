@@ -1,4 +1,5 @@
 import json
+
 import pytest
 import requests
 from assertpy import assert_that
@@ -44,8 +45,8 @@ class TestAllergyIntolerance:
         assert_that(expected_status_code).is_equal_to(response.status_code)
         assert_that(expected_content["resourceType"]).is_equal_to(response_resourceType)
         assert_that("searchset").is_equal_to(response_bundle_type)
-        assert_that(1).is_equal_to(response_number_of_entries)
-        assert_that("AllergyIntolerance").is_equal_to(response_entry_resourceType)
+        assert_that(29).is_equal_to(response_number_of_entries)
+        assert_that("OperationOutcome").is_equal_to(response_entry_resourceType)
 
     @pytest.mark.mediation
     @pytest.mark.debug
