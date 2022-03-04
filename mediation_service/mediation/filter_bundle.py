@@ -45,22 +45,40 @@ class BundleFilter:
                     new_entry = BundleEntry()
                     new_entry.resource = op_outcome
                     filtered_bundle_entries.append(new_entry)
+
             if isinstance(original_entry.resource, self.resource):
                 new_entry = BundleEntry()
                 new_entry.resource = original_entry.resource
                 filtered_bundle_entries.append(new_entry)
+
         filtered_bundle.entry = filtered_bundle_entries
 
         return filtered_bundle
 
     def _handle_warnings(self, resource: Resource):
         list_resource = resource
+        operation_outcome_list = []
         if list_resource.extension:
             for extension in list_resource.extension:
                 if (
                     extension.url == "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC"
                                      "-ListWarningCode-1"):
-                    return self._build_operationoutcome(extension)
+                    operation_outcome_list.append(self._build_operationoutcome_issue(extension))
+
+            if operation_outcome_list:
+                return self._build_operationoutcome(operation_outcome_list)
+
+    def _build_operationoutcome(self, operation_outcome_list) -> OperationOutcome:
+        operationoutcome = OperationOutcome()
+        meta = Meta()
+        fhir_date = FHIRDate()
+
+        fhir_date.date = datetime.datetime.now()
+        meta.lastUpdated = fhir_date
+        operationoutcome.meta = meta
+        operationoutcome.issue = operation_outcome_list
+
+        return operationoutcome
 
     def _clean_response(self, response: str):
         """Remove any fhir_comments from json response before creating Bundle object"""
@@ -81,12 +99,9 @@ class BundleFilter:
             if key not in ["fhir_comments"]
         }
 
-    def _build_operationoutcome(self, extension: Extension) -> OperationOutcome:
-        op_outcome_issue_list = []
+    def _build_operationoutcome_issue(self, extension: Extension) -> OperationOutcomeIssue:
         op_outcome_issue = OperationOutcomeIssue()
-        new_opoutcome = OperationOutcome()
-        meta = Meta()
-        fhir_date = FHIRDate()
+
         codeable_concept = CodeableConcept()
         coding_list = []
         coding = Coding()
@@ -94,41 +109,35 @@ class BundleFilter:
         op_outcome_issue.code = "processing"
         op_outcome_issue.severity = "warning"
 
-        fhir_date.date = datetime.datetime.now()
-        meta.lastUpdated = fhir_date
-        new_opoutcome.meta = meta
-
         codeable_concept.system = "https://fhir.nhs.uk/CodeSystem/Spine-ErrorOrWarningCode"
 
         if extension.valueCode == "confidential-items":
-            new_opoutcome.diagnostics = "Items excluded due to confidentiality and/or patient preferences."
+            op_outcome_issue.diagnostics = "Items excluded due to confidentiality and/or patient preferences."
             coding.code = "CONFIDENTIAL_ITEMS"
             coding_list.append(coding)
             codeable_concept.coding = coding_list
             codeable_concept.display = "Confidential Items"
         if extension.valueCode == "data-in-transit":
-            new_opoutcome.diagnostics = "Patient record transfer from previous GP practice not yet complete; any " \
-                                        "information recorded before dd-mmm-yyyy has been excluded "
+            op_outcome_issue.diagnostics = "Patient record transfer from previous GP practice not yet complete; any " \
+                                           "information recorded before dd-mmm-yyyy has been excluded "
             coding.code = "DATA_IN_TRANSIT"
             coding_list.append(coding)
             codeable_concept.coding = coding_list
             codeable_concept.display = "Data in Transit"
         if extension.valueCode == "data-awaiting-filing":
-            new_opoutcome.diagnostics = "Patient data may be incomplete as there is data supplied by a third party " \
-                                        "awaiting review before becoming available. "
+            op_outcome_issue.diagnostics = "Patient data may be incomplete as there is data supplied by a third party " \
+                                           "awaiting review before becoming available. "
             coding.code = "DATA_AWAITING_FILING"
             coding_list.append(coding)
             codeable_concept.coding = coding_list
             codeable_concept.display = "Data Awaiting Filing"
+
         op_outcome_issue.details = codeable_concept
 
         location_list = ["/entry"]
         op_outcome_issue.location = location_list
 
-        op_outcome_issue_list.append(op_outcome_issue)
-        new_opoutcome.issue = op_outcome_issue_list
-
-        return new_opoutcome
+        return op_outcome_issue
 
     @staticmethod
     def _load_bundle(response: dict):
