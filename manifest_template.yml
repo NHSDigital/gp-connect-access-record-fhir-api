@@ -4,6 +4,7 @@ DESCRIPTION: example description
 APIGEE_ENVIRONMENTS:
   - name: internal-dev
     display_name: Internal Development
+    portal_visibility: false
   # - name: internal-qa-sandbox
   #   display_name: Internal QA Sandbox
   # - name: ref
@@ -11,6 +12,7 @@ APIGEE_ENVIRONMENTS:
 # Enable int environment when ready by uncommenting:
   - name: int
     display_name: Integration Testing
+    portal_visibility: true
 ---
 meta:
   api:
@@ -55,6 +57,6 @@ apigee:
         description: {{ DESCRIPTION }}
         requireCallbackUrl: false
         title: {{ TITLE }}
-        visibility: false
+        visibility: {{ENV.portal_visibility}}
         specId: {{ NAME }}
 {% endfor %}
