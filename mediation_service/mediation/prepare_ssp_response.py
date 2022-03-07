@@ -14,7 +14,7 @@ def prepare_ssp_response(ssp_response: dict) -> dict:
     return ssp_response
 
 
-def transform_patient(ref, ssp_response: dict):
+def __transform_patient(ref, ssp_response: dict):
     if not isinstance(ref, str) or 'Patient' not in ref:
         return ""
 
@@ -35,7 +35,7 @@ def transform_patient(ref, ssp_response: dict):
                 for identifier in matches:
                     if identifier.value.get('system').lower() == 'https://fhir.nhs.uk/Id/nhs-number'.lower():
                         nhs_number = identifier.value.get('value')
-                        return f"http/p/{nhs_number}"
+                        return f"AllergyIntolerance?patient:identifier=https://fhir.nhs.uk/Id/nhs-number|{nhs_number}"
 
         return ""
 
@@ -51,7 +51,7 @@ def __transform_local_references(ssp_response: dict):
             query = parse('resource.patient.reference')
             matches = query.find(allergy)
             for ref in matches:
-                abs_ref = transform_patient(ref.value, ssp_response)
+                abs_ref = __transform_patient(ref.value, ssp_response)
                 if abs_ref:
                     allergy['resource']['patient']['reference'] = abs_ref
 

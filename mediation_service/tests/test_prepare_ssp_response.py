@@ -50,7 +50,8 @@ def test_transform_references_for_patient():
     fhir_res = {'entry': [patient, allergy_intolerance]}
 
     modified_allergy = deepcopy(allergy_intolerance)
-    modified_allergy['resource']['patient']['reference'] = f"http/p/{nhs_num}"
+    modified_allergy['resource']['patient'][
+        'reference'] = f"AllergyIntolerance?patient:identifier=https://fhir.nhs.uk/Id/nhs-number|{nhs_num}"
     expected_resource = {'type': 'searchset', 'entry': [modified_allergy]}
 
     # When
@@ -72,7 +73,7 @@ def test_transform_references_for_patient_if_exists():
 
     modified_allergy = deepcopy(allergy_intolerance)
     modified_allergy['resource']['patient'][
-        'reference'] = f"Patient/2"  # The reference is the same i.e. no transformation
+        'reference'] = "Patient/2"  # The reference is the same i.e. no transformation
     expected_resource = {'type': 'searchset', 'entry': [modified_allergy]}
 
     # When
