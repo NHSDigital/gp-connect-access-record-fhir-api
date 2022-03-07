@@ -29,4 +29,3 @@ run: setup-test
 run-%: setup-test
 	$(eval TOKEN := $(shell docker run $(docker_env) nhs-login-authenticator))
 	poetry run pytest -s -m $(subst run-,,$@) -v $(cmd_opts) --access-token="$(TOKEN)" test_api.py
-
