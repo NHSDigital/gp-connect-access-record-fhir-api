@@ -1,10 +1,10 @@
 FROM ubuntu:18.04
- 
+
 RUN apt-get update \
   && apt-get install -y python3-pip python3-dev \
   && cd /usr/local/bin \
   && ln -s /usr/bin/python3 python \
-  && pip3 install --upgrade pip 
+  && pip3 install --upgrade pip
 
 # INSTALL DEPENDENCIES
 RUN apt-get install -y curl unzip openjdk-8-jre-headless xvfb libxi6 libgconf-2-4
@@ -16,7 +16,7 @@ RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-ke
     && apt-get -y install google-chrome-stable
 
 # INSTALL CHROMEDRIVER
-RUN wget -N https://chromedriver.storage.googleapis.com/97.0.4692.71/chromedriver_linux64.zip -P ~/ \
+RUN wget -N https://chromedriver.storage.googleapis.com/99.0.4844.51/chromedriver_linux64.zip -P ~/ \
     && unzip ~/chromedriver_linux64.zip -d ~/ \
     && rm ~/chromedriver_linux64.zip \
     && mv -f ~/chromedriver /usr/local/bin/chromedriver \
