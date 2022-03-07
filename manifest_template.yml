@@ -11,6 +11,7 @@ APIGEE_ENVIRONMENTS:
 # Enable int environment when ready by uncommenting:
   - name: int
     display_name: Integration Testing
+    make_spec_visible: true
 ---
 meta:
   api:
