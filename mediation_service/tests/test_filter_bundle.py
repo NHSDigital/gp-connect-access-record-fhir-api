@@ -19,14 +19,6 @@ def example_allergies_response():
 
 
 @pytest.fixture
-def example_bundle_with_warning_response():
-    file_path = os.path.join(dir_path, "resources/example_bundle_with_warning.json")
-    with open(file=file_path, mode="r") as f:
-        resource_str = f.read()
-    return json.loads(resource_str)
-
-
-@pytest.fixture
 def allergies_filterer():
     return BundleFilter(AllergyIntolerance)
 
@@ -99,22 +91,3 @@ def test_clean_bundle(input, expected, allergies_filterer: BundleFilter):
     cleaned_dict = allergies_filterer._clean_response(input)
 
     assert cleaned_dict == expected
-
-
-@pytest.mark.parametrize("new_bundle_type, expected_type", example_types)
-def test_converting_warnings_to_operationoutcome(
-    new_bundle_type,
-    expected_type,
-    allergies_filterer: BundleFilter,
-    example_bundle_with_warning_response,
-):
-    response_bundle = allergies_filterer._load_bundle(example_bundle_with_warning_response)
-
-    filtered_bundle = allergies_filterer._filter_bundle(
-        response_bundle, new_bundle_type
-    )
-
-    response_as_json = json.loads(json.dumps(filtered_bundle.as_json()))
-    assert response_as_json["resourceType"] == "Bundle"
-    assert len(response_as_json["entry"]) == 29
-    assert response_as_json["entry"][0]["resource"]["resourceType"] == "OperationOutcome"
