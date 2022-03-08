@@ -12,18 +12,18 @@ def pytest_addoption(parser):
             required=option.get("required", False),
             action=option.get("action", "store"),
             help=option.get("help", ""),
-            default=option.get("default")
+            default=option.get("default"),
         )
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def cmd_options(request) -> dict:
     return create_cmd_options(request.config.getoption)
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def access_token(cmd_options: dict):
-    return cmd_options['--access-token']
+    return cmd_options["--access-token"]
 
 
 def get_proxy_base_path(proxy_base_path: str, pr_no: str):
@@ -33,7 +33,7 @@ def get_proxy_base_path(proxy_base_path: str, pr_no: str):
         return f"{proxy_base_path}"
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def proxy_url(cmd_options: dict) -> str:
     env = cmd_options["--apigee-environment"]
 

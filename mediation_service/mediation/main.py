@@ -1,8 +1,6 @@
 import json
 import os
 import re
-from filter_bundle import BundleFilter
-from fhirclient.models.allergyintolerance import AllergyIntolerance
 
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, Request
@@ -148,8 +146,7 @@ def allergy_intolerance(
     )  # returned as a json str
 
     prepared_bundle = prepare_ssp_response(json.loads(allergy_bundle.text))
-    # bundle_filterer = BundleFilter(AllergyIntolerance)
-    # filtered_bundle_json = bundle_filterer.filter_for_resource(allergy_bundle.text)
+
     converted_bundle = _fhir_convert_client.convert(prepared_bundle, access_token)
 
     response_for_test_while_using_orange_test = {
