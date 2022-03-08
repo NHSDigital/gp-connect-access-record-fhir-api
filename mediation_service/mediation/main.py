@@ -11,6 +11,7 @@ from starlette.responses import Response
 from starlette.status import HTTP_200_OK
 
 from fhir_converter_client import FhirConverter
+from prepare_ssp_response import prepare_ssp_response
 from sds_client import SdsClient
 from client_credentials import AuthClientCredentials
 from pds_client import PdsClient
@@ -146,19 +147,20 @@ def allergy_intolerance(
         values
     )  # returned as a json str
 
-    bundle_filterer = BundleFilter(AllergyIntolerance)
-    filtered_bundle_json = bundle_filterer.filter_for_resource(allergy_bundle.text)
-    converted_bundle = _fhir_convert_client.convert(filtered_bundle_json, access_token)
+    prepared_bundle = prepare_ssp_response(json.loads(allergy_bundle.text))
+    # bundle_filterer = BundleFilter(AllergyIntolerance)
+    # filtered_bundle_json = bundle_filterer.filter_for_resource(allergy_bundle.text)
+    #converted_bundle = _fhir_convert_client.convert(filtered_bundle_json, access_token)
 
     response_for_test_while_using_orange_test = {
         "to_ASID": to_ASID,
         "GPConnect_URL": GPConnect_URL,
-        "response": converted_bundle.text,
+        "response":json.dumps(prepared_bundle),
     }
 
     return Response(
         content=json.dumps(response_for_test_while_using_orange_test),
-        status_code=converted_bundle.status_code,
+        status_code=allergy_bundle.status_code,
     )
 
 
