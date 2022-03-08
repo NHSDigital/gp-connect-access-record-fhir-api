@@ -8,11 +8,11 @@ from fastapi.responses import JSONResponse
 from starlette.responses import Response
 from starlette.status import HTTP_200_OK
 
+from client_credentials import AuthClientCredentials
 from fhir_converter_client import FhirConverter
+from pds_client import PdsClient
 from prepare_ssp_response import prepare_ssp_response
 from sds_client import SdsClient
-from client_credentials import AuthClientCredentials
-from pds_client import PdsClient
 from ssp_client import SspClient
 
 
@@ -152,7 +152,7 @@ def allergy_intolerance(
     response_for_test_while_using_orange_test = {
         "to_ASID": to_ASID,
         "GPConnect_URL": GPConnect_URL,
-        "response":json.dumps(converted_bundle),
+        "response": json.dumps(converted_bundle),
     }
 
     return Response(
