@@ -13,7 +13,7 @@ from jsonpath_rw import parse
 
 
 def prepare_ssp_response(ssp_response: dict) -> dict:
-    # __transform_local_references(ssp_response)
+    __transform_local_references(ssp_response)
     operationoutcome = __filter_warnings_to_operationoutcome(ssp_response)
     __filter_non_allergy_intolerance(ssp_response)
     __remove_fhir_comment(ssp_response)
@@ -40,7 +40,7 @@ def __filter_warnings_to_operationoutcome(ssp_response: dict) -> OperationOutcom
                 if (
                     extension["url"]
                     == "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC"
-                    "-ListWarningCode-1"
+                       "-ListWarningCode-1"
                 ):
                     operation_outcome_list.append(
                         __build_operationoutcome_issue(extension)

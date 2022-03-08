@@ -1,4 +1,5 @@
 import json
+
 import pytest
 import requests
 from assertpy import assert_that
@@ -34,7 +35,6 @@ class TestAllergyIntolerance:
         response_dict = response.json()
 
         bundleObj = json.loads(response_dict["response"])
-        print(json.dumps(bundleObj))
 
         response_resourceType = bundleObj["resourceType"]
         response_bundle_type = bundleObj["type"]
