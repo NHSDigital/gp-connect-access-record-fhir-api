@@ -139,9 +139,11 @@ def __transform_local_references(ssp_response: dict):
         if match.value == "AllergyIntolerance":
             index = match.full_path.left.left.right.index
             allergy = ssp_response["entry"][index]
-            patient_ref = allergy["resource"]["patient"]["reference"]
-            patient_id = patient_ref.split("/")
-            ssp_response["entry"][index]["resource"]["patient"]["reference"] = patient_list.get(patient_id[1])
+            if allergy.get("resource").get("patient"):
+                patient_ref = allergy.get("resource").get("patient").get("reference")
+                patient_id = patient_ref.split("/")
+                ssp_response["entry"][index]["resource"]["patient"]["reference"] = patient_list.get(patient_id[1],
+                                                                                                    patient_ref)
 
 
 def __filter_non_allergy_intolerance(ssp_response: dict):

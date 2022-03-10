@@ -66,8 +66,8 @@ def test_transform_references_for_patient():
 def test_transform_references_for_patient_if_exists():
     # Given the local reference doesn't match with any resource
     nhs_num = '9690937286'
-    patient = {'resource': {'resourceType': 'Patient', 'id': 3,  # The id does NOT match with the reference
-                            'identifier': {'system': 'https://fhir.nhs.uk/Id/nhs-number', 'value': nhs_num}}}
+    patient = {'resource': {'resourceType': 'Patient', 'id': '3',  # The id does NOT match with the reference
+                            'identifier': [{'system': 'https://fhir.nhs.uk/Id/nhs-number', 'value': nhs_num}]}}
 
     allergy_intolerance = {'resource': {'resourceType': 'AllergyIntolerance', 'patient': {'reference': 'Patient/2'}}}
 
