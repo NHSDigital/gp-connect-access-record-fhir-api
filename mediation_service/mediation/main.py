@@ -145,7 +145,7 @@ def allergy_intolerance(
         values
     )  # returned as a json str
 
-    prepared_bundle = prepare_ssp_response(json.loads(allergy_bundle.text))
+    prepared_bundle = prepare_ssp_response(allergy_bundle)
 
     converted_bundle = _fhir_convert_client.convert(prepared_bundle, access_token)
 
@@ -157,7 +157,7 @@ def allergy_intolerance(
 
     return Response(
         content=json.dumps(response_for_test_while_using_orange_test),
-        status_code=allergy_bundle.status_code,
+        status_code=HTTP_200_OK,
     )
 
 

@@ -40,10 +40,11 @@ def test_remove_non_allergy_intolerance():
 
 
 def test_transform_references_for_patient():
+
     # Give AllergyIntolerance has a local reference to Patient with id 2
     nhs_num = '9690937286'
-    patient = {'resource': {'resourceType': 'Patient', 'id': 2,
-                            'identifier': {'system': 'https://fhir.nhs.uk/Id/nhs-number', 'value': nhs_num}}}
+    patient = {'resource': {'resourceType': 'Patient', 'id': '2',
+                            'identifier': [{'system': 'https://fhir.nhs.uk/Id/nhs-number', 'value': nhs_num}]}}
 
     allergy_intolerance = {'resource': {'resourceType': 'AllergyIntolerance', 'patient': {'reference': 'Patient/2'}}}
 
@@ -57,6 +58,7 @@ def test_transform_references_for_patient():
     # When
     actual_resource = prepare_ssp_response(fhir_res)
 
+    # actual_resource e' uam string
     # Then
     assert expected_resource == actual_resource
 

@@ -1,5 +1,4 @@
 import datetime
-import re
 from functools import reduce
 
 from fhirclient.models.codeableconcept import CodeableConcept
@@ -23,7 +22,6 @@ def prepare_ssp_response(ssp_response: dict) -> dict:
         ssp_response["entry"].append(operationoutcome_object)
 
     ssp_response["type"] = "searchset"
-
     return ssp_response
 
 
@@ -52,7 +50,6 @@ def __filter_warnings_to_operationoutcome(ssp_response: dict) -> OperationOutcom
 
 def __build_operationoutcome_issue(extension: Extension) -> OperationOutcomeIssue:
     op_outcome_issue = OperationOutcomeIssue()
-
     codeable_concept = CodeableConcept()
     coding_list = []
     coding = Coding()
@@ -110,49 +107,41 @@ def __build_operationoutcome(operation_outcome_list) -> OperationOutcome:
     return operationoutcome
 
 
-def __transform_patient(ref, ssp_response: dict):
-    if not isinstance(ref, str) or "Patient" not in ref:
-        return ""
-
-    id_matches = re.findall(r"^Patient/(\d)", ref)
-    if id_matches:
-        patient_id = id_matches[0]
-        query = parse("`this`.entry[*].resource.resourceType")
-        matches = query.find(ssp_response)
-        for match in matches:
-            if match.value == "Patient":
-                index = match.full_path.left.left.right.index
-                patient = ssp_response["entry"][index]
-                if str(patient["resource"].get("id")) != patient_id:
-                    continue  # This is the correct patient only if it's 'id' matches with the one in ref
-
-                query = parse("resource.identifier")
-                matches = query.find(patient)
-                for identifier in matches:
+def __transform_patient(ssp_response: dict) -> dict:
+    patient_dict_to_return = {}
+    query = parse("`this`.entry[*].resource.resourceType")
+    matches = query.find(ssp_response)
+    for match in matches:
+        if match.value == "Patient":
+            index = match.full_path.left.left.right.index
+            patient = ssp_response["entry"][index]
+            query = parse("resource.identifier")
+            matches = query.find(patient)
+            for identifier in matches:
+                for item in identifier.value:
                     if (
-                        identifier.value.get("system").lower()
+                        item.get("system").lower()
                         == "https://fhir.nhs.uk/Id/nhs-number".lower()
                     ):
-                        nhs_number = identifier.value.get("value")
-                        return f"AllergyIntolerance?patient:identifier=https://fhir.nhs.uk/Id/nhs-number|{nhs_number}"
+                        nhs_number = item.get("value")
+                        patient_dict_to_return[patient["resource"].get(
+                            "id")] = f"AllergyIntolerance?patient:identifier=https://fhir.nhs.uk/Id/nhs-number|{nhs_number}"
 
-        return ""
+    return patient_dict_to_return
 
 
 def __transform_local_references(ssp_response: dict):
+    patient_list = __transform_patient(ssp_response)
+
     query = parse("`this`.entry[*].resource.resourceType")
     matches = query.find(ssp_response)
-
     for match in matches:
         if match.value == "AllergyIntolerance":
             index = match.full_path.left.left.right.index
             allergy = ssp_response["entry"][index]
-            query = parse("resource.patient.reference")
-            matches = query.find(allergy)
-            for ref in matches:
-                abs_ref = __transform_patient(ref.value, ssp_response)
-                if abs_ref:
-                    allergy["resource"]["patient"]["reference"] = abs_ref
+            patient_ref = allergy["resource"]["patient"]["reference"]
+            patient_id = patient_ref.split("/")
+            ssp_response["entry"][index]["resource"]["patient"]["reference"] = patient_list.get(patient_id[1])
 
 
 def __filter_non_allergy_intolerance(ssp_response: dict):

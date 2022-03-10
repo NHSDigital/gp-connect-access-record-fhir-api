@@ -33,7 +33,6 @@ class TestAllergyIntolerance:
         )
 
         response_dict = response.json()
-
         bundleObj = json.loads(response_dict["response"])
 
         response_resourceType = bundleObj["resourceType"]
@@ -46,6 +45,7 @@ class TestAllergyIntolerance:
         response_entry_resourceType_allergy = bundleObj["entry"][0]["resource"][
             "resourceType"
         ]
+        patient_reference = bundleObj["entry"][2]["resource"]["patient"]["reference"]
 
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
@@ -57,6 +57,9 @@ class TestAllergyIntolerance:
         )
         assert_that("AllergyIntolerance").is_equal_to(
             response_entry_resourceType_allergy
+        )
+        assert_that("AllergyIntolerance?patient:identifier=https://fhir.nhs.uk/Id/nhs-number|9690937332").is_equal_to(
+            patient_reference
         )
 
     @pytest.mark.mediation
