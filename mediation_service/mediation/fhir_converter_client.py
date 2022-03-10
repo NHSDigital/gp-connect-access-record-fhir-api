@@ -1,5 +1,4 @@
 import requests
-import json
 
 
 class FhirConverter:
@@ -18,7 +17,7 @@ class FhirConverter:
 
         res = requests.post(
             f"https://{self.__url}/fhir-converter/$convert",
-            json=json.loads(bundle),
+            json=bundle,
             headers=headers)
 
-        return res
+        return res.json()

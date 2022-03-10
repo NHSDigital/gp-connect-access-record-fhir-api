@@ -29,7 +29,7 @@ class SspClient:
             verify=False
         )
 
-        return res
+        return res.json()
 
     @staticmethod
     def __get_orange_payload() -> str:
