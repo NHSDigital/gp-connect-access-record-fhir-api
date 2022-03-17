@@ -6,15 +6,24 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Threading.Tasks;
 using System;
+using System.Text.Json;
 
 namespace oauth_nhsd_api.Pages
 {
     [Authorize]
     public class AllergiesModel : PageModel
     {
+        public class ParseResponse {
+            public string to_ASID { get; set; }
+            public string GPConnect_URL { get; set; }
+            public string response { get; set; }
+
+        }
         public string ResResponse { get; set; }
 
         public string ResContent { get; set; }
+        public string jsonResponse { get; set; }
+        public string resp { get; set; }
 
         public DateTime SessionExpires { get; set; }
 
@@ -41,7 +50,10 @@ namespace oauth_nhsd_api.Pages
 
             // variables created to disply info to the user.
             ResResponse = string.Format("{0} - {1}", (int)response.StatusCode, response.StatusCode);
-            ResContent = await response.Content.ReadAsStringAsync();
+            ResContent =  response.Content.ReadAsStringAsync().Result;
+            ParseResponse jsonResponse =
+                JsonSerializer.Deserialize<ParseResponse>(ResContent);
+            resp = jsonResponse.response;
             SessionExpires = Convert.ToDateTime(tokenExpiresAt);
         }
     }
