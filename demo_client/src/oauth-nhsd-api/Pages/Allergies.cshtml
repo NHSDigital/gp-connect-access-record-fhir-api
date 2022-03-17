@@ -1,0 +1,30 @@
+@page
+@model oauth_nhsd_api.Pages.AllergiesModel
+@{
+    ViewData["Title"] = "Allergies";
+}
+
+<div class="nhsuk-back-link">
+  <a class="nhsuk-back-link__link" asp-page="/Home">
+    <svg class="nhsuk-icon nhsuk-icon__chevron-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" height="24" width="24">
+      <path d="M8.5 12c0-.3.1-.5.3-.7l5-5c.4-.4 1-.4 1.4 0s.4 1 0 1.4L10.9 12l4.3 4.3c.4.4.4 1 0 1.4s-1 .4-1.4 0l-5-5c-.2-.2-.3-.4-.3-.7z"></path>
+    </svg>
+    Go back</a>
+</div>
+
+<h1>Allergies and adverse reactions</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-3">User:</div>
+        <div class="col-9"> @Model.SessionExpires</div>
+    </div>
+    <div class="row">
+        <div class="col-3">Response Information:</div>
+        <div class="col-9">@Model.ResResponse</div>
+    </div>
+    <div class="row">
+        <div class="col-3">Response Content:</div>
+        <div class="col-9">@Model.ResContent</div>
+    </div>
+</div>
