@@ -20,13 +20,13 @@
 <div class="container">
     <div class="row">
         Response Content:
-        @foreach (var item in Model.orderedActiveList)
+        @foreach (var item in Model.OrderedActiveList)
         {
             <div class="nhsuk-card nhsuk-card--clickable">
                 <div class="nhsuk-card__content">
-                    <h2 class="nhsuk-card__heading nhsuk-heading-m">
-                        <a class="nhsuk-card__link" href="#">Allergy: @item.assertedTitle |  Date: @item.assertedDate</a>
-                    </h2>
+                    <h3 class="nhsuk-card__heading nhsuk-heading-s">
+                        <a class="nhsuk-card__link" href="#">Allergy: @item.AssertedTitle |  Date: @item.AssertedDate</a>
+                    </h3>
                 </div>
             </div>
 
