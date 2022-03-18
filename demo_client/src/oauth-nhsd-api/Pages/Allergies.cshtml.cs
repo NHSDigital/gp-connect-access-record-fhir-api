@@ -6,24 +6,28 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Threading.Tasks;
 using System;
-using System.Text.Json;
+using System.Linq;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace oauth_nhsd_api.Pages
 {
     [Authorize]
     public class AllergiesModel : PageModel
     {
-        public class GPCResponse {
-            public string to_ASID { get; set; }
-            public string GPConnect_URL { get; set; }
-            public string response { get; set; }
 
+        public class DateNameJsonBundle
+        {
+            public DateTime? AssertedDate { get; set; }
+            public string AssertedTitle { get; set; }
+            public JToken JtokenBundle { get; set; }
         }
+
+        public JToken EntriesAsJson { get; set; }
         public string ResResponse { get; set; }
 
-        public string allergiesBundle { get; set; }
-
         public DateTime SessionExpires { get; set; }
+        public List<DateNameJsonBundle> OrderedActiveList { get; set; } = new List<DateNameJsonBundle>();
 
         private readonly IConfiguration _configuration;
 
@@ -44,17 +48,46 @@ namespace oauth_nhsd_api.Pages
             // make the user restricted request.
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenAccess);
 
-            HttpResponseMessage response = await new HttpClient().SendAsync(req);
+            HttpResponseMessage NHSAPIresponse = await new HttpClient().SendAsync(req);
+
+            var ResContent = await NHSAPIresponse.Content.ReadAsStringAsync();
+
+            // Parsing of API response into JSON object
+            JObject initialAPIParse = JObject.Parse(ResContent);
+
+            var allergyResponseAsString = initialAPIParse["response"].ToString();
+            var allergyResponseAsJson = JObject.Parse(allergyResponseAsString);
+
+            EntriesAsJson = allergyResponseAsJson.SelectToken("entry");
+            var activeList = new List<DateNameJsonBundle>();
+
+            // Looping to create a list of objects to order
+            foreach (JToken resource in EntriesAsJson)
+            {
+                if (resource.SelectToken("resource.resourceType").ToString() == "AllergyIntolerance"
+                    && resource.SelectToken("resource.clinicalStatus.coding[0].code").ToString() == "active")
+                {
+                    var resourceCode = resource.SelectToken("resource.code");
+#nullable enable
+                    JToken? displayTitle = resourceCode.SelectToken("coding[0].display");
+                    JToken? textTitle = resourceCode.SelectToken("text");
+#nullable disable
+                    var allergyText = displayTitle ?? textTitle ?? "Name not Given";
+                    activeList.Add(new DateNameJsonBundle
+                    {
+                        AssertedDate = (DateTime?)resource.SelectToken("resource.recordedDate"),
+                        AssertedTitle = allergyText.ToString(),
+                        JtokenBundle = resource.SelectToken("resource")
+                    });
+                }
+                // Orders the list by date, oldest first
+                OrderedActiveList = activeList.OrderBy(x => x.AssertedDate).ToList();
+            }
 
             // variables created to disply info to the user.
-            ResResponse = string.Format("{0} - {1}", (int)response.StatusCode, response.StatusCode);
-
-            var ResContent =  await response.Content.ReadAsStringAsync();
-            GPCResponse jsonResponse =
-                JsonSerializer.Deserialize<GPCResponse>(ResContent);
-            allergiesBundle = jsonResponse.response;
-
+            ResResponse = string.Format("{0} - {1}", (int)NHSAPIresponse.StatusCode, NHSAPIresponse.StatusCode);
             SessionExpires = Convert.ToDateTime(tokenExpiresAt);
+
         }
     }
 }
