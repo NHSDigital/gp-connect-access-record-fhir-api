@@ -13,7 +13,7 @@ namespace oauth_nhsd_api.Pages
     [Authorize]
     public class AllergiesModel : PageModel
     {
-        public class ParseResponse {
+        public class GPCResponse {
             public string to_ASID { get; set; }
             public string GPConnect_URL { get; set; }
             public string response { get; set; }
@@ -21,9 +21,7 @@ namespace oauth_nhsd_api.Pages
         }
         public string ResResponse { get; set; }
 
-        public string ResContent { get; set; }
-        public string jsonResponse { get; set; }
-        public string resp { get; set; }
+        public string allergiesBundle { get; set; }
 
         public DateTime SessionExpires { get; set; }
 
@@ -50,10 +48,12 @@ namespace oauth_nhsd_api.Pages
 
             // variables created to disply info to the user.
             ResResponse = string.Format("{0} - {1}", (int)response.StatusCode, response.StatusCode);
-            ResContent =  response.Content.ReadAsStringAsync().Result;
-            ParseResponse jsonResponse =
-                JsonSerializer.Deserialize<ParseResponse>(ResContent);
-            resp = jsonResponse.response;
+
+            var ResContent =  await response.Content.ReadAsStringAsync();
+            GPCResponse jsonResponse =
+                JsonSerializer.Deserialize<GPCResponse>(ResContent);
+            allergiesBundle = jsonResponse.response;
+
             SessionExpires = Convert.ToDateTime(tokenExpiresAt);
         }
     }
