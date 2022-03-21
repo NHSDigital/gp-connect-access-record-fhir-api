@@ -36,31 +36,36 @@ class TestAllergyIntolerance:
         bundleObj = json.loads(response_dict["response"])
 
         response_resourceType = bundleObj["resourceType"]
-        response_bundle_type = bundleObj["type"]
+        bundle_type = bundleObj["type"]
+        bundle_url = bundleObj["meta"]["profile"][0]
         response_number_of_entries = len(bundleObj["entry"])
 
-        response_entry_resourceType_operationoutcome = bundleObj["entry"][28][
-            "resource"
-        ]["resourceType"]
-        response_entry_resourceType_allergy = bundleObj["entry"][0]["resource"][
+        resourceType_operationoutcome = bundleObj["entry"][28]["resource"][
             "resourceType"
         ]
+
+        resourceType_allergy = bundleObj["entry"][0]["resource"]["resourceType"]
         patient_reference = bundleObj["entry"][2]["resource"]["patient"]["reference"]
+        allergy_url = bundleObj["entry"][2]["resource"]["meta"]["profile"][0]
 
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
         assert_that(expected_content["resourceType"]).is_equal_to(response_resourceType)
-        assert_that("searchset").is_equal_to(response_bundle_type)
+        assert_that("searchset").is_equal_to(bundle_type)
+        assert_that(
+            "https://fhir.hl7.org.uk/StructureDefinition/UKCore-Bundle"
+        ).is_equal_to(bundle_url)
         assert_that(29).is_equal_to(response_number_of_entries)
-        assert_that("OperationOutcome").is_equal_to(
-            response_entry_resourceType_operationoutcome
-        )
-        assert_that("AllergyIntolerance").is_equal_to(
-            response_entry_resourceType_allergy
-        )
-        assert_that("AllergyIntolerance?patient:identifier=https://fhir.nhs.uk/Id/nhs-number|9690937332").is_equal_to(
-            patient_reference
-        )
+
+        assert_that("OperationOutcome").is_equal_to(resourceType_operationoutcome)
+
+        assert_that("AllergyIntolerance").is_equal_to(resourceType_allergy)
+        assert_that(
+            "AllergyIntolerance?patient:identifier=https://fhir.nhs.uk/Id/nhs-number|9690937332"
+        ).is_equal_to(patient_reference)
+        assert_that(
+            "https://fhir.hl7.org.uk/StructureDefinition/UKCore-AllergyIntolerance"
+        ).is_equal_to(allergy_url)
 
     @pytest.mark.mediation
     @pytest.mark.debug

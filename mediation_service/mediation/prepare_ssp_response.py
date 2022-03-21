@@ -12,7 +12,7 @@ from jsonpath_rw import parse
 
 
 def prepare_ssp_response(ssp_response: dict) -> dict:
-    __transform_local_references(ssp_response)
+    __transform_allergy_local_references_and_url(ssp_response)
     operationoutcome = __filter_warnings_to_operationoutcome(ssp_response)
     __filter_non_allergy_intolerance(ssp_response)
     __transform_bundle_url(ssp_response)
@@ -132,15 +132,27 @@ def __transform_patient(ssp_response: dict) -> dict:
     return patient_dict_to_return
 
 
-def __transform_local_references(ssp_response: dict):
+def __transform_allergy_url(allergy: dict, index: int, ssp_response: dict):
+    R4_ALLERGY_URL = "https://fhir.hl7.org.uk/StructureDefinition/UKCore-AllergyIntolerance"
+    query = parse("`this`.resource.meta.profile")
+    match = query.find(allergy)
+    if match:
+        ssp_response["entry"][index]["resource"]["meta"]["profile"] = [R4_ALLERGY_URL]
+
+
+def __transform_allergy_local_references_and_url(ssp_response: dict):
     patient_list = __transform_patient(ssp_response)
 
     query = parse("`this`.entry[*].resource.resourceType")
     matches = query.find(ssp_response)
+
     for match in matches:
         if match.value == "AllergyIntolerance":
             index = match.full_path.left.left.right.index
             allergy = ssp_response["entry"][index]
+
+            __transform_allergy_url(allergy, index, ssp_response)
+
             if allergy.get("resource").get("patient"):
                 patient_ref = allergy.get("resource").get("patient").get("reference")
                 patient_id = patient_ref.split("/")
@@ -163,7 +175,7 @@ def __filter_non_allergy_intolerance(ssp_response: dict):
         ssp_response["entry"].remove(item)
 
 
-def __transform_bundle_url(ssp_response: dict) -> dict:
+def __transform_bundle_url(ssp_response: dict):
     R4_URL = "https://fhir.hl7.org.uk/StructureDefinition/UKCore-Bundle"
 
     query = parse("`this`.meta.profile")

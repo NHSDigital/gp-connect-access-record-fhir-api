@@ -189,3 +189,28 @@ def test_transform_bundle_no_url():
     result = prepare_ssp_response(bundle)
     # Then
     assert result == {"resourceType": "Bundle", "type": "searchset"}
+
+
+def test_transform_allergy_url():
+    # Given
+    fhir_resource = {
+        "entry": [
+            {
+                "resource": {
+                    "resourceType": "AllergyIntolerance",
+                    "meta": {
+                        "profile": [
+                            "https://fhir.nhs.uk/STU3/StructureDefinition/CareConnect-GPC-AllergyIntolerance-1"
+                        ]
+                    },
+                }
+            }
+        ]
+    }
+    # When
+    result = prepare_ssp_response(fhir_resource)
+    # Then
+    assert (
+        result["entry"][0]["resource"]["meta"]["profile"][0]
+        == "https://fhir.hl7.org.uk/StructureDefinition/UKCore-AllergyIntolerance"
+    )
