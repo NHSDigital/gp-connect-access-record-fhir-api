@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 from functools import reduce
 
 from fhirclient.models.codeableconcept import CodeableConcept
@@ -100,7 +100,11 @@ def __build_operationoutcome(operation_outcome_list) -> OperationOutcome:
     meta = Meta()
     fhir_date = FHIRDate()
 
-    fhir_date.date = datetime.datetime.now()
+    # current UTC datetime
+    now_utc = datetime.now(timezone.utc)
+    now_utc_isoformat = now_utc.astimezone(timezone.utc)
+    fhir_date.date = now_utc_isoformat
+
     meta.lastUpdated = fhir_date
     operationoutcome.meta = meta
     operationoutcome.issue = operation_outcome_list
@@ -133,7 +137,9 @@ def __transform_patient(ssp_response: dict) -> dict:
 
 
 def __transform_allergy_url(allergy: dict, index: int, ssp_response: dict):
-    R4_ALLERGY_URL = "https://fhir.hl7.org.uk/StructureDefinition/UKCore-AllergyIntolerance"
+    R4_ALLERGY_URL = (
+        "https://fhir.hl7.org.uk/StructureDefinition/UKCore-AllergyIntolerance"
+    )
     query = parse("`this`.resource.meta.profile")
     match = query.find(allergy)
     if match:
