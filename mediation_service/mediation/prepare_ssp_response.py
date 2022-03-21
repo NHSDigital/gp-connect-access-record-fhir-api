@@ -15,6 +15,7 @@ def prepare_ssp_response(ssp_response: dict) -> dict:
     __transform_local_references(ssp_response)
     operationoutcome = __filter_warnings_to_operationoutcome(ssp_response)
     __filter_non_allergy_intolerance(ssp_response)
+    __transform_bundle_url(ssp_response)
     __remove_fhir_comment(ssp_response)
 
     if operationoutcome:
@@ -38,7 +39,7 @@ def __filter_warnings_to_operationoutcome(ssp_response: dict) -> OperationOutcom
                 if (
                     extension["url"]
                     == "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC"
-                       "-ListWarningCode-1"
+                    "-ListWarningCode-1"
                 ):
                     operation_outcome_list.append(
                         __build_operationoutcome_issue(extension)
@@ -124,8 +125,9 @@ def __transform_patient(ssp_response: dict) -> dict:
                         == "https://fhir.nhs.uk/Id/nhs-number".lower()
                     ):
                         nhs_number = item.get("value")
-                        patient_dict_to_return[patient["resource"].get(
-                            "id")] = f"AllergyIntolerance?patient:identifier=https://fhir.nhs.uk/Id/nhs-number|{nhs_number}"
+                        patient_dict_to_return[
+                            patient["resource"].get("id")
+                        ] = f"AllergyIntolerance?patient:identifier=https://fhir.nhs.uk/Id/nhs-number|{nhs_number}"
 
     return patient_dict_to_return
 
@@ -142,8 +144,9 @@ def __transform_local_references(ssp_response: dict):
             if allergy.get("resource").get("patient"):
                 patient_ref = allergy.get("resource").get("patient").get("reference")
                 patient_id = patient_ref.split("/")
-                ssp_response["entry"][index]["resource"]["patient"]["reference"] = patient_list.get(patient_id[1],
-                                                                                                    patient_ref)
+                ssp_response["entry"][index]["resource"]["patient"][
+                    "reference"
+                ] = patient_list.get(patient_id[1], patient_ref)
 
 
 def __filter_non_allergy_intolerance(ssp_response: dict):
@@ -158,6 +161,15 @@ def __filter_non_allergy_intolerance(ssp_response: dict):
 
     for item in to_remove:
         ssp_response["entry"].remove(item)
+
+
+def __transform_bundle_url(ssp_response: dict) -> dict:
+    R4_URL = "https://fhir.hl7.org.uk/StructureDefinition/UKCore-Bundle"
+
+    query = parse("`this`.meta.profile")
+    match = query.find(ssp_response)
+    if match:
+        ssp_response["meta"]["profile"] = [R4_URL]
 
 
 def __remove_fhir_comment(ssp_response: dict):
