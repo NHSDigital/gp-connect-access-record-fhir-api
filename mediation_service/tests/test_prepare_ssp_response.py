@@ -1,5 +1,6 @@
 from copy import deepcopy
 from mediation_service.mediation.prepare_ssp_response import prepare_ssp_response
+import re
 
 
 def test_remove_comments():
@@ -161,6 +162,19 @@ def test_warning_filter():
     assert result["entry"][0]["resource"]["resourceType"] == "AllergyIntolerance"
     assert result["entry"][1]["resource"]["resourceType"] == "OperationOutcome"
     assert len(result["entry"][1]["resource"]["issue"]) == 2
+
+    # ensure date matches fhir regex.
+    operation_outcome_last_updated = result["entry"][1]["resource"]["meta"][
+        "lastUpdated"
+    ]
+    pattern = re.compile(
+        (
+            r"([0-9]([0-9]([0-9][1-9]|[1-9]0)|[1-9]00)|[1-9]000)-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]"
+            r"|3[0-1])T([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\.[0-9]+)?(Z|(\+|-)((0[0-9]"
+            r"|1[0-3]):[0-5][0-9]|14:00))"
+        )
+    )
+    pattern.fullmatch(operation_outcome_last_updated)
 
 
 def test_transform_bundle_url():
