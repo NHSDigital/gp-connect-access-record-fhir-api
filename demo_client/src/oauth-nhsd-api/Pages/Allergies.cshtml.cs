@@ -4,25 +4,19 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using oauth_nhsd_api.Helpers;
 
 namespace oauth_nhsd_api.Pages
 {
     [Authorize]
     public class AllergiesModel : PageModel
     {
-
-        public class DateNameJsonBundle
-        {
-            public DateTime? AssertedDate { get; set; }
-            public string AssertedTitle { get; set; }
-            public JToken JtokenBundle { get; set; }
-        }
-
         public JToken EntriesAsJson { get; set; }
         public string ResResponse { get; set; }
 
@@ -55,7 +49,7 @@ namespace oauth_nhsd_api.Pages
             // Parsing of API response into JSON object
             JObject initialAPIParse = JObject.Parse(ResContent);
 
-            var allergyResponseAsString = initialAPIParse["response"].ToString();
+            var allergyResponseAsString = Convert.ToString(initialAPIParse["response"]);
             var allergyResponseAsJson = JObject.Parse(allergyResponseAsString);
 
             EntriesAsJson = allergyResponseAsJson.SelectToken("entry");
@@ -69,13 +63,18 @@ namespace oauth_nhsd_api.Pages
                 {
                     var resourceCode = resource.SelectToken("resource.code");
 #nullable enable
-                    JToken? displayTitle = resourceCode.SelectToken("coding[0].display");
-                    JToken? textTitle = resourceCode.SelectToken("text");
+                    //JToken? displayTitle = resourceCode.SelectToken("coding[0].display");
+                    //JToken? textTitle = resourceCode.SelectToken("text");
 #nullable disable
-                    var allergyText = displayTitle ?? textTitle ?? "Name not Given";
+                    var allergyText = Convert.ToString(
+                        resourceCode.SelectToken("coding[0].display")
+                        ?? resourceCode.SelectToken("text")
+                        ?? "Name not Given");
+
                     activeList.Add(new DateNameJsonBundle
                     {
                         AssertedDate = (DateTime?)resource.SelectToken("resource.recordedDate"),
+                        EndDate = null,
                         AssertedTitle = allergyText.ToString(),
                         JtokenBundle = resource.SelectToken("resource")
                     });
@@ -88,6 +87,11 @@ namespace oauth_nhsd_api.Pages
             ResResponse = string.Format("{0} - {1}", (int)NHSAPIresponse.StatusCode, NHSAPIresponse.StatusCode);
             SessionExpires = Convert.ToDateTime(tokenExpiresAt);
 
+        }
+
+        public IActionResult OnPost()
+        {
+            return RedirectToPage("AllergyDetails");
         }
     }
 }

@@ -3,7 +3,8 @@
 @{
     ViewData["Title"] = "Allergies";
 }
-@using Newtonsoft.Json.Linq;
+@*@using Newtonsoft.Json.Linq;*@
+@using Newtonsoft.Json
 
 
 <div class="nhsuk-back-link">
@@ -18,18 +19,17 @@
 <h1>Allergies and adverse reactions</h1>
 
 <div class="container">
-    <div class="row">
-        Response Content:
-        @foreach (var item in Model.OrderedActiveList)
-        {
-            <div class="nhsuk-card nhsuk-card--clickable">
-                <div class="nhsuk-card__content">
-                    <h3 class="nhsuk-card__heading nhsuk-heading-s">
-                        <a class="nhsuk-card__link" href="#">Allergy: @item.AssertedTitle |  Date: @item.AssertedDate</a>
-                    </h3>
-                </div>
-            </div>
+    @foreach (var item in Model.OrderedActiveList)
+    {
+        Dictionary<string, string> passingDict = new Dictionary<string, string> { { "passedObject", JsonConvert.SerializeObject(item) } };
 
-        }
-    </div>
+        <div class="nhsuk-card nhsuk-card--clickable">
+            <div class="nhsuk-card__content">
+                <h3 class="nhsuk-card__heading nhsuk-heading-s">
+                    <a class="nhsuk-card__link" asp-page="AllergyDetails" asp-all-route-data="passingDict">Allergy: @item.AssertedTitle |  Date: @item.AssertedDate</a>
+                </h3>
+            </div>
+        </div>
+
+    }
 </div>
