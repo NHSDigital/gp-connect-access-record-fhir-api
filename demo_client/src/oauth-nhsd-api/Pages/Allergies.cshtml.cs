@@ -62,10 +62,7 @@ namespace oauth_nhsd_api.Pages
                     && resource.SelectToken("resource.clinicalStatus.coding[0].code").ToString() == "active")
                 {
                     var resourceCode = resource.SelectToken("resource.code");
-#nullable enable
-                    //JToken? displayTitle = resourceCode.SelectToken("coding[0].display");
-                    //JToken? textTitle = resourceCode.SelectToken("text");
-#nullable disable
+
                     var allergyText = Convert.ToString(
                         resourceCode.SelectToken("coding[0].display")
                         ?? resourceCode.SelectToken("text")
