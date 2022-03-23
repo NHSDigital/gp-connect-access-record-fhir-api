@@ -85,10 +85,5 @@ namespace oauth_nhsd_api.Pages
             SessionExpires = Convert.ToDateTime(tokenExpiresAt);
 
         }
-
-        public IActionResult OnPost()
-        {
-            return RedirectToPage("AllergyDetails");
-        }
     }
 }
