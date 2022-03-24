@@ -65,8 +65,7 @@ namespace oauth_nhsd_api.Pages
 
                     var allergyText = Convert.ToString(
                         resourceCode.SelectToken("coding[0].display")
-                        ?? resourceCode.SelectToken("text")
-                        ?? "");
+                        ?? resourceCode.SelectToken("text"));
 
                     activeList.Add(new DateNameJsonBundle
                     {
