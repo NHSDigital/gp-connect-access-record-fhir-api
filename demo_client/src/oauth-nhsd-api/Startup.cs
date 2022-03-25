@@ -58,7 +58,7 @@ namespace oauth_nhsd_api
 
                     // id and secret issued by oAUth provider
                     options.ClientId = Configuration["ClientId"];
-                    options.ClientSecret = Configuration["NHSD:ClientSecret"];
+                    options.ClientSecret = Configuration["ClientSecret"];
 
                     // endpoint where we can exchange our auth code for an access token
                     options.TokenEndpoint = Configuration["NHSD:OAuthEndpoint"] + "/token";
@@ -84,6 +84,7 @@ namespace oauth_nhsd_api
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseCookiePolicy();
             app.UseRouting();
 
             app.UseAuthentication();
