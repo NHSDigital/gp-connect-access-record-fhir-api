@@ -67,22 +67,20 @@ namespace oauth_nhsd_api.Helpers
                 AssertedDate = Convert.ToString(resourceBundle.AssertedDate),
                 EndDate =  Convert.ToString(resourceBundle.EndDate), //This will be added to the bundle upon implementation of "inactive" 
                 EndReason = "",
-                Identifier = Convert.ToString(resourceJtoken.SelectToken("identifier[0]")), //Guessed resource path
+                Identifier = Convert.ToString(resourceJtoken.SelectToken("identifier[0].value")),
                 ClinicalStatus = Convert.ToString(resourceJtoken.SelectToken("resource.clinicalStatus.coding[0].code")),
                 VerificationStatus = Convert.ToString(resourceJtoken.SelectToken("verificationStatus.coding[0].code")),
-                AssetType = Convert.ToString(resourceJtoken.SelectToken("type")), //Guessed resource path
-                Category = Convert.ToString(resourceJtoken.SelectToken("category[0]")), //Guessed resource path
-                Cause = Convert.ToString(resourceJtoken.SelectToken("reaction[0].substance")), //Guessed resource path
-                Reaction = Convert.ToString(resourceJtoken.SelectToken("reaction[0].manifestation[0]")), //Guessed resource path
-                ReactionSeverity = Convert.ToString(
-                    resourceJtoken.SelectToken("criticality")
-                    ?? resourceJtoken.SelectToken("reaction[0].severity")), //Guessed resource path,
+                AssetType = Convert.ToString(resourceJtoken.SelectToken("type")),
+                Category = Convert.ToString(resourceJtoken.SelectToken("category[0]")),
+                Cause = Convert.ToString(resourceBundle.AssertedTitle),
+                Reaction = Convert.ToString(resourceJtoken.SelectToken("reaction[0].manifestation[0].text")),
+                ReactionSeverity = Convert.ToString(resourceJtoken.SelectToken("reaction[0].severity")),
                 AdditionalInformation = Convert.ToString(
                     resourceJtoken.SelectToken("note[0].text")
-                    ?? resourceJtoken.SelectToken("reaction[0].note[0]")), //Guessed resource path,
-                Recorder = Convert.ToString(resourceJtoken.SelectToken("recorder.reference")), //Guessed resource path
-                Asserter = Convert.ToString(resourceJtoken.SelectToken("asserter.reference")), //Guessed resource path
-                LastOccurrenceDate = Convert.ToString(resourceJtoken.SelectToken("lastOccurance")), //Guessed resource path
+                    ?? resourceJtoken.SelectToken("reaction[0].note[0]")),
+                Recorder = Convert.ToString(resourceJtoken.SelectToken("recorder.reference")),
+                Asserter = Convert.ToString(resourceJtoken.SelectToken("asserter.reference")),
+                LastOccurrenceDate = Convert.ToString(resourceJtoken.SelectToken("lastOccurance")),
 
             };
             return resource;
