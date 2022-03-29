@@ -11,8 +11,6 @@ RUN dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /app
 COPY --from=build-env /app/out .
-# ENV ASPNETCORE_HTTPS_PORT=5001
-# ENV ASPNETCORE_URLS=http://+:5000
-EXPOSE 5001
+ENV ASPNETCORE_URLS=http://+:5000
 EXPOSE 5000
 CMD ./oauth-nhsd-api ClientId=$CLIENT_ID ClientSecret=$CLIENT_SECRET

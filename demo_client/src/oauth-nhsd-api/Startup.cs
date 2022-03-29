@@ -84,7 +84,11 @@ namespace oauth_nhsd_api
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseCookiePolicy();
+            app.UseCookiePolicy(new CookiePolicyOptions()
+            {
+                MinimumSameSitePolicy = SameSiteMode.Lax,
+                Secure = CookieSecurePolicy.Always
+        });
             app.UseRouting();
 
             app.UseAuthentication();
