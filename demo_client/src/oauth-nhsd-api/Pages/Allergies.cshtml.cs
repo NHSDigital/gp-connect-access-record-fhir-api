@@ -17,6 +17,7 @@ namespace oauth_nhsd_api.Pages
     [Authorize]
     public class AllergiesModel : PageModel
     {
+        public AllergyResource parsedItem { get; set; }
         public JToken EntriesAsJson { get; set; }
         public string ResResponse { get; set; }
 

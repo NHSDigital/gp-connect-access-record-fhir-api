@@ -1,0 +1,54 @@
+@page
+@model oauth_nhsd_api.Pages.AllergiesModel
+@{
+    ViewData["Title"] = "Allergies";
+}
+@using Newtonsoft.Json
+@using oauth_nhsd_api.Helpers
+@{
+    var parser = new ParseResourceToObjectClass();
+}
+
+
+<div class="nhsuk-back-link">
+    <a class="nhsuk-back-link__link" asp-page="/Allergies">
+        <svg class="nhsuk-icon nhsuk-icon__chevron-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" height="24" width="24">
+            <path d="M8.5 12c0-.3.1-.5.3-.7l5-5c.4-.4 1-.4 1.4 0s.4 1 0 1.4L10.9 12l4.3 4.3c.4.4.4 1 0 1.4s-1 .4-1.4 0l-5-5c-.2-.2-.3-.4-.3-.7z"></path>
+        </svg>
+        Go back
+    </a>
+</div>
+
+<h1>Allergies and adverse reactions</h1>
+
+<div class="container">
+    @foreach (var item in Model.OrderedActiveList)
+    {
+        var parsedItem = parser.ParseResourceToObject(item);
+        Model.parsedItem = parsedItem;
+        <div>
+            <ul class="nhsuk-list">
+                <li>@Html.DisplayNameFor(model => model.parsedItem.AllergyTitle): @Model.parsedItem.AllergyTitle</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.Id): @Model.parsedItem.Id</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.Profile): @Model.parsedItem.Profile</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.OnSetDate): @Model.parsedItem.OnSetDate</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.AssertedDate): @Model.parsedItem.AssertedDate</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.EndDate): @Model.parsedItem.EndDate</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.EndReason): @Model.parsedItem.EndReason</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.Identifier): @Model.parsedItem.Identifier</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.ClinicalStatus): @Model.parsedItem.ClinicalStatus</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.VerificationStatus): @Model.parsedItem.VerificationStatus</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.AssetType): @Model.parsedItem.AssetType</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.Category): @Model.parsedItem.Category</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.Cause): @Model.parsedItem.Cause</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.Reaction): @Model.parsedItem.Reaction</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.ReactionSeverity): @Model.parsedItem.ReactionSeverity</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.AdditionalInformation): @Model.parsedItem.AdditionalInformation</li>
+                <li>@Html.DisplayNameFor(model => model.parsedItem.Recorder): @Model.parsedItem.Recorder</li>
+                @*<li>@Html.DisplayNameFor(model => model.parsedItem.Asserter): @Model.parsedItem.Asserter</li>*@ @*Removed for Prototype*@
+                @*<li>@Html.DisplayNameFor(model => model.parsedItem.LastOccurrenceDate): @Model.parsedItem.LastOccurrenceDate</li>*@ @*Removed for Prototype*@
+            </ul>
+            <hr class="nhsuk-section-break nhsuk-section-break--l nhsuk-section-break--visible">
+        </div>
+    }
+</div>
