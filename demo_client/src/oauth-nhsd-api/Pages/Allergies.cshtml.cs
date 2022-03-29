@@ -65,8 +65,7 @@ namespace oauth_nhsd_api.Pages
 
                     var allergyText = Convert.ToString(
                         resourceCode.SelectToken("coding[0].display")
-                        ?? resourceCode.SelectToken("text")
-                        ?? "Name not Given");
+                        ?? resourceCode.SelectToken("text"));
 
                     activeList.Add(new DateNameJsonBundle
                     {
@@ -77,10 +76,10 @@ namespace oauth_nhsd_api.Pages
                     });
                 }
                 // Orders the list by date, oldest first
-                OrderedActiveList = activeList.OrderBy(x => x.AssertedDate).ToList();
+                OrderedActiveList = activeList.OrderByDescending(x => x.AssertedDate).ToList();
             }
 
-            // variables created to disply info to the user.
+            // variables created to display info to the user.
             ResResponse = string.Format("{0} - {1}", (int)NHSAPIresponse.StatusCode, NHSAPIresponse.StatusCode);
             SessionExpires = Convert.ToDateTime(tokenExpiresAt);
 
