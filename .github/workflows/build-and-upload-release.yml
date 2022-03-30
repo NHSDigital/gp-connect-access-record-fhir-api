@@ -22,8 +22,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.SPEC_VERSION }}
-          release_name: ${{ env.SPEC_VERSION }}
+          tag_name: ${{ gifhub.ref }}
+          release_name: Release ${{ gifhub.ref }}
           draft: false
           prerelease: false
 
