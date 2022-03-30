@@ -63,7 +63,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: TEST - ${{ env.SPEC_VERSION }}
+          tag_name: ${{ env.SPEC_VERSION }}
           release_name: TEST - ${{ env.SPEC_VERSION }}
 
       - name: Upload Release Asset (master only)
