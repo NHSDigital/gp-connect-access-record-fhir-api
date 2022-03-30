@@ -10,7 +10,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build project
+      - name: Publish project
         run: |
           dotnet publish ./demo_client/src/oauth-nhsd-api/oauth-nhsd-api.csproj -c Release -o build
 
@@ -31,6 +31,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/
-          asset_name: democlient.zip
-          asset_content_type: application/zip
+          asset_path: ./build/oauth-nhsd-api.exe
+          asset_name: democlient.exe
+          asset_content_type: application/octet-stream
