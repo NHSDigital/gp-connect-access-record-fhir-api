@@ -74,6 +74,6 @@ jobs:
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
           asset_path: ./democlient.zip
-          asset_name: democlient-v${{ env.SPEC_VERSION }}.zip
+          asset_name: democlient.zip
           asset_content_type: application/zip
 
