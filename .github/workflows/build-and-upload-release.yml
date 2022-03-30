@@ -2,35 +2,48 @@ name: Upload Release Asset
 
 on: push
 
-jobs:
-  build:
-    name: Upload Release Asset
-    runs-on: ubuntu-latest
+name: Release
+    strategy:
+      matrix:
+        kind: ['linux', 'windows', 'macOS']
+        include:
+          - kind: linux
+            os: ubuntu-latest
+            target: linux-x64
+            release_suffix: ''
+          - kind: windows
+            os: windows-latest
+            target: win-x64
+            release_suffix: .exe
+          - kind: macOS
+            os: macos-latest
+            target: osx-x64
+            release_suffix: ''
+    runs-on: ${{ matrix.os }}
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+        - name: Checkout
+            uses: actions/checkout@v1
 
-      - name: Publish project
-        run: |
-          dotnet publish ./demo_client/src/oauth-nhsd-api/oauth-nhsd-api.csproj -c Release -o build
+        - name: Setup dotnet
+            uses: actions/setup-dotnet@v1
+            with:
+            dotnet-version: 5.0
 
-      - name: Create release (master only)
-        id: create_release
-        #if: github.ref == 'refs/heads/master'
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: gitactiontest
-          release_name: ${{ env.SPEC_VERSION }}
+        - name: Build
+            shell: bash
+            run: |
+            # Define some variables for things we need
+            tag=$(git describe --tags --abbrev=0)
+            release_name="App-$tag-${{ matrix.target }}"
 
-      - name: Upload Release Asset (master only)
-        #if: github.ref == 'refs/heads/master'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/oauth-nhsd-api
-          asset_name: democlient.exe
-          asset_content_type: application/octet-stream
+            # Build everything
+            dotnet publish .\demo_client\src\oauth-nhsd-api\oauth-nhsd-api.csproj --framework netcoreapp5.0 -c Release -o "$release_name" -r "${{matrix.target}}"
+
+        - name: Release
+            uses: softprops/action-gh-release@v1
+            with:
+                name: ${{matrix.kind}}_democlient${{matrix.release_suffix}}
+                files: $release_name/oauth-nhsd-api${{matrix.release_suffix}}
+            env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
