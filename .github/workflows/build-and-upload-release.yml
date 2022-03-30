@@ -10,22 +10,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-    #   - name: Build project # This would actually build your project, using zip for an example artifact
-    #     run: |
-    #       zip --junk-paths democlient demo_client
+      - name: Build project
+        run: |
+          dotnet publish -c Release -o build
 
       - name: Create release (master only)
         id: create_release
         #if: github.ref == 'refs/heads/master'
         uses: actions/create-release@v1
-        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
+          tag_name: ${{ env.SPEC_VERSION }}
+          release_name: ${{ env.SPEC_VERSION }}
 
       - name: Upload Release Asset (master only)
         #if: github.ref == 'refs/heads/master'
@@ -34,6 +31,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./democlient.zip
+          asset_path: ./build/
           asset_name: democlient.zip
           asset_content_type: application/zip
