@@ -1,0 +1,39 @@
+name: Upload Release Asset
+
+on: push
+
+jobs:
+  build:
+    name: Upload Release Asset
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build project # This would actually build your project, using zip for an example artifact
+        run: |
+          zip --junk-paths demo_client README.md
+
+      - name: Create release (master only)
+        id: create_release
+        #if: github.ref == 'refs/heads/master'
+        uses: actions/create-release@v1
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.SPEC_VERSION }}
+          release_name: TEST - ${{ env.SPEC_VERSION }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset (master only)
+        #if: github.ref == 'refs/heads/master'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./demo_client.zip
+          asset_name: demo_client.zip
+          asset_content_type: application/zip
