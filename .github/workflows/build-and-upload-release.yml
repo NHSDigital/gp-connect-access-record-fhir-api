@@ -12,7 +12,7 @@ jobs:
 
       - name: Build project
         run: |
-          dotnet publish -c Release -o build
+          dotnet publish ../../demo_client/src/oauth-nhsd-api/ -c Release -o build
 
       - name: Create release (master only)
         id: create_release
