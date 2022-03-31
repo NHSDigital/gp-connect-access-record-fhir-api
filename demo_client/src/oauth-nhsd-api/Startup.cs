@@ -25,7 +25,7 @@ namespace oauth_nhsd_api
 
             var param = new Dictionary<string, string>() {
                 {"response_type", "code"},
-                {"client_id", Configuration["secrets:ClientId"]},
+                {"client_id", Configuration["ClientId"]},
                 {"scope", "nhs-login"},
                 {"redirect_uri", Configuration["NHSD:CallbackUrl"]}
             };
@@ -57,8 +57,8 @@ namespace oauth_nhsd_api
                     options.CallbackPath = new PathString("/callback");
 
                     // id and secret issued by oAUth provider
-                    options.ClientId = Configuration["secrets:ClientId"];
-                    options.ClientSecret = Configuration["secrets:ClientSecret"];
+                    options.ClientId = Configuration["ClientId"];
+                    options.ClientSecret = Configuration["ClientSecret"];
 
                     // endpoint where we can exchange our auth code for an access token
                     options.TokenEndpoint = Configuration["NHSD:OAuthEndpoint"] + "/token";
@@ -84,6 +84,11 @@ namespace oauth_nhsd_api
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseCookiePolicy(new CookiePolicyOptions()
+            {
+                MinimumSameSitePolicy = SameSiteMode.Lax,
+                Secure = CookieSecurePolicy.Always
+        });
             app.UseRouting();
 
             app.UseAuthentication();
