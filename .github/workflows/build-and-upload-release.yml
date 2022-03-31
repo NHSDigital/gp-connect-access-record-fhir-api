@@ -42,7 +42,7 @@ jobs:
             release_name="App-$tag-${{ matrix.target }}"
 
             # Build everything
-            dotnet publish .\demo_client\src\oauth-nhsd-api\oauth-nhsd-api.csproj --framework netcoreapp5.0 -c Release -o "$release_name" -r "${{matrix.target}}"
+            dotnet publish ./demo_client/src/oauth-nhsd-api/oauth-nhsd-api.csproj --framework netcoreapp5.0 -c Release -o "$release_name" -r "${{matrix.target}}"
 
       - name: Release
         uses: softprops/action-gh-release@v1
