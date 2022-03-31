@@ -111,12 +111,17 @@ jobs:
             # Build everything
             dotnet publish ./demo_client/src/oauth-nhsd-api/oauth-nhsd-api.csproj -c Release -o "out_${{ matrix.kind }}" -r "${{ matrix.target }}" --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=True
 
+      - name: Zip the asset into a zip file
+        id: zip_asset
+        run: |
+          7z a -tzip democlient_${{ matrix.kind }}-${{ needs.build.outputs.release_version }}.zip out_${{ matrix.kind }}/oauth-nhsd-api${{ matrix.release_suffix }}
+
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
             repo_token: ${{ secrets.GITHUB_TOKEN }}
-            file: out_${{ matrix.kind }}/oauth-nhsd-api${{ matrix.release_suffix }}
-            asset_name: democlient_${{ matrix.kind }}_${{ needs.build.outputs.release_version }}${{ matrix.release_suffix }}
+            file: democlient_${{ matrix.kind }}-${{ needs.build.outputs.release_version }}.zip
+            asset_name: democlient_${{ matrix.kind }}_${{ needs.build.outputs.release_version }}.zip
             tag: ${{ needs.build.outputs.release_version }}
 
 
