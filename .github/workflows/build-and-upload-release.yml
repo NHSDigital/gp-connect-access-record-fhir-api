@@ -1,53 +1,59 @@
-name: Upload Release Asset
-
-on:
-  release:
-    types: [published]
-
+---
 jobs:
   release:
     name: Release
     strategy:
-        matrix:
-            kind: ['linux', 'windows', 'macOS']
-            include:
-              - kind: linux
-                os: ubuntu-latest
-                target: linux-x64
-                release_suffix: ''
-              - kind: windows
-                os: windows-latest
-                target: win-x64
-                release_suffix: .exe
-              - kind: macOS
-                os: macos-latest
-                target: osx-x64
-                release_suffix: ''
-        runs-on: ${{ matrix.os }}
+      matrix:
+        include:
+          -
+            kind: linux
+            os: ubuntu-latest
+            release_suffix: ""
+            target: linux-x64
+          -
+            kind: windows
+            os: windows-latest
+            release_suffix: .exe
+            target: win-x64
+          -
+            kind: macOS
+            os: macos-latest
+            release_suffix: ""
+            target: osx-x64
+        kind:
+          - linux
+          - windows
+          - macOS
+      runs-on: "${{ matrix.os }}"
+      steps:
+        -
+          name: Checkout
+          uses: actions/checkout@v1
+        -
+          name: "Setup dotnet"
+          uses: actions/setup-dotnet@v1
+          with:
+            dotnet-version: 5.0
+        -
+          name: Build
+          run: |
+              # Define some variables for things we need
+              tag=$(git describe --tags --abbrev=0)
+              release_name="App-$tag-${{ matrix.target }}"
 
-        steps:
-          - name: Checkout
-            uses: actions/checkout@v1
-
-          - name: Setup dotnet
-            uses: actions/setup-dotnet@v1
-            with:
-                dotnet-version: 5.0
-
-          - name: Build
-            shell: bash
-            run: |
-                # Define some variables for things we need
-                tag=$(git describe --tags --abbrev=0)
-                release_name="App-$tag-${{ matrix.target }}"
-
-                # Build everything
-                dotnet publish .\demo_client\src\oauth-nhsd-api\oauth-nhsd-api.csproj --framework netcoreapp5.0 -c Release -o "$release_name" -r "${{matrix.target}}"
-
-          - name: Release
-            uses: softprops/action-gh-release@v1
-            with:
-                name: ${{matrix.kind}}_democlient${{matrix.release_suffix}}
-                files: $release_name/oauth-nhsd-api${{matrix.release_suffix}}
-            env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              # Build everything
+              dotnet publish .\demo_client\src\oauth-nhsd-api\oauth-nhsd-api.csproj --framework netcoreapp5.0 -c Release -o "$release_name" -r "${{matrix.target}}"
+          shell: bash
+        -
+          env:
+            GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          name: Release
+          uses: softprops/action-gh-release@v1
+          with:
+            files: "$release_name/oauth-nhsd-api${{matrix.release_suffix}}"
+            name: "${{matrix.kind}}_democlient${{matrix.release_suffix}}"
+name: "Upload Release Asset"
+true:
+  release:
+    types:
+      - published
