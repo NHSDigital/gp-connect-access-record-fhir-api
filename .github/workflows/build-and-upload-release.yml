@@ -1,6 +1,8 @@
 name: Upload Release Asset
 
-on: push
+on:
+  release:
+    types: [published]
 
 jobs:
   release:
