@@ -1,10 +1,10 @@
-name: Build
+name: Build and Publish binaries
 
 on: push
 
 jobs:
   build:
-    name: build
+    name: Build Release
     runs-on: ubuntu-latest
     outputs:
         release_version: ${{steps.set_output_step.outputs.spec_version}}
@@ -66,7 +66,7 @@ jobs:
 
       - name: Create release (master only)
         id: create_release
-        #if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
         uses: actions/create-release@v1
         continue-on-error: true
         env:
@@ -79,6 +79,7 @@ jobs:
     name: Multiplatform Build
     needs: build
     runs-on: ${{ matrix.os }}
+    if: github.ref == 'refs/heads/master'
     strategy:
         matrix:
             kind: ['linux', 'windows', 'macOS']
