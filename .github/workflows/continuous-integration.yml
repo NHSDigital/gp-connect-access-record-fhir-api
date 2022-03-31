@@ -6,6 +6,8 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
+    outputs:
+        release_version: ${{steps.outputs.spec_version}}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -54,6 +56,10 @@ jobs:
         run: echo ::set-env name=SPEC_VERSION::$(poetry run python scripts/calculate_version.py)
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      - name: Set SPEC_VERSION to outputs
+        run: echo "::set-output name=spec_version::${{env.SPEC_VERSION}}"
+
+
 
       - name: Create release (master only)
         id: create_release
@@ -111,7 +117,7 @@ jobs:
         with:
             repo_token: ${{ secrets.GITHUB_TOKEN }}
             file: $release_name/oauth-nhsd-api${{ matrix.release_suffix }}
-            asset_name: democlient_${{ matrix.kind }}_${{ env.SPEC_VERSION }}${{ matrix.release_suffix }}
-            tag: ${{ env.SPEC_VERSION }}
+            asset_name: democlient_${{ matrix.kind }}_${{ needs.build.outputs.release_version }}${{ matrix.release_suffix }}
+            tag: ${{ needs.build.outputs.release_version }}
 
 
