@@ -114,7 +114,7 @@ jobs:
       - name: Zip the asset into a zip file
         id: zip_asset
         run: |
-          7z a -tzip democlient_${{ matrix.kind }}-${{ needs.build.outputs.release_version }}.zip out_${{ matrix.kind }}/oauth-nhsd-api${{ matrix.release_suffix }}
+          7z a -tzip democlient_${{ matrix.kind }}-${{ needs.build.outputs.release_version }}.zip out_${{ matrix.kind }}/*
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
