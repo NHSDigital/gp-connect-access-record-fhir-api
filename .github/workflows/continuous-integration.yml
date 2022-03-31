@@ -7,8 +7,9 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     outputs:
-        release_version: ${{steps.outputs.spec_version}}
+        release_version: ${{steps.set_output_step.outputs.spec_version}}
     steps:
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -56,7 +57,9 @@ jobs:
         run: echo ::set-env name=SPEC_VERSION::$(poetry run python scripts/calculate_version.py)
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
       - name: Set SPEC_VERSION to outputs
+        id: set_output_step
         run: echo "::set-output name=spec_version::${{env.SPEC_VERSION}}"
 
 
