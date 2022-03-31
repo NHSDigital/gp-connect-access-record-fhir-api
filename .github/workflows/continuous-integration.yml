@@ -109,7 +109,7 @@ jobs:
         shell: bash
         run: |
             # Build everything
-            dotnet publish ./demo_client/src/oauth-nhsd-api/oauth-nhsd-api.csproj -c Release -o "out_${{ matrix.kind }}" -r "${{ matrix.target }}"
+            dotnet publish .\demo_client\src\oauth-nhsd-api\oauth-nhsd-api.csproj -c Release -o "out_${{ matrix.kind }}" -r "${{ matrix.target }}" --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=True
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
