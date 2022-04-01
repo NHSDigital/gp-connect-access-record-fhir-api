@@ -1,12 +1,15 @@
-name: Build
+name: Build and Publish binaries
 
 on: push
 
 jobs:
   build:
-    name: build
+    name: Build Release
     runs-on: ubuntu-latest
+    outputs:
+        release_version: ${{steps.set_output_step.outputs.spec_version}}
     steps:
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -55,8 +58,14 @@ jobs:
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
+      - name: Set SPEC_VERSION to outputs
+        id: set_output_step
+        run: echo "::set-output name=spec_version::${{env.SPEC_VERSION}}"
+
+
+
       - name: Create release (master only)
-        id: create-release
+        id: create_release
         if: github.ref == 'refs/heads/master'
         uses: actions/create-release@v1
         continue-on-error: true
@@ -65,4 +74,55 @@ jobs:
         with:
           tag_name: ${{ env.SPEC_VERSION }}
           release_name: ${{ env.SPEC_VERSION }}
+
+  multiplatform_build:
+    name: Multiplatform Build
+    needs: build
+    runs-on: ${{ matrix.os }}
+    if: github.ref == 'refs/heads/master'
+    strategy:
+        matrix:
+            kind: ['linux', 'windows', 'macOS']
+            include:
+              - kind: linux
+                os: ubuntu-latest
+                target: linux-x64
+                release_suffix: ''
+              - kind: windows
+                os: windows-latest
+                target: win-x64
+                release_suffix: .exe
+              - kind: macOS
+                os: macos-latest
+                target: osx-x64
+                release_suffix: ''
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+            dotnet-version: '5.0.x'
+
+      - name: Publish
+        shell: bash
+        run: |
+            # Build everything
+            dotnet publish ./demo_client/src/oauth-nhsd-api/oauth-nhsd-api.csproj -c Release -o "out_${{ matrix.kind }}" -r "${{ matrix.target }}" --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishTrimmed=True
+
+      - name: Zip the asset into a zip file
+        id: zip_asset
+        run: |
+          7z a -tzip democlient_${{ matrix.kind }}-${{ needs.build.outputs.release_version }}.zip out_${{ matrix.kind }}/*
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+            repo_token: ${{ secrets.GITHUB_TOKEN }}
+            file: democlient_${{ matrix.kind }}-${{ needs.build.outputs.release_version }}.zip
+            asset_name: democlient_${{ matrix.kind }}_${{ needs.build.outputs.release_version }}.zip
+            tag: ${{ needs.build.outputs.release_version }}
+
 

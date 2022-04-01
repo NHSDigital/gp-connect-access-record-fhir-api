@@ -12,6 +12,18 @@ This project was created with Visual Studio 2019, and is an ASP.NET Core 5.0 Web
 2. Create an app on the NHS Digital API Platform and request access to gp-connect-access-record-fhir-api, registering your callback url `http://localhost:5000/callback`
 
 This will generate a Client Key and a Client Secret, these will be used to authenticate later so make note of them.
+### Running Latest Release
+To run the application without any dependancies on your machine, follow these steps:
+
+1. Visit and Download the latest release for your Operating system from [Download Latest Release](https://github.com/NHSDigital/gp-connect-access-record-fhir-api/releases)
+2. Unzip the folder
+3. From your terminal, navigate to the unzipped folder
+4. To run the application run the following command:
+    * Windows: `start oauth-nhsd-api.exe ClientId="<your_client_key>" ClientSecret="<your_secret_key>"`
+    * Linux: `./oauth-nhsd-api --urls http://+:5000 ClientId="<your_client_key>" ClientSecret="<your_secret_key>"`
+    * Mac `./oauth-nhsd-api ClientId="<your_client_key>" ClientSecret="<your_secret_key>"`
+    
+       Note: MacOS will complain about security stuff, you need to allow apps from identified developers on System Preferences -> Allow apps downloaded from: -> App Store and identified developers.
 
 ### To Run Locally
 To run the application:
