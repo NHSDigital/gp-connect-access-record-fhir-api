@@ -4,6 +4,10 @@ const healthcheck_status_code = context.getVariable('healthcheckResponse.status.
 const healthcheck_request_url = context.getVariable('healthcheckRequest.url');
 const healthcheck_failed = context.getVariable("servicecallout.ServiceCallout.CallHealthcheckEndpoint.failed");
 
+const PDS_healthcheck_status_code = context.getVariable('PDShealthcheckResponse.status.code');
+const SDS_healthcheck_status_code = context.getVariable('SDShealthcheckResponse.status.code');
+const fhir_converter_healthcheck_status_code = context.getVariable('fhirConverterHealthcheckResponse.status.code');
+
 function json_tryparse(raw) {
     try {
         return JSON.parse(raw);
@@ -32,6 +36,11 @@ const resp = {
             "responseCode" : healthcheck_status_code,
             "outcome": healthcheck_content,
             "links" : {"self": healthcheck_request_url}
+        },
+        "dependencies" : {
+            "PDS" : PDS_healthcheck_status_code,
+            "SDS" : SDS_healthcheck_status_code,
+            "fhir-converter" : fhir_converter_healthcheck_status_code
         }
     }
 };

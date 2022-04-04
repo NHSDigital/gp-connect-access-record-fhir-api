@@ -28,6 +28,18 @@
         <Step>
           <Name>ServiceCallout.CallHealthcheckEndpoint</Name>
         </Step>
+        <Step>
+          <Name>ServiceCallout.CallPDSHealthcheck</Name>
+        </Step>
+        <Step>
+          <Name>ServiceCallout.CallSDSHealthcheck</Name>
+        </Step>
+        <!-- <Step>
+          <Name>ServiceCallout.CallSSPHealthcheck</Name>
+        </Step> -->
+        <Step>
+          <Name>ServiceCallout.CallFhirConverterHealthcheck</Name>
+        </Step>
       </Request>
       <Response>
         <Step>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ServiceCallout async="false" continueOnError="true" enabled="true" name="ServiceCallout.CallPDSHealthcheck">
+    <DisplayName>ServiceCallout.CallPDSHealthcheck</DisplayName>
+    <Properties/>
+    <Request clearPayload="true" variable="healthcheckRequest">
+        <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+        <Set>
+            <Verb>GET</Verb>
+            <Path>/_ping</Path>
+        </Set>
+    </Request>
+    <Response>PDShealthcheckResponse</Response>
+    <HTTPTargetConnection>
+        <SSLInfo>
+            <Enabled>true</Enabled>
+        </SSLInfo>
+        <URL>https://{{ APIGEE_ENVIRONMENT }}.api.service.nhs.uk/personal-demographics/FHIR/R4</URL>
+    </HTTPTargetConnection>
+    <Timeout>20000</Timeout>
+</ServiceCallout>
