@@ -1,10 +1,9 @@
 from uuid import uuid4
 
-import requests
+from request_helpers import make_get_request
 
 
 class PdsClient:
-
     def __init__(self, url: str, env: str) -> None:
         self.__env = env
         self.__url = url
@@ -13,19 +12,18 @@ class PdsClient:
 
         headers = {
             "X-Request-ID": str(uuid4()),
-            "Authorization": f"Bearer {access_token}"
+            "Authorization": f"Bearer {access_token}",
         }
+        url = f"https://{self.__url}/personal-demographics/FHIR/R4/Patient/{nhs_number}"
 
-        res = requests.get(
-            f"https://{self.__url}/personal-demographics/FHIR/R4/Patient/{nhs_number}",
-            headers=headers)
+        res = make_get_request(call_name="PDS", url=url, headers=headers)
 
         return self.__get_ods(res.json())
 
     @staticmethod
     def __get_ods(patient: dict) -> str:
         def is_ods_extension(gp):
-            return gp["identifier"]["system"] == "https://fhir.nhs.uk/Id/ods-organization-code"
+            return (gp["identifier"]["system"] == "https://fhir.nhs.uk/Id/ods-organization-code")
 
         ods_ids = filter(is_ods_extension, patient["generalPractitioner"])
 

@@ -1,4 +1,4 @@
-import requests
+from request_helpers import make_get_request
 
 
 class SdsClient:
@@ -7,6 +7,8 @@ class SdsClient:
         self.__apigee_url = apigee_url
 
     def get_toASID(self, ods_code):
+        url = f"https://{self.__apigee_url}/spine-directory/FHIR/R4/Device"
+
         headers = {"apikey": self.__client_id}
 
         params = {
@@ -14,10 +16,8 @@ class SdsClient:
             "identifier": "https://fhir.nhs.uk/Id/nhsServiceInteractionId|urn:nhs:names:services:gpconnect:fhir:operation:gpc.getstructuredrecord-1",
         }
 
-        res = requests.get(
-            f"https://{self.__apigee_url}/spine-directory/FHIR/R4/Device",
-            headers=headers,
-            params=params,
+        res = make_get_request(
+            call_name="SDS get_toASID", url=url, headers=headers, params=params
         )
 
         return self.__get_toAsid(res.json())
@@ -36,6 +36,8 @@ class SdsClient:
             return asidId
 
     def get_URL(self, ods_code):
+        url = f"https://{self.__apigee_url}/spine-directory/FHIR/R4/Endpoint"
+
         headers = {"apikey": self.__client_id}
 
         params = {
@@ -43,10 +45,8 @@ class SdsClient:
             "identifier": "https://fhir.nhs.uk/Id/nhsServiceInteractionId|urn:nhs:names:services:gpconnect:fhir:operation:gpc.getstructuredrecord-1",
         }
 
-        res = requests.get(
-            f"https://{self.__apigee_url}/spine-directory/FHIR/R4/Endpoint",
-            headers=headers,
-            params=params,
+        res = make_get_request(
+            call_name="SDS get_URL", url=url, headers=headers, params=params
         )
 
         return self.__get_URL(res.json())

@@ -1,6 +1,7 @@
-import requests
+import os
 
 from orange_jwt import create_orange_jwt
+from request_helpers import make_post_request
 
 
 class SspClient:
@@ -10,6 +11,7 @@ class SspClient:
 
     def get_allergy_intolerance_bundle(self, ods: dict):
         # update Ssp-From with to_ASID from dict
+        url = f"https://{self._url}/B82617/STU3/1/gpconnect/structured/fhir/Patient/$gpc.getstructuredrecord"
         headers = {
             "Accept": "application/fhir+json",
             "Ssp-From": "200000000359",
@@ -22,18 +24,16 @@ class SspClient:
 
         _body = self.__get_orange_payload()
         # ODS code on the request is hardcoded --- need to be changed
-        res = requests.post(
-            f"https://{self._url}/B82617/STU3/1/gpconnect/structured/fhir/Patient/$gpc.getstructuredrecord",
-            headers=headers,
-            data=_body,
-            verify=False
-        )
+        res = make_post_request(call_name="SSP get allergy intolerance bundle", url=url, headers=headers, data=_body, verify=False)
 
         return res.json()
 
     @staticmethod
     def __get_orange_payload() -> str:
-        with open('getstructuredrecord_payload.json', 'r') as f:
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        file_path = os.path.join(dir_path, 'getstructuredrecord_payload.json')
+
+        with open(file_path, 'r') as f:
             json_text = f.read()
 
         return json_text

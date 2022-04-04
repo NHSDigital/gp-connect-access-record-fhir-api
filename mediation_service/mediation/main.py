@@ -47,7 +47,7 @@ async def env_var_exception_handler(_: Request, exc: KeyError):
         content={"message": str(exc)},
     )
 
-# message here
+
 @app.exception_handler(HTTPException)
 async def http_client_exception_handler(_: Request, exc: HTTPException):
     return JSONResponse(
