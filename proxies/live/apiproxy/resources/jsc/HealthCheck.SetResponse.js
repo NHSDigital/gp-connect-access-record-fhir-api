@@ -19,9 +19,17 @@ function json_tryparse(raw) {
 
 const healthcheck_content = json_tryparse(context.getVariable('healthcheckResponse.content'));
 const healthcheck_status = (healthcheck_status_code/100 === 2) ? "pass" : "fail";
+const PDS_healthcheck_status = (PDS_healthcheck_status_code/100 === 2) ? "pass" : "fail";
+const SDS_healthcheck_status = (SDS_healthcheck_status_code/100 === 2) ? "pass" : "fail";
+const fhir_converter_healthcheck_status = (fhir_converter_healthcheck_status_code/100 === 2) ? "pass" : "fail";
+
 const timeout = (healthcheck_status_code === null && healthcheck_failed) ? "true" : "false";
 
-const final_status = (healthcheck_status !== "pass") ? "fail" : "pass";
+const final_status = (healthcheck_status !== "pass" &&
+                      PDS_healthcheck_status !== "pass" &&
+                      SDS_healthcheck_status !== "pass" &&
+                      fhir_converter_healthcheck_status !== "pass")
+                      ? "fail" : "pass";
 
 const resp = {
     "status" : final_status,
@@ -38,9 +46,9 @@ const resp = {
             "links" : {"self": healthcheck_request_url}
         },
         "dependencies" : {
-            "PDS" : PDS_healthcheck_status_code,
-            "SDS" : SDS_healthcheck_status_code,
-            "fhir-converter" : fhir_converter_healthcheck_status_code
+            "PDS responseCode" : PDS_healthcheck_status_code,
+            "SDS responseCode" : SDS_healthcheck_status_code,
+            "fhir-converter responseCode" : fhir_converter_healthcheck_status_code
         }
     }
 };
