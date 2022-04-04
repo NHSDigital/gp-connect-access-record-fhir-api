@@ -1,5 +1,5 @@
 from copy import deepcopy
-from mediation.prepare_ssp_response import prepare_ssp_response
+from mediation_service.mediation.prepare_ssp_response import prepare_ssp_response
 import re
 
 

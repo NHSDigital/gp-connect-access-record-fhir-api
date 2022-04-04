@@ -1,7 +1,7 @@
-from mediation.pds_client import PdsClient
-from mediation.sds_client import SdsClient
-from mediation.ssp_client import SspClient
-from mediation.fhir_converter_client import FhirConverter
+from mediation_service.mediation.pds_client import PdsClient
+from mediation_service.mediation.sds_client import SdsClient
+from mediation_service.mediation.ssp_client import SspClient
+from mediation_service.mediation.fhir_converter_client import FhirConverter
 from unittest.mock import Mock
 from fastapi import HTTPException
 

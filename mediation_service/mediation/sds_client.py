@@ -1,4 +1,4 @@
-from mediation.request_helpers import make_get_request
+from request_helpers import make_get_request
 
 
 class SdsClient:
