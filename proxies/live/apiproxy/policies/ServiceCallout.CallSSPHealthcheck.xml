@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ServiceCallout async="false" continueOnError="true" enabled="true" name="ServiceCallout.CallHealthcheckEndpoint">
-    <DisplayName>ServiceCallout.CallHealthcheckEndpoint</DisplayName>
+<ServiceCallout async="false" continueOnError="true" enabled="true" name="ServiceCallout.CallSSPHealthcheck">
+    <DisplayName>ServiceCallout.CallSSPHealthcheck</DisplayName>
     <Properties/>
     <Request clearPayload="true" variable="healthcheckRequest">
         <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
