@@ -1,7 +1,7 @@
 import os
 
-from orange_jwt import create_orange_jwt
-from request_helpers import make_post_request
+from mediation.orange_jwt import create_orange_jwt
+from mediation.request_helpers import make_post_request
 
 
 class SspClient:

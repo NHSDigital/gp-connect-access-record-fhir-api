@@ -1,4 +1,4 @@
-from request_helpers import make_post_request
+from mediation.request_helpers import make_post_request
 
 
 class FhirConverter:

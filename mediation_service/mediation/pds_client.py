@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from request_helpers import make_get_request
+from mediation.request_helpers import make_get_request
 
 
 class PdsClient:
