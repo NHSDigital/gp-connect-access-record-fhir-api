@@ -46,9 +46,9 @@ const resp = {
             "links" : {"self": healthcheck_request_url}
         },
         "dependencies" : {
-            "PDS responseCode" : PDS_healthcheck_status_code,
-            "SDS responseCode" : SDS_healthcheck_status_code,
-            "fhir-converter responseCode" : fhir_converter_healthcheck_status_code
+            "PDS responseCode" : PDS_healthcheck_status,
+            "SDS responseCode" : SDS_healthcheck_status,
+            "fhir-converter responseCode" : fhir_converter_healthcheck_status
         }
     }
 };
