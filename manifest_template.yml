@@ -55,7 +55,7 @@ apigee:
       - edgeAPIProductName: {{ NAME }}
         anonAllowed: true
         description: {{ DESCRIPTION }}
-        requireCallbackUrl: false
+        requireCallbackUrl: true
         title: {{ TITLE }}
         visibility: {{ENV.portal_visibility}}
         specId: {{ NAME }}
