@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using oauth_nhsd_api.Helpers;
 
 namespace oauth_nhsd_api.Pages
@@ -73,17 +75,26 @@ namespace oauth_nhsd_api.Pages
                         AssertedDate = (DateTime?)resource.SelectToken("resource.recordedDate"),
                         EndDate = null,
                         AssertedTitle = allergyText.ToString(),
-                        JtokenBundle = resource.SelectToken("resource")
+                        JtokenBundle = JsonConvert.SerializeObject(resource.SelectToken("resource"))
                     });
                 }
-                // Orders the list by date, oldest first
-                OrderedActiveList = activeList.OrderByDescending(x => x.AssertedDate).ToList();
             }
+            // Orders the list by date, oldest first
+            OrderedActiveList = activeList.OrderByDescending(x => x.AssertedDate).ToList();
 
             // variables created to display info to the user.
             ResResponse = string.Format("{0} - {1}", (int)NHSAPIresponse.StatusCode, NHSAPIresponse.StatusCode);
             SessionExpires = Convert.ToDateTime(tokenExpiresAt);
 
         }
+
+        public ActionResult OnGetSetSessionData(string jsonString)
+        {
+            HttpContext.Session.SetString("SelectedAllergy", jsonString);
+
+            return new JsonResult(new { redirectUrl = Url.Page("AllergyDetails") });
+
+        }
     }
+   
 }
