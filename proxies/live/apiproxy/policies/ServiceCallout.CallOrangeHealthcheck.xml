@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ServiceCallout async="false" continueOnError="true" enabled="true" name="ServiceCallout.CallOrangeHealthcheck">
+    <DisplayName>ServiceCallout.CallOrangeHealthcheck</DisplayName>
+    <Properties/>
+    <Request clearPayload="true" variable="healthcheckRequest">
+        <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+        <Set>
+            <Verb>GET</Verb>
+        </Set>
+    </Request>
+    <Response>orangeHealthcheckResponse</Response>
+    <HTTPTargetConnection>
+        <SSLInfo>
+            <Enabled>true</Enabled>
+        </SSLInfo>
+        <URL>https://orange.testlab.nhs.uk/B82617/STU3/1/gpconnect/structured/fhir/metadata</URL>
+    </HTTPTargetConnection>
+    <Timeout>20000</Timeout>
+</ServiceCallout>

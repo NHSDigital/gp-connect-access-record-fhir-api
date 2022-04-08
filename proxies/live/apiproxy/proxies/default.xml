@@ -34,9 +34,9 @@
         <Step>
           <Name>ServiceCallout.CallSDSHealthcheck</Name>
         </Step>
-        <!-- <Step>
-          <Name>ServiceCallout.CallSSPHealthcheck</Name>
-        </Step> -->
+        <Step>
+          <Name>ServiceCallout.CallOrangeHealthcheck</Name>
+        </Step>
         <Step>
           <Name>ServiceCallout.CallFhirConverterHealthcheck</Name>
         </Step>

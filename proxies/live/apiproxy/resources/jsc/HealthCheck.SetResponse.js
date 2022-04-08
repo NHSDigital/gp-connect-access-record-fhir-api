@@ -6,6 +6,7 @@ const healthcheck_failed = context.getVariable("servicecallout.ServiceCallout.Ca
 
 const PDS_healthcheck_status_code = context.getVariable('PDShealthcheckResponse.status.code');
 const SDS_healthcheck_status_code = context.getVariable('SDShealthcheckResponse.status.code');
+const orange_healthcheck_status_code = context.getVariable('orangeHealthcheckResponse.status.code');
 const fhir_converter_healthcheck_status_code = context.getVariable('fhirConverterHealthcheckResponse.status.code');
 
 function json_tryparse(raw) {
@@ -21,6 +22,7 @@ const healthcheck_content = json_tryparse(context.getVariable('healthcheckRespon
 const healthcheck_status = (healthcheck_status_code/100 === 2) ? "pass" : "fail";
 const PDS_healthcheck_status = (PDS_healthcheck_status_code/100 === 2) ? "pass" : "fail";
 const SDS_healthcheck_status = (SDS_healthcheck_status_code/100 === 2) ? "pass" : "fail";
+const orange_healthcheck_status = (orange_healthcheck_status_code <= 500) ? "pass" : "fail";
 const fhir_converter_healthcheck_status = (fhir_converter_healthcheck_status_code/100 === 2) ? "pass" : "fail";
 
 const timeout = (healthcheck_status_code === null && healthcheck_failed) ? "true" : "false";
@@ -28,6 +30,7 @@ const timeout = (healthcheck_status_code === null && healthcheck_failed) ? "true
 const final_status = (healthcheck_status !== "pass" &&
                       PDS_healthcheck_status !== "pass" &&
                       SDS_healthcheck_status !== "pass" &&
+                      orange_healthcheck_status !== "pass" &&
                       fhir_converter_healthcheck_status !== "pass")
                       ? "fail" : "pass";
 
@@ -48,6 +51,7 @@ const resp = {
         "dependencies" : {
             "PDS status" : PDS_healthcheck_status,
             "SDS status" : SDS_healthcheck_status,
+            "Orange TestLab status" : orange_healthcheck_status,
             "fhir-converter status" : fhir_converter_healthcheck_status
         }
     }
