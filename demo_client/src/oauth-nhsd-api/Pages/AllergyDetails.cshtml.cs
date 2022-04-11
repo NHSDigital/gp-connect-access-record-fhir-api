@@ -10,23 +10,27 @@ namespace oauth_nhsd_api.Pages
     public class AllergyDetailsModel :  PageModel
     {
         public AllergyResource? ParsedModel { get; set; }
+        private readonly IsoDateTimeConverter _dateTimeConverter = new() { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
+        private readonly ParseResourceToObjectClass _parser = new();
 
         public ActionResult OnGet(string id)
         {
+            // If URL is manually navigated to
             if (id == null)
             {
                 return RedirectToPage("Allergies");
             }
+
+            // If Query string manually added out of range 
             var sessionData = HttpContext.Session.GetString(id);
+            if (sessionData == null)
+            {
+                return RedirectToPage("Allergies");
+            }
+            // Custom converter (_dateTimeConverter) required to parse date
+            var passedJsonObject = JsonConvert.DeserializeObject<DateNameJsonBundle>(sessionData, _dateTimeConverter);
 
-            ////Custom datetime layout was needed to parse 
-            var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
-
-            var passedJsonObject = JsonConvert.DeserializeObject<DateNameJsonBundle>(sessionData, dateTimeConverter);
-
-            ////Parse the json to a class for use in frontend
-            ParseResourceToObjectClass parser = new ParseResourceToObjectClass();
-            ParsedModel = parser.ParseResourceToObject(passedJsonObject);
+            ParsedModel = _parser.ParseResourceToObject(passedJsonObject);
 
             return Page();
         }

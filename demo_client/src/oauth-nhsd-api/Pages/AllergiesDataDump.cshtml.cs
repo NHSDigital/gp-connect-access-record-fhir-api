@@ -12,8 +12,8 @@ namespace oauth_nhsd_api.Pages
     {
         public List<AllergyResource> OrderedList { get; set; } = new List<AllergyResource>();
         public AllergyResource Resource { get; set; }
-        private ParseResourceToObjectClass _parser = new ParseResourceToObjectClass();
-        private IsoDateTimeConverter _dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
+        private readonly ParseResourceToObjectClass _parser = new();
+        private readonly IsoDateTimeConverter _dateTimeConverter = new() { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
         public void OnGet()
         {
             foreach (var sessionKey in HttpContext.Session.Keys)

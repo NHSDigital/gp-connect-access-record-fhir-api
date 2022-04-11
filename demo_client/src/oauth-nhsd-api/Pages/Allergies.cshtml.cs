@@ -22,10 +22,9 @@ namespace oauth_nhsd_api.Pages
         public AllergyResource parsedItem { get; set; }
         public JToken EntriesAsJson { get; set; }
         public string ResResponse { get; set; }
-
         public DateTime SessionExpires { get; set; }
-        public List<DateNameJsonBundle> OrderedActiveList { get; set; } = new List<DateNameJsonBundle>();
-        private IsoDateTimeConverter _dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
+        public List<DateNameJsonBundle> OrderedActiveList = new();
+        private readonly IsoDateTimeConverter _dateTimeConverter = new() { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
 
 
         private readonly IConfiguration _configuration;
@@ -36,7 +35,6 @@ namespace oauth_nhsd_api.Pages
         }
         public async Task OnGet()
         {
-            // Load from session if available
             if (IsSessionPopulatedByApiResponse())
             {
                 OrderedActiveList = GetListFromSessionData();
@@ -45,20 +43,12 @@ namespace oauth_nhsd_api.Pages
             {
                 var ApiResponse = await GetApiResponse();
 
-                // Parsing of API response into list
                 var UnorderedActiveList = CreateListFromJsonResponse(ApiResponse, "active");
 
-                // Orders the list by date, oldest first
                 OrderedActiveList = UnorderedActiveList.OrderByDescending(listItem => listItem.AssertedDate).ToList();
             }
             
-            // Adding allergies data to ASP Session
             SetSessionDataFromList(OrderedActiveList);
-
-            //// variables created to display info to the user.
-            //ResResponse = string.Format("{0} - {1}", (int)NHSAPIresponse.StatusCode, NHSAPIresponse.StatusCode);
-            //SessionExpires = Convert.ToDateTime(tokenExpiresAt);
-
         }
 
         public async Task<string> GetApiResponse()
@@ -70,7 +60,6 @@ namespace oauth_nhsd_api.Pages
             HttpRequestMessage req = new HttpRequestMessage(System.Net.Http.HttpMethod.Get,
                 _configuration["NHSD:APIEndpoint"] + _configuration["NHSD:NhsNumber"]);
 
-            // make the user restricted request.
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenAccess);
 
             HttpResponseMessage NHSAPIresponse = await new HttpClient().SendAsync(req);
@@ -104,6 +93,7 @@ namespace oauth_nhsd_api.Pages
             {
                 var sessionData = HttpContext.Session.GetString(sessionKey);
 
+                // Custom converter (_dateTimeConverter) required to parse date
                 var passedJsonObject = JsonConvert.DeserializeObject<DateNameJsonBundle>(sessionData, _dateTimeConverter);
                 activeList.Add(passedJsonObject);
             }
@@ -112,7 +102,6 @@ namespace oauth_nhsd_api.Pages
 
         public List<DateNameJsonBundle> CreateListFromJsonResponse(string apiResponse, string activeStatus)
         {
-            // Parsing the API response into a useable object
             JObject initialAPIParse = JObject.Parse(apiResponse);
 
             var allergyResponseAsString = Convert.ToString(initialAPIParse["response"]);
@@ -121,7 +110,7 @@ namespace oauth_nhsd_api.Pages
             EntriesAsJson = allergyResponseAsJson.SelectToken("entry");
             var activeList = new List<DateNameJsonBundle>();
 
-            // Looping to create a list of objects to order
+
             foreach (JToken resource in EntriesAsJson)
             {
                 if (resource.SelectToken("resource.resourceType").ToString() == "AllergyIntolerance"
@@ -148,18 +137,9 @@ namespace oauth_nhsd_api.Pages
 
         public Boolean IsSessionPopulatedByApiResponse()
         {
-            try
-            {
-                var response = HttpContext.Session.GetString("0");
-                JsonConvert.DeserializeObject<DateNameJsonBundle>(response);
-            }
-            catch (ArgumentNullException)
-            {
+            var response = HttpContext.Session.GetString("0");
 
-                return false;
-            }
-
-            return true;
+            return response == null;
         }
     }
    
