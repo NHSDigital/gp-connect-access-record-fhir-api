@@ -139,7 +139,8 @@ namespace oauth_nhsd_api.Pages
         {
             var response = HttpContext.Session.GetString("0");
 
-            return !(response == null);
+            // True: When session entry is present, False: Missing session
+            return (response != null);
         }
     }
    
