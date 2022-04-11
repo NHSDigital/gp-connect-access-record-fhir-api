@@ -10,7 +10,7 @@ namespace oauth_nhsd_api.Pages
 {
     public class AllergiesDataDumpModel : PageModel
     {
-        public List<AllergyResource> OrderedList { get; set; } = new List<AllergyResource>();
+        public List<AllergyResource> OrderedList = new();
         public AllergyResource Resource { get; set; }
         private readonly ParseResourceToObjectClass _parser = new();
         private readonly IsoDateTimeConverter _dateTimeConverter = new() { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };

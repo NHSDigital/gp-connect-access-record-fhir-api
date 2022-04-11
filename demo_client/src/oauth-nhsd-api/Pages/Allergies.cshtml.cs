@@ -19,14 +19,8 @@ namespace oauth_nhsd_api.Pages
     [Authorize]
     public class AllergiesModel : PageModel
     {
-        public AllergyResource parsedItem { get; set; }
-        public JToken EntriesAsJson { get; set; }
-        public string ResResponse { get; set; }
-        public DateTime SessionExpires { get; set; }
-        public List<DateNameJsonBundle> OrderedActiveList = new();
+        public List<DateNameJsonBundle> OrderedActiveList { get; set; }
         private readonly IsoDateTimeConverter _dateTimeConverter = new() { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
-
-
         private readonly IConfiguration _configuration;
 
         public AllergiesModel(IConfiguration configuration)
@@ -107,7 +101,7 @@ namespace oauth_nhsd_api.Pages
             var allergyResponseAsString = Convert.ToString(initialAPIParse["response"]);
             var allergyResponseAsJson = JObject.Parse(allergyResponseAsString);
 
-            EntriesAsJson = allergyResponseAsJson.SelectToken("entry");
+            var EntriesAsJson = allergyResponseAsJson.SelectToken("entry");
             var activeList = new List<DateNameJsonBundle>();
 
 
