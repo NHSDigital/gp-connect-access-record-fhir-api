@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using oauth_nhsd_api.Helpers;
+using Newtonsoft.Json.Converters;
 
 namespace oauth_nhsd_api.Pages
 {
@@ -24,6 +25,8 @@ namespace oauth_nhsd_api.Pages
 
         public DateTime SessionExpires { get; set; }
         public List<DateNameJsonBundle> OrderedActiveList { get; set; } = new List<DateNameJsonBundle>();
+        private IsoDateTimeConverter _dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
+
 
         private readonly IConfiguration _configuration;
 
@@ -33,7 +36,33 @@ namespace oauth_nhsd_api.Pages
         }
         public async Task OnGet()
         {
+            // Load from session if available
+            if (IsSessionPopulatedByApiResponse())
+            {
+                OrderedActiveList = GetListFromSessionData();
+            }
+            else
+            {
+                var ApiResponse = await GetApiResponse();
 
+                // Parsing of API response into list
+                var UnorderedActiveList = CreateListFromJsonResponse(ApiResponse, "active");
+
+                // Orders the list by date, oldest first
+                OrderedActiveList = UnorderedActiveList.OrderByDescending(listItem => listItem.AssertedDate).ToList();
+            }
+            
+            // Adding allergies data to ASP Session
+            SetSessionDataFromList(OrderedActiveList);
+
+            //// variables created to display info to the user.
+            //ResResponse = string.Format("{0} - {1}", (int)NHSAPIresponse.StatusCode, NHSAPIresponse.StatusCode);
+            //SessionExpires = Convert.ToDateTime(tokenExpiresAt);
+
+        }
+
+        public async Task<string> GetApiResponse()
+        {
             var tokenAccess = await HttpContext.GetTokenAsync("access_token");
             var tokenRefresh = await HttpContext.GetTokenAsync("refresh_token");
             var tokenExpiresAt = await HttpContext.GetTokenAsync("expires_at");
@@ -46,10 +75,45 @@ namespace oauth_nhsd_api.Pages
 
             HttpResponseMessage NHSAPIresponse = await new HttpClient().SendAsync(req);
 
-            var ResContent = await NHSAPIresponse.Content.ReadAsStringAsync();
+            var ApiResponse = await NHSAPIresponse.Content.ReadAsStringAsync();
 
-            // Parsing of API response into JSON object
-            JObject initialAPIParse = JObject.Parse(ResContent);
+            return ApiResponse;
+        }
+
+        public void SetSessionDataFromList(List<DateNameJsonBundle> dateNameBundleList)
+        {
+            if (!IsSessionPopulatedByApiResponse()) {
+                foreach (var dateNameJsonBundle in dateNameBundleList.Select((value, index) => new { value, index }))
+                {
+                    var dateNameJsonBundleAsString = new Dictionary<string, string>()
+                {
+                    {"AssertedTitle",  dateNameJsonBundle.value.AssertedTitle},
+                    {"AssertedDate", Convert.ToString(dateNameJsonBundle.value.AssertedDate)},
+                    {"JtokenBundle", dateNameJsonBundle.value.JtokenBundle}
+                };
+
+                    HttpContext.Session.SetString(dateNameJsonBundle.index.ToString(), JsonConvert.SerializeObject(dateNameJsonBundleAsString));
+                }
+            }
+        }
+
+        public List<DateNameJsonBundle> GetListFromSessionData()
+        {
+            var activeList = new List<DateNameJsonBundle>();
+            foreach (var sessionKey in HttpContext.Session.Keys)
+            {
+                var sessionData = HttpContext.Session.GetString(sessionKey);
+
+                var passedJsonObject = JsonConvert.DeserializeObject<DateNameJsonBundle>(sessionData, _dateTimeConverter);
+                activeList.Add(passedJsonObject);
+            }
+            return activeList;
+        }
+
+        public List<DateNameJsonBundle> CreateListFromJsonResponse(string apiResponse, string activeStatus)
+        {
+            // Parsing the API response into a useable object
+            JObject initialAPIParse = JObject.Parse(apiResponse);
 
             var allergyResponseAsString = Convert.ToString(initialAPIParse["response"]);
             var allergyResponseAsJson = JObject.Parse(allergyResponseAsString);
@@ -61,7 +125,7 @@ namespace oauth_nhsd_api.Pages
             foreach (JToken resource in EntriesAsJson)
             {
                 if (resource.SelectToken("resource.resourceType").ToString() == "AllergyIntolerance"
-                    && resource.SelectToken("resource.clinicalStatus.coding[0].code").ToString() == "active")
+                    && resource.SelectToken("resource.clinicalStatus.coding[0].code").ToString() == activeStatus)
                 {
                     var resourceCode = resource.SelectToken("resource.code");
 
@@ -78,34 +142,25 @@ namespace oauth_nhsd_api.Pages
                     });
                 }
             }
-            // Orders the list by date, oldest first
-            OrderedActiveList = activeList.OrderByDescending(x => x.AssertedDate).ToList();
 
-            // Adding allergies data to ASP Session
-            SetSessionDataFromList(OrderedActiveList);
-
-            // variables created to display info to the user.
-            ResResponse = string.Format("{0} - {1}", (int)NHSAPIresponse.StatusCode, NHSAPIresponse.StatusCode);
-            SessionExpires = Convert.ToDateTime(tokenExpiresAt);
-
+            return activeList;
         }
 
-        public void SetSessionDataFromList(List<DateNameJsonBundle> dateNameBundleList)
+        public Boolean IsSessionPopulatedByApiResponse()
         {
-            foreach (var dateNameJsonBundle in dateNameBundleList.Select((value, index) => new {value, index}))
+            try
             {
-                var dateNameJsonBundleAsString = new Dictionary<string, string>()
-                {
-                    {"AssertedTitle",  dateNameJsonBundle.value.AssertedTitle},
-                    {"AssertedDate", Convert.ToString(dateNameJsonBundle.value.AssertedDate)},
-                    {"JtokenBundle", dateNameJsonBundle.value.JtokenBundle}
-                };
-
-                HttpContext.Session.SetString(dateNameJsonBundle.index.ToString(), JsonConvert.SerializeObject(dateNameJsonBundleAsString));
+                var response = HttpContext.Session.GetString("0");
+                JsonConvert.DeserializeObject<DateNameJsonBundle>(response);
             }
-        }
+            catch (ArgumentNullException)
+            {
 
-        public void Get
+                return false;
+            }
+
+            return true;
+        }
     }
    
 }
