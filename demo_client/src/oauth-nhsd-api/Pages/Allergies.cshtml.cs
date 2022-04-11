@@ -139,7 +139,7 @@ namespace oauth_nhsd_api.Pages
         {
             var response = HttpContext.Session.GetString("0");
 
-            return response == null;
+            return !(response == null);
         }
     }
    
