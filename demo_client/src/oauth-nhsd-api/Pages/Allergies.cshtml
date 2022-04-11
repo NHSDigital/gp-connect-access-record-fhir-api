@@ -27,7 +27,7 @@
                 <h3 class="nhsuk-card__heading nhsuk-heading-s">
                     @item.AssertedDate?.ToString("dd MMM yyyy")
                     <br/>
-                    <a  id = "@Model.OrderedActiveList.IndexOf(item)" class="nhsuk-card__link">
+                    <a class="nhsuk-card__link" asp-page="AllergyDetails" asp-route-id="@Model.OrderedActiveList.IndexOf(item)">
                         @item.AssertedTitle
                     </a>
                 </h3>
@@ -37,7 +37,7 @@
     }
 </div>
 <div class="nhsuk-action-link">
-    <a class="nhsuk-action-link__link" asp-page="/AllergiesDataDump" >
+    <a class="nhsuk-action-link__link" asp-page="/AllergiesDataDump">
         <svg class="nhsuk-icon nhsuk-icon__arrow-right-circle" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24" aria-hidden="true" width="36" height="36">
             <path d="M0 0h24v24H0z" fill="none"></path>
@@ -48,35 +48,3 @@
         <span class="nhsuk-action-link__text">View Allergies Data Dump</span>
     </a>
 </div>
-
-
-<script>
-    var myArray = [];
-    //Create Reposnse array in JS
-    @foreach (var item in Model.OrderedActiveList)
-    {
-        @:var jtokenAsString = "@item.JtokenBundle".replace(/&quot;/g, '"');
-        @:var data = {AssertedTitle: "@item.AssertedTitle", AssertedDate: "@item.AssertedDate", JtokenBundle: jtokenAsString};
-        @:myArray.push(data); 
-    }
-    //Onclick event triggerd by card
-$(".nhsuk-card__link").on('click', function(event){
-    //Selected array item using id from selected card
-    var _index = parseInt(event.target.id)
-    var data = myArray[_index]
-
-    //Send GET request to store chosen card in session
-    $.ajax({
-        type: "GET",
-        url: "/Allergies?handler=SetSessionData",
-        data: {jsonString: JSON.stringify(data)},
-        datatype: "json",
-        contentType: 'application/json; charset=utf-8',
-        success: function (result) {
-            window.location.replace(result.redirectUrl);
-        }
-    });
-
-    
-});
-</script>

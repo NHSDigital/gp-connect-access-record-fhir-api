@@ -10,16 +10,16 @@ namespace oauth_nhsd_api.Pages
     {
         public AllergyResource? ParsedModel { get; set; }
 
-        public void OnGet()
+        public void OnGet(string id)
         {
-            var passedObject = HttpContext.Session.GetString("SelectedAllergy");
+            var test = HttpContext.Session.GetString(id);
 
-            //Custom datetime layout was needed to parse 
+            ////Custom datetime layout was needed to parse 
             var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
 
-            var passedJsonObject = JsonConvert.DeserializeObject<DateNameJsonBundle>(passedObject, dateTimeConverter);
+            var passedJsonObject = JsonConvert.DeserializeObject<DateNameJsonBundle>(test, dateTimeConverter);
 
-            //Parse the json to a class for use in frontend
+            ////Parse the json to a class for use in frontend
             ParseResourceToObjectClass parser = new ParseResourceToObjectClass();
             ParsedModel = parser.ParseResourceToObject(passedJsonObject);
         }
