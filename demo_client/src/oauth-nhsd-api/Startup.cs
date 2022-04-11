@@ -32,14 +32,14 @@ namespace oauth_nhsd_api
             var url = QueryHelpers.AddQueryString("/authorize", param);
 
             services.AddAuthentication(options =>
-            {
-                // Authentication cookie - are you authentciated or not. if not - default challenge scheme defines what should be used to authenticate you
-                // here using custom scheme NHSD
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                {
+                    // Authentication cookie - are you authentciated or not. if not - default challenge scheme defines what should be used to authenticate you
+                    // here using custom scheme NHSD
+                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
-                options.DefaultChallengeScheme = "NHSD";
-            })
+                    options.DefaultChallengeScheme = "NHSD";
+                })
                 .AddCookie(options =>
                 {
                     options.Cookie.HttpOnly = true;
