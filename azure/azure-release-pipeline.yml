@@ -32,10 +32,14 @@ extends:
     service_base_path: ${{ variables.service_base_path }}
     apigee_deployments:
       - environment: internal-dev
+        jinja_templates:
+          ENCRYPTED_VARIABLES_KVM: apim-variables-encrypted
         post_deploy:
           - template: ./templates/run-integration-tests.yml
       - environment: int
         depends_on:
           - internal_dev
+        jinja_templates:
+          ENCRYPTED_VARIABLES_KVM: apim-variables-encrypted
         post_deploy:
           - template: ./templates/run-integration-tests.yml
