@@ -32,8 +32,9 @@ extends:
     service_name: ${{ variables.service_name }}
     short_service_name: ${{ variables.short_service_name }}
     service_base_path: ${{ variables.service_base_path }}
-    ENCRYPTED_VARIABLES_KVM: apim-variables-encrypted
     apigee_deployments:
       - environment: internal-dev
+        jinja_templates:
+          ENCRYPTED_VARIABLES_KVM: apim-variables-encrypted
         post_deploy:
           - template: ./templates/run-integration-tests.yml
