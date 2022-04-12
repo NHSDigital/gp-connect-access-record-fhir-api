@@ -26,6 +26,9 @@
           <Name>RaiseFault.401Unauthorized</Name>
         </Step>
         <Step>
+          <Name>KeyValueMapOperations.GetSecureVariables</Name>
+        </Step>
+        <Step>
           <Name>ServiceCallout.CallHealthcheckEndpoint</Name>
         </Step>
         <Step>
