@@ -5,8 +5,11 @@
     <Request clearPayload="true" variable="healthcheckRequest">
         <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
         <Set>
+            <Headers>
+                <Header name="apikey">{{ status-endpoint-api-key }}</Header>
+            </Headers>
             <Verb>GET</Verb>
-            <Path>/_ping</Path>
+            <Path>/_status</Path>
         </Set>
     </Request>
     <Response>fhirConverterHealthcheckResponse</Response>
@@ -14,7 +17,7 @@
         <SSLInfo>
             <Enabled>true</Enabled>
         </SSLInfo>
-        <URL>https://{{ APIGEE_ENVIRONMENT }}.api.service.nhs.uk/fhir-converter</URL>
+        <URL>https://int.api.service.nhs.uk/fhir-converter</URL>
     </HTTPTargetConnection>
     <Timeout>20000</Timeout>
 </ServiceCallout>

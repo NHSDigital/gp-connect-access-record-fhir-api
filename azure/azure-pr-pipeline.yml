@@ -27,12 +27,25 @@ variables:
   - template: project.yml
 
 extends:
-  template: azure/common/apigee-deployment.yml@common
-  parameters:
-    service_name: ${{ variables.service_name }}
-    short_service_name: ${{ variables.short_service_name }}
-    service_base_path: ${{ variables.service_base_path }}
-    apigee_deployments:
-      - environment: internal-dev
-        post_deploy:
-          - template: ./templates/run-integration-tests.yml
+  - template: "azure/components/aws-assume-role.yml@common"
+    parameters:
+      role: "auto-ops"
+      profile: "apm_ptl"
+
+  - template: "azure/components/get-aws-secrets-and-ssm-params.yml@common"
+    parameters:
+      secret_ids:
+        - ptl/monitoring/status-endpoint-api-key
+
+  - bash: |
+        export status-endpoint-api-key="$(Pipeline.Workspace)/secrets/$(status-endpoint-api-key)"
+
+  - template: azure/common/apigee-deployment.yml@common
+    parameters:
+      service_name: ${{ variables.service_name }}
+      short_service_name: ${{ variables.short_service_name }}
+      service_base_path: ${{ variables.service_base_path }}
+      apigee_deployments:
+        - environment: internal-dev
+          post_deploy:
+            - template: ./templates/run-integration-tests.yml
