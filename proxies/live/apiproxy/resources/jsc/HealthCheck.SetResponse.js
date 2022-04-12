@@ -27,10 +27,10 @@ const fhir_converter_healthcheck_status = (fhir_converter_healthcheck_status_cod
 
 const timeout = (healthcheck_status_code === null && healthcheck_failed) ? "true" : "false";
 
-const final_status = (healthcheck_status != "pass" &&
-                      PDS_healthcheck_status != "pass" &&
-                      SDS_healthcheck_status != "pass" &&
-                      orange_healthcheck_status != "pass" &&
+const final_status = (healthcheck_status != "pass" ||
+                      PDS_healthcheck_status != "pass" ||
+                      SDS_healthcheck_status != "pass" ||
+                      orange_healthcheck_status != "pass" ||
                       fhir_converter_healthcheck_status != "pass")
                       ? "fail" : "pass";
 
