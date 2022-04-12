@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authentication;
@@ -36,49 +37,65 @@ namespace oauth_nhsd_api.Pages
             var tokenAccess = await HttpContext.GetTokenAsync("access_token");
             var tokenRefresh = await HttpContext.GetTokenAsync("refresh_token");
             var tokenExpiresAt = await HttpContext.GetTokenAsync("expires_at");
-
+            
             HttpRequestMessage req = new HttpRequestMessage(System.Net.Http.HttpMethod.Get,
                 _configuration["NHSD:APIEndpoint"] + _configuration["NHSD:NhsNumber"]);
 
             // make the user restricted request.
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenAccess);
+            //req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", " ");
 
             HttpResponseMessage NHSAPIresponse = await new HttpClient().SendAsync(req);
-
-            var ResContent = await NHSAPIresponse.Content.ReadAsStringAsync();
-
-            // Parsing of API response into JSON object
-            JObject initialAPIParse = JObject.Parse(ResContent);
-
-            var allergyResponseAsString = Convert.ToString(initialAPIParse["response"]);
-            var allergyResponseAsJson = JObject.Parse(allergyResponseAsString);
-
-            EntriesAsJson = allergyResponseAsJson.SelectToken("entry");
-            var activeList = new List<DateNameJsonBundle>();
-
-            // Looping to create a list of objects to order
-            foreach (JToken resource in EntriesAsJson)
-            {
-                if (resource.SelectToken("resource.resourceType").ToString() == "AllergyIntolerance"
-                    && resource.SelectToken("resource.clinicalStatus.coding[0].code").ToString() == "active")
+            
+            if (NHSAPIresponse.StatusCode == HttpStatusCode.OK)
                 {
-                    var resourceCode = resource.SelectToken("resource.code");
+                    
+                    var ResContent = await NHSAPIresponse.Content.ReadAsStringAsync();
 
-                    var allergyText = Convert.ToString(
-                        resourceCode.SelectToken("coding[0].display")
-                        ?? resourceCode.SelectToken("text"));
+                    // Parsing of API response into JSON object
+                    JObject initialAPIParse = JObject.Parse(ResContent);
 
-                    activeList.Add(new DateNameJsonBundle
+                    var allergyResponseAsString = Convert.ToString(initialAPIParse["response"]);
+                    var allergyResponseAsJson = JObject.Parse(allergyResponseAsString);
+
+                    EntriesAsJson = allergyResponseAsJson.SelectToken("entry");
+                    var activeList = new List<DateNameJsonBundle>();
+
+                    // Looping to create a list of objects to order
+                    foreach (JToken resource in EntriesAsJson)
                     {
-                        AssertedDate = (DateTime?)resource.SelectToken("resource.recordedDate"),
-                        EndDate = null,
-                        AssertedTitle = allergyText.ToString(),
-                        JtokenBundle = resource.SelectToken("resource")
-                    });
-                }
-                // Orders the list by date, oldest first
-                OrderedActiveList = activeList.OrderByDescending(x => x.AssertedDate).ToList();
-            }
+                        if (resource.SelectToken("resource.resourceType").ToString() == "AllergyIntolerance"
+                            && resource.SelectToken("resource.clinicalStatus.coding[0].code").ToString() == "active")
+                        {
+                            var resourceCode = resource.SelectToken("resource.code");
+
+                            var allergyText = Convert.ToString(
+                                resourceCode.SelectToken("coding[0].display")
+                                ?? resourceCode.SelectToken("text"));
+
+                            activeList.Add(new DateNameJsonBundle
+                            {
+                                AssertedDate = (DateTime?)resource.SelectToken("resource.recordedDate"),
+                                EndDate = null,
+                                AssertedTitle = allergyText.ToString(),
+                                JtokenBundle = resource.SelectToken("resource")
+                            });
+                        }
+                        // Orders the list by date, oldest first
+                        OrderedActiveList = activeList.OrderByDescending(x => x.AssertedDate).ToList();
+                    }
+                }    
+
+            else
+                 {
+                 Response.Redirect("/Index");
+                
+                 foreach(var cookie in HttpContext.Request.Cookies)
+                    {
+                      Response.Cookies.Delete(cookie.Key);
+                    }
+ 
+                 }
 
             // variables created to display info to the user.
             ResResponse = string.Format("{0} - {1}", (int)NHSAPIresponse.StatusCode, NHSAPIresponse.StatusCode);
