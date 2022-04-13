@@ -26,7 +26,22 @@
           <Name>RaiseFault.401Unauthorized</Name>
         </Step>
         <Step>
+          <Name>KeyValueMapOperations.GetSecureVariables</Name>
+        </Step>
+        <Step>
           <Name>ServiceCallout.CallHealthcheckEndpoint</Name>
+        </Step>
+        <Step>
+          <Name>ServiceCallout.CallPDSHealthcheck</Name>
+        </Step>
+        <Step>
+          <Name>ServiceCallout.CallSDSHealthcheck</Name>
+        </Step>
+        <Step>
+          <Name>ServiceCallout.CallOrangeHealthcheck</Name>
+        </Step>
+        <Step>
+          <Name>ServiceCallout.CallFhirConverterHealthcheck</Name>
         </Step>
       </Request>
       <Response>

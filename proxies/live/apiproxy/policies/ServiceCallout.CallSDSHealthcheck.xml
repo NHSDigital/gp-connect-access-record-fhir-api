@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ServiceCallout async="false" continueOnError="true" enabled="true" name="ServiceCallout.CallSDSHealthcheck">
+    <DisplayName>ServiceCallout.CallSDSHealthcheck</DisplayName>
+    <Properties/>
+    <Request clearPayload="true" variable="healthcheckRequest">
+        <IgnoreUnresolvedVariables>false</IgnoreUnresolvedVariables>
+        <Set>
+            <Headers>
+                <Header name="apikey">{private.apigee.status-endpoint-api-key}</Header>
+            </Headers>
+            <Verb>GET</Verb>
+            <Path>/_status</Path>
+        </Set>
+    </Request>
+    <Response>SDShealthcheckResponse</Response>
+    <HTTPTargetConnection>
+        <SSLInfo>
+            <Enabled>true</Enabled>
+        </SSLInfo>
+        <URL>https://int.api.service.nhs.uk/spine-directory/FHIR/R4</URL>
+    </HTTPTargetConnection>
+    <Timeout>20000</Timeout>
+</ServiceCallout>
