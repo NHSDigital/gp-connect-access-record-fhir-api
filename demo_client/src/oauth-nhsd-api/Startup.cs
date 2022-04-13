@@ -37,7 +37,6 @@ namespace oauth_nhsd_api
                     // here using custom scheme NHSD
                     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-
                     options.DefaultChallengeScheme = "NHSD";
                 })
                 .AddCookie(options =>

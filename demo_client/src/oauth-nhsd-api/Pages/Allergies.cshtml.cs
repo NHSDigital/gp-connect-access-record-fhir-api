@@ -43,8 +43,7 @@ namespace oauth_nhsd_api.Pages
 
             // make the user restricted request.
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenAccess);
-            //req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", " ");
-
+            
             HttpResponseMessage NHSAPIresponse = await new HttpClient().SendAsync(req);
             
             if (NHSAPIresponse.StatusCode == HttpStatusCode.OK)
