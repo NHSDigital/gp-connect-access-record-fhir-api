@@ -1,6 +1,7 @@
 from copy import deepcopy
 from mediation_service.mediation.prepare_ssp_response import prepare_ssp_response
 import re
+from jsonpath_rw import parse
 
 
 def test_remove_comments():
@@ -47,6 +48,62 @@ def test_remove_non_allergy_intolerance():
 
     # Then
     assert expected_res == act
+
+
+def test_return_active_and_resolved_allergy():
+    # Given
+    fhir_res = {
+        "entry": [
+             {"resource": {"resourceType": "Foo"}},
+             {"resource": {"resourceType": "AllergyIntolerance"}},
+             {"resource": {"resourceType": "AllergyIntolerance"}},
+             {"resource": {
+                 "resourceType": "List",
+                  "title": "Ended allergies",
+                 "contained": [
+                     {
+                         "resourceType": "AllergyIntolerance",
+                         "extension": [
+                            {
+                                "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                            }
+                        ],
+                        "clinicalStatus": "resolved",
+                     }
+                 ]
+                 }
+                }
+        ]
+    }
+
+    expected_res = {
+        "type": "searchset",
+        "entry": [
+            {"resource": {"resourceType": "AllergyIntolerance"}},
+            {"resource": {"resourceType": "AllergyIntolerance"}},
+            {"resource": {
+                 "resourceType": "List",
+                 "title": "Ended allergies",
+                 "contained": [
+                     {
+                         "resourceType": "AllergyIntolerance",
+                         "extension": [
+                            {
+                                "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                            }
+                        ],
+                        "clinicalStatus": "resolved",
+                     }
+                 ]
+                 }
+                }
+        ],
+    }
+
+     # When
+    actual = prepare_ssp_response(fhir_res)
+
+    assert expected_res == actual
 
 
 def test_transform_references_for_patient():

@@ -158,14 +158,41 @@ def __filter_non_allergy_intolerance(ssp_response: dict):
     query = parse("`this`.entry[*].resource.resourceType")
     matches = query.find(ssp_response)
 
-    to_remove = []
-    for match in matches:
-        if match.value != "AllergyIntolerance":
-            index = match.full_path.left.left.right.index
-            to_remove.append(ssp_response["entry"][index])
+    indexes_to_keep = []
 
-    for item in to_remove:
+    # get indexes of allegyIntolerance
+    for match in matches:
+        if match.value == "AllergyIntolerance":
+            index = match.full_path.left.left.right.index
+            indexes_to_keep.append(index)
+
+    # get indexes of List
+    for match in matches:
+        if match.value == "List":
+            # get the resource
+            index = match.full_path.left.left.right.index
+            list_resource = ssp_response["entry"][index]
+            # check list title
+            list_title = list_resource.get("title")
+            if list_title == "Ended allergies":
+                indexes_to_keep.append(index)
+
+    # get the size of entry list - for indexes not in list to keep - remove
+    all_indexes = [i for i in range(0, len(ssp_response["entry"]))]
+    indexes_to_remove = [i for i in all_indexes if i not in indexes_to_keep]
+
+    for item in indexes_to_remove:
         ssp_response["entry"].remove(item)
+
+
+    # to_remove = []
+    # for match in matches:
+    #     if match.value != "AllergyIntolerance":
+    #         index = match.full_path.left.left.right.index
+    #         to_remove.append(ssp_response["entry"][index])
+
+    # for item in to_remove:
+    #     ssp_response["entry"].remove(item)
 
 
 def __remove_fhir_comment(ssp_response: dict):
