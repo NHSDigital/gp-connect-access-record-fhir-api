@@ -33,16 +33,21 @@ def __filter_warnings_to_operationoutcome(ssp_response: dict) -> OperationOutcom
     for match in matches:
         if match.value == "List":
             index = match.full_path.left.left.right.index
-            list = ssp_response["entry"][index]
-            for extension in list["resource"]["extension"]:
-                if (
-                    extension["url"]
-                    == "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC"
-                    "-ListWarningCode-1"
-                ):
-                    operation_outcome_list.append(
-                        __build_operationoutcome_issue(extension)
-                    )
+            list = ssp_response["entry"][index]["resource"]
+
+            # check list title to only select list with allergy intolerance warnings.
+            list_title = list.get("title")
+            if list_title == "Allergies and adverse reactions":
+
+                for extension in list["extension"]:
+                    if (
+                        extension["url"]
+                        == "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC"
+                        "-ListWarningCode-1"
+                    ):
+                        operation_outcome_list.append(
+                            __build_operationoutcome_issue(extension)
+                        )
 
     if operation_outcome_list:
         return __build_operationoutcome(operation_outcome_list)
@@ -155,45 +160,41 @@ def __transform_allergy_local_references(ssp_response: dict):
 
 
 def __filter_non_allergy_intolerance(ssp_response: dict):
+    # handle bundle with no entries
+    if not ssp_response.get("entry"):
+        return
+
     query = parse("`this`.entry[*].resource.resourceType")
     matches = query.find(ssp_response)
 
-    indexes_to_keep = []
+    entry_to_keep = []
 
-    # get indexes of allegyIntolerance
     for match in matches:
-        if match.value == "AllergyIntolerance":
-            index = match.full_path.left.left.right.index
-            indexes_to_keep.append(index)
+        allergy_intolerances = __allergy_intolerances_to_keep(match, ssp_response)
+        ended_allergy_list = __ended_allergy_list_to_keep(match, ssp_response)
+        entry_to_keep.extend(allergy_intolerances + ended_allergy_list)
 
-    # get indexes of List
-    for match in matches:
-        if match.value == "List":
-            # get the resource
-            index = match.full_path.left.left.right.index
-            list_resource = ssp_response["entry"][index]
-            # check list title
-            list_title = list_resource.get("title")
-            if list_title == "Ended allergies":
-                indexes_to_keep.append(index)
+    for entry in ssp_response["entry"]:
+        if entry not in entry_to_keep:
+            ssp_response["entry"].remove(entry)
 
-    # get the size of entry list - for indexes not in list to keep - remove
-    all_indexes = [i for i in range(0, len(ssp_response["entry"]))]
-    indexes_to_remove = [i for i in all_indexes if i not in indexes_to_keep]
+def __allergy_intolerances_to_keep(match, ssp_response):
+    allergy_to_keep = []
+    if match.value == "AllergyIntolerance":
+        index = match.full_path.left.left.right.index
+        allergy_to_keep.append(ssp_response["entry"][index])
+    return allergy_to_keep
 
-    for item in indexes_to_remove:
-        ssp_response["entry"].remove(item)
-
-
-    # to_remove = []
-    # for match in matches:
-    #     if match.value != "AllergyIntolerance":
-    #         index = match.full_path.left.left.right.index
-    #         to_remove.append(ssp_response["entry"][index])
-
-    # for item in to_remove:
-    #     ssp_response["entry"].remove(item)
-
+def __ended_allergy_list_to_keep(match, ssp_response):
+    list_to_retain = []
+    if match.value == "List":
+        index = match.full_path.left.left.right.index
+        list_resource = ssp_response["entry"][index]["resource"]
+        # check list title
+        list_title = list_resource.get("title")
+        if list_title == "Ended allergies":
+            list_to_retain.append(ssp_response["entry"][index])
+    return list_to_retain
 
 def __remove_fhir_comment(ssp_response: dict):
     query = parse("`this`..fhir_comments")

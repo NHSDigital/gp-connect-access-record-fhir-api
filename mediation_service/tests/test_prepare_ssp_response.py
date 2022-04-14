@@ -1,7 +1,6 @@
 from copy import deepcopy
 from mediation_service.mediation.prepare_ssp_response import prepare_ssp_response
 import re
-from jsonpath_rw import parse
 
 
 def test_remove_comments():
@@ -54,25 +53,26 @@ def test_return_active_and_resolved_allergy():
     # Given
     fhir_res = {
         "entry": [
-             {"resource": {"resourceType": "Foo"}},
-             {"resource": {"resourceType": "AllergyIntolerance"}},
-             {"resource": {"resourceType": "AllergyIntolerance"}},
-             {"resource": {
-                 "resourceType": "List",
-                  "title": "Ended allergies",
-                 "contained": [
-                     {
-                         "resourceType": "AllergyIntolerance",
-                         "extension": [
-                            {
-                                "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
-                            }
-                        ],
-                        "clinicalStatus": "resolved",
-                     }
-                 ]
-                 }
+            {"resource": {"resourceType": "Foo"}},
+            {"resource": {"resourceType": "AllergyIntolerance"}},
+            {"resource": {"resourceType": "AllergyIntolerance"}},
+            {
+                "resource": {
+                    "resourceType": "List",
+                    "title": "Ended allergies",
+                    "contained": [
+                        {
+                            "resourceType": "AllergyIntolerance",
+                            "extension": [
+                                {
+                                    "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                                }
+                            ],
+                            "clinicalStatus": "resolved",
+                        }
+                    ],
                 }
+            },
         ]
     }
 
@@ -81,30 +81,30 @@ def test_return_active_and_resolved_allergy():
         "entry": [
             {"resource": {"resourceType": "AllergyIntolerance"}},
             {"resource": {"resourceType": "AllergyIntolerance"}},
-            {"resource": {
-                 "resourceType": "List",
-                 "title": "Ended allergies",
-                 "contained": [
-                     {
-                         "resourceType": "AllergyIntolerance",
-                         "extension": [
-                            {
-                                "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
-                            }
-                        ],
-                        "clinicalStatus": "resolved",
-                     }
-                 ]
-                 }
+            {
+                "resource": {
+                    "resourceType": "List",
+                    "title": "Ended allergies",
+                    "contained": [
+                        {
+                            "resourceType": "AllergyIntolerance",
+                            "extension": [
+                                {
+                                    "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                                }
+                            ],
+                            "clinicalStatus": "resolved",
+                        }
+                    ],
                 }
+            },
         ],
     }
 
-     # When
+    # When
     actual = prepare_ssp_response(fhir_res)
 
     assert expected_res == actual
-
 
 def test_transform_references_for_patient():
 
@@ -197,6 +197,7 @@ def test_warning_filter():
             {
                 "resource": {
                     "resourceType": "List",
+                    "title": "Allergies and adverse reactions",
                     "extension": [
                         {
                             "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-ListWarningCode-1",
@@ -214,6 +215,7 @@ def test_warning_filter():
 
     # When
     result = prepare_ssp_response(fhir_res)
+    print(result)
 
     # Then
     assert result["entry"][0]["resource"]["resourceType"] == "AllergyIntolerance"
