@@ -64,6 +64,15 @@ namespace oauth_nhsd_api
                     options.TokenEndpoint = Configuration["NHSD:OAuthEndpoint"] + "/token";
                     options.SaveTokens = true;
                 });
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = System.TimeSpan.FromMinutes(10);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
 
         }
 
@@ -88,11 +97,13 @@ namespace oauth_nhsd_api
             {
                 MinimumSameSitePolicy = SameSiteMode.Lax,
                 Secure = CookieSecurePolicy.Always
-        });
+            });
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {

@@ -1,29 +1,38 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
-using System;
+using Newtonsoft.Json.Converters;
 using oauth_nhsd_api.Helpers;
 
 namespace oauth_nhsd_api.Pages
 {
     public class AllergyDetailsModel :  PageModel
     {
-        public DateNameJsonBundle passedJsonObject { get; set; }
-        public AllergyResource ParsedModel { get; set; }
+        public AllergyResource? ParsedModel { get; set; }
+        private readonly IsoDateTimeConverter _dateTimeConverter = new() { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
+        private readonly ParseResourceToObjectClass _parser = new();
 
-        public IActionResult OnGet(string passedObject)
+        public ActionResult OnGet(string id)
         {
-            passedJsonObject = JsonConvert.DeserializeObject<DateNameJsonBundle>(passedObject);
-
-            if (passedJsonObject == null)
+            // If URL is manually navigated to
+            if (id == null)
             {
-                return NotFound();
+                return RedirectToPage("Allergies");
             }
-            //Parse the json to a class for use in frontend
-            ParseResourceToObjectClass parser = new ParseResourceToObjectClass();
-            ParsedModel = parser.ParseResourceToObject(passedJsonObject);
-            return Page();
 
+            // If Query string manually added out of range 
+            var sessionData = HttpContext.Session.GetString(id);
+            if (sessionData == null)
+            {
+                return RedirectToPage("Allergies");
+            }
+            // Custom converter (_dateTimeConverter) required to parse date
+            var passedJsonObject = JsonConvert.DeserializeObject<DateNameJsonBundle>(sessionData, _dateTimeConverter);
+
+            ParsedModel = _parser.ParseResourceToObject(passedJsonObject);
+
+            return Page();
         }
 
     }

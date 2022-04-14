@@ -10,7 +10,7 @@ namespace oauth_nhsd_api.Helpers
         public DateTime? AssertedDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string AssertedTitle { get; set; }
-        public JToken JtokenBundle { get; set; }
+        public string JtokenBundle { get; set; }
     }
 
     public class AllergyResource
@@ -57,7 +57,8 @@ namespace oauth_nhsd_api.Helpers
     public class ParseResourceToObjectClass{
         public AllergyResource ParseResourceToObject(DateNameJsonBundle resourceBundle)
         {
-            var resourceJtoken = resourceBundle.JtokenBundle;
+            var resourceJtoken = JObject.Parse(resourceBundle.JtokenBundle);
+
             var resource = new AllergyResource()
             {
                 AllergyTitle = Convert.ToString(resourceBundle.AssertedTitle),
