@@ -15,11 +15,7 @@ from jsonpath_rw import parse
 def prepare_ssp_response(ssp_response: dict) -> dict:
     __transform_allergy_local_references(ssp_response)
     operationoutcome = __filter_warnings_to_operationoutcome(ssp_response)
-    # take list first.
-    # extract resolved allergies
     resolved_allergy_intolerance_entries = _extract_resolved_allergies(ssp_response)
-    # remove all things that are not allergy intolerance
-    # add the resolved resources to entry.
     _filter_non_allergy_intolerance(ssp_response)
     __remove_fhir_comment(ssp_response)
 
@@ -167,8 +163,12 @@ def __transform_allergy_local_references(ssp_response: dict):
                     "reference"
                 ] = patient_list.get(patient_id[1], patient_ref)
 
+
 def _extract_resolved_allergies(ssp_response: dict):
-    """Extract resolved allergy intolernace resources from list"""
+    """
+    Select resolved allergy intolerance resources from Ended allergies list
+    Return them as a list of Bundle Entry objects
+    """
     query = parse("`this`.entry[*].resource.resourceType")
     matches = query.find(ssp_response)
 
@@ -189,31 +189,22 @@ def _extract_resolved_allergies(ssp_response: dict):
     return resolved_allergy_intolerance_entries
 
 
-
 def _filter_non_allergy_intolerance(ssp_response: dict):
     """
-    Select active and resolved allergy intolerance resources
-    Extract resolved allergy intolerance resources from list
+    Select only active allergy intolerance resources
     """
-    # handle bundle with no entries
-    if not ssp_response.get("entry"):
-        return
-
     query = parse("`this`.entry[*].resource.resourceType")
     matches = query.find(ssp_response)
 
-    entry_to_keep = []
-
+    to_remove = []
     for match in matches:
-        allergy_intolerances = __allergy_intolerances_to_keep(match, ssp_response)
-        #ended_allergy_list = __ended_allergy_list_to_keep(match, ssp_response)
-        entry_to_keep.extend(allergy_intolerances)
+        if match.value != "AllergyIntolerance":
+            index = match.full_path.left.left.right.index
+            to_remove.append(ssp_response["entry"][index])
 
-    copy_entries = deepcopy(ssp_response["entry"])
+    for item in to_remove:
+        ssp_response["entry"].remove(item)
 
-    for entry in copy_entries:
-        if entry not in entry_to_keep:
-            ssp_response["entry"].remove(entry)
 
 def __allergy_intolerances_to_keep(match, ssp_response):
     allergy_to_keep = []
@@ -221,6 +212,7 @@ def __allergy_intolerances_to_keep(match, ssp_response):
         index = match.full_path.left.left.right.index
         allergy_to_keep.append(ssp_response["entry"][index])
     return allergy_to_keep
+
 
 def __ended_allergy_list_to_keep(match, ssp_response):
     list_to_retain = []
@@ -232,6 +224,7 @@ def __ended_allergy_list_to_keep(match, ssp_response):
         if list_title == "Ended allergies":
             list_to_retain.append(ssp_response["entry"][index])
     return list_to_retain
+
 
 def __remove_fhir_comment(ssp_response: dict):
     query = parse("`this`..fhir_comments")
