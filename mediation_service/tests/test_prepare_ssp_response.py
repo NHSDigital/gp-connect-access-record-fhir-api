@@ -1,6 +1,11 @@
 from copy import deepcopy
-from mediation_service.mediation.prepare_ssp_response import prepare_ssp_response
+from mediation_service.mediation.prepare_ssp_response import (
+    prepare_ssp_response,
+    _filter_non_allergy_intolerance,
+    _extract_resolved_allergies
+)
 import re
+import json
 
 
 def test_remove_comments():
@@ -54,6 +59,7 @@ def test_return_active_and_resolved_allergy():
     fhir_res = {
         "entry": [
             {"resource": {"resourceType": "Foo"}},
+            {"resource": {"resourceType": "Bar"}},
             {"resource": {"resourceType": "AllergyIntolerance"}},
             {"resource": {"resourceType": "AllergyIntolerance"}},
             {
@@ -63,6 +69,17 @@ def test_return_active_and_resolved_allergy():
                     "contained": [
                         {
                             "resourceType": "AllergyIntolerance",
+                            "id": "1",
+                            "extension": [
+                                {
+                                    "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                                }
+                            ],
+                            "clinicalStatus": "resolved",
+                        },
+                        {
+                            "resourceType": "AllergyIntolerance",
+                            "id": "2",
                             "extension": [
                                 {
                                     "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
@@ -73,6 +90,7 @@ def test_return_active_and_resolved_allergy():
                     ],
                 }
             },
+            {"resource": {"resourceType": "Baz"}},
         ]
     }
 
@@ -81,13 +99,20 @@ def test_return_active_and_resolved_allergy():
         "entry": [
             {"resource": {"resourceType": "AllergyIntolerance"}},
             {"resource": {"resourceType": "AllergyIntolerance"}},
-            {
-                "resource": {
-                    "resourceType": "List",
-                    "title": "Ended allergies",
-                    "contained": [
-                        {
+            {"resource": {
                             "resourceType": "AllergyIntolerance",
+                            "id": "1",
+                            "extension": [
+                                {
+                                    "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                                }
+                            ],
+                            "clinicalStatus": "resolved",
+                        },
+            },
+            {"resource": {
+                            "resourceType": "AllergyIntolerance",
+                            "id": "2",
                             "extension": [
                                 {
                                     "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
@@ -95,8 +120,6 @@ def test_return_active_and_resolved_allergy():
                             ],
                             "clinicalStatus": "resolved",
                         }
-                    ],
-                }
             },
         ],
     }
@@ -105,6 +128,95 @@ def test_return_active_and_resolved_allergy():
     actual = prepare_ssp_response(fhir_res)
 
     assert expected_res == actual
+
+
+def test_extract_resolved_allergies():
+    # Given
+    fhir_res = {
+        "entry": [
+            {"resource": {"resourceType": "Foo"}},
+            {"resource": {"resourceType": "AllergyIntolerance"}},
+            {
+                "resource": {
+                    "resourceType": "List",
+                    "title": "Ended allergies",
+                    "contained": [
+                        {
+                            "resourceType": "AllergyIntolerance",
+                            "id": "1",
+                            "extension": [
+                                {
+                                    "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                                }
+                            ],
+                            "clinicalStatus": "resolved",
+                        },
+                        {
+                            "resourceType": "AllergyIntolerance",
+                            "id": "2",
+                            "extension": [
+                                {
+                                    "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                                }
+                            ],
+                            "clinicalStatus": "resolved",
+                        },
+                    ],
+                }
+            },
+            {"resource": {"resourceType": "Baz"}},
+        ]
+    }
+
+    expected = [
+        {
+            "resource": {
+                "resourceType": "AllergyIntolerance",
+                "id": "1",
+                "extension": [
+                    {
+                        "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                    }
+                ],
+                "clinicalStatus": "resolved",
+            },
+        },
+        {
+            "resource": {
+                "resourceType": "AllergyIntolerance",
+                "id": "2",
+                "extension": [
+                    {
+                        "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                    }
+                ],
+                "clinicalStatus": "resolved",
+            },
+        },
+    ]
+
+    # When
+    actual = _extract_resolved_allergies(fhir_res)
+
+    # Then
+    assert actual == expected
+
+def test_extract_resolved_allergies_when_none():
+    fhir_res = {
+        "entry": [
+            {"resource": {"resourceType": "Foo"}},
+            {"resource": {"resourceType": "AllergyIntolerance"}},
+            {"resource": {"resourceType": "Baz"}},
+        ]
+    }
+
+    # When
+    actual = _extract_resolved_allergies(fhir_res)
+
+    # Then
+    assert actual == []
+
+
 
 def test_transform_references_for_patient():
 

@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime, timezone
 from functools import reduce
 
@@ -14,8 +15,16 @@ from jsonpath_rw import parse
 def prepare_ssp_response(ssp_response: dict) -> dict:
     __transform_allergy_local_references(ssp_response)
     operationoutcome = __filter_warnings_to_operationoutcome(ssp_response)
-    __filter_non_allergy_intolerance(ssp_response)
+    # take list first.
+    # extract resolved allergies
+    resolved_allergy_intolerance_entries = _extract_resolved_allergies(ssp_response)
+    # remove all things that are not allergy intolerance
+    # add the resolved resources to entry.
+    _filter_non_allergy_intolerance(ssp_response)
     __remove_fhir_comment(ssp_response)
+
+    if resolved_allergy_intolerance_entries:
+        ssp_response["entry"].extend(resolved_allergy_intolerance_entries)
 
     if operationoutcome:
         operationoutcome_object = {"resource": operationoutcome.as_json()}
@@ -158,8 +167,34 @@ def __transform_allergy_local_references(ssp_response: dict):
                     "reference"
                 ] = patient_list.get(patient_id[1], patient_ref)
 
+def _extract_resolved_allergies(ssp_response: dict):
+    """Extract resolved allergy intolernace resources from list"""
+    query = parse("`this`.entry[*].resource.resourceType")
+    matches = query.find(ssp_response)
 
-def __filter_non_allergy_intolerance(ssp_response: dict):
+    resolved_allergy_intolerance_entries = []
+
+    for match in matches:
+        if match.value == "List":
+            index = match.full_path.left.left.right.index
+            list_resource = ssp_response["entry"][index]["resource"]
+            # check list title
+            list_title = list_resource.get("title")
+            if list_title == "Ended allergies":
+                contained = list_resource.get("contained")
+                for resource in contained:
+                    resource_entry = {"resource": resource}
+                    resolved_allergy_intolerance_entries.append(resource_entry)
+
+    return resolved_allergy_intolerance_entries
+
+
+
+def _filter_non_allergy_intolerance(ssp_response: dict):
+    """
+    Select active and resolved allergy intolerance resources
+    Extract resolved allergy intolerance resources from list
+    """
     # handle bundle with no entries
     if not ssp_response.get("entry"):
         return
@@ -171,10 +206,12 @@ def __filter_non_allergy_intolerance(ssp_response: dict):
 
     for match in matches:
         allergy_intolerances = __allergy_intolerances_to_keep(match, ssp_response)
-        ended_allergy_list = __ended_allergy_list_to_keep(match, ssp_response)
-        entry_to_keep.extend(allergy_intolerances + ended_allergy_list)
+        #ended_allergy_list = __ended_allergy_list_to_keep(match, ssp_response)
+        entry_to_keep.extend(allergy_intolerances)
 
-    for entry in ssp_response["entry"]:
+    copy_entries = deepcopy(ssp_response["entry"])
+
+    for entry in copy_entries:
         if entry not in entry_to_keep:
             ssp_response["entry"].remove(entry)
 
