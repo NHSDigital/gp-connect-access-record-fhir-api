@@ -15,7 +15,7 @@ namespace oauth_nhsd_api.Pages
         private readonly IsoDateTimeConverter _dateTimeConverter = new() { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
         private readonly ParseResourceToObjectClass _parser = new();
 
-        public ActionResult OnGet(string id)
+        public ActionResult OnGet(string id, string allergyType)
         {
             // If URL is manually navigated to
             if (id == null)
@@ -24,7 +24,7 @@ namespace oauth_nhsd_api.Pages
             }
 
             // If Query string manually added out of range 
-            var sessionData = HttpContext.Session.GetString(id);
+            var sessionData = HttpContext.Session.GetString(allergyType+"_"+id);
             if (sessionData == null)
             {
                 return RedirectToPage("Allergies");

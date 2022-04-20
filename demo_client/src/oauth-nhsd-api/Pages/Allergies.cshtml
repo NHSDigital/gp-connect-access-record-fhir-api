@@ -16,14 +16,12 @@
 
 <h1>Allergies and adverse reactions</h1>
 
-
-
 <button class="tablink" onclick="openPage('Active', this)" id="defaultOpen">Active</button>
 <button class="tablink" onclick="openPage('Resolved', this)">Resolved</button>
 
 <div id="Active" class="tabcontent">
     <div class="container">
-        @if (Model.OrderedActiveList != null)
+        @if (Model.OrderedActiveList.Count != 0)
         {
             @foreach (var item in Model.OrderedActiveList)
             {
@@ -32,7 +30,7 @@
                         <h3 class="nhsuk-card__heading nhsuk-heading-s">
                             @item.AssertedDate?.ToString("dd MMM yyyy")
                             <br />
-                            <a class="nhsuk-card__link" asp-page="AllergyDetails" asp-route-id="@Model.OrderedActiveList.IndexOf(item)">
+                            <a class="nhsuk-card__link" asp-page="AllergyDetails" asp-route-id="@Model.OrderedActiveList.IndexOf(item)" asp-route-allergyType = "active">
                                 @item.AssertedTitle
                             </a>
                         </h3>
@@ -55,7 +53,7 @@
 
 <div id="Resolved" class="tabcontent">
     <div class="container">
-        @if (Model.OrderedResolvedList != null)
+        @if (Model.OrderedResolvedList.Count != 0)
         {
             @foreach (var item in Model.OrderedResolvedList)
             {
@@ -64,7 +62,7 @@
                         <h3 class="nhsuk-card__heading nhsuk-heading-s">
                             @item.AssertedDate?.ToString("dd MMM yyyy")
                             <br />
-                            <a class="nhsuk-card__link" asp-page="AllergyDetails" asp-route-id="@Model.OrderedResolvedList.IndexOf(item)">
+                            <a class="nhsuk-card__link" asp-page="AllergyDetails" asp-route-id="@Model.OrderedResolvedList.IndexOf(item)" asp-route-allergyType = "resolved">
                                 @item.AssertedTitle
                             </a>
                         </h3>
