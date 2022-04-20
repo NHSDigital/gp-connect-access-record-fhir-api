@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Allergies";
 }
-
+ 
 
 <div class="nhsuk-back-link">
     <a class="nhsuk-back-link__link" asp-page="/Home">
@@ -20,8 +20,9 @@
 <h1>Allergies and adverse reactions</h1>
 
 <div class="container">
-    @foreach (var item in Model.OrderedActiveList)
-    {
+  
+      @foreach (var item in Model.OrderedActiveList)
+        {
         <div class="nhsuk-card nhsuk-card--clickable">
             <div class="nhsuk-card__content">
                 <h3 class="nhsuk-card__heading nhsuk-heading-s">
@@ -33,8 +34,8 @@
                 </h3>
             </div>
         </div>
-
-    }
+   
+    } 
 </div>
 <div class="nhsuk-action-link">
     <a class="nhsuk-action-link__link" asp-page="/AllergiesDataDump">
