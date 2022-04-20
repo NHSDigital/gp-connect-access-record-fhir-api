@@ -15,11 +15,13 @@ using Newtonsoft.Json.Linq;
 using oauth_nhsd_api.Helpers;
 using Newtonsoft.Json.Converters;
 
+
 namespace oauth_nhsd_api.Pages
 {
     [Authorize]
     public class AllergiesModel : PageModel
     {
+        public List<DateNameJsonBundle> OrderedResolvedList { get; set; }
         public List<DateNameJsonBundle> OrderedActiveList { get; set; } = new List<DateNameJsonBundle>();
         private readonly IsoDateTimeConverter _dateTimeConverter = new() { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
         private readonly IConfiguration _configuration;
