@@ -15,7 +15,6 @@ using Newtonsoft.Json.Linq;
 using oauth_nhsd_api.Helpers;
 using Newtonsoft.Json.Converters;
 
-
 namespace oauth_nhsd_api.Pages
 {
     [Authorize]
@@ -169,5 +168,9 @@ namespace oauth_nhsd_api.Pages
             // True: When session entry is present, False: Missing session
             return isActiveSessionAvailable | isResolvedSessionAvailable;
         }
+    
+                 
+
+
     }
 }
