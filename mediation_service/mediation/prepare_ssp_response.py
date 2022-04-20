@@ -11,6 +11,8 @@ from fhirclient.models.operationoutcome import OperationOutcome
 from fhirclient.models.operationoutcome import OperationOutcomeIssue
 from jsonpath_rw import parse
 
+ALLERGIES_AND_ADVERSE_REACTION_LIST_CODE = "886921000000105"
+ENDED_ALLERGIES_LIST_CODE = "1103671000000101"
 
 def prepare_ssp_response(ssp_response: dict) -> dict:
     __transform_allergy_local_references(ssp_response)
@@ -45,7 +47,7 @@ def __filter_warnings_to_operationoutcome(ssp_response: dict) -> OperationOutcom
             code_matches = code_query.find(list)
 
             for code_match in code_matches:
-                if code_match.value == "886921000000105":  # TODO: create constant
+                if code_match.value == ALLERGIES_AND_ADVERSE_REACTION_LIST_CODE:
                     for extension in list["extension"]:
                         if (
                             extension["url"]
@@ -186,7 +188,7 @@ def _extract_resolved_allergies(ssp_response: dict):
             code_matches = code_query.find(list_resource)
 
             for code_match in code_matches:
-                if code_match.value == "1103671000000101":  # TODO: create constant
+                if code_match.value == ENDED_ALLERGIES_LIST_CODE:
                     contained = list_resource.get("contained")
                     for resource in contained:
                         resource_entry = {"resource": resource}
