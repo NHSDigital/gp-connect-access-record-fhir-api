@@ -5,9 +5,11 @@ using oauth_nhsd_api.Helpers;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Microsoft.AspNetCore.Authorization;
 
 namespace oauth_nhsd_api.Pages
 {
+    [Authorize]
     public class AllergiesDataDumpModel : PageModel
     {
         public List<AllergyResource> OrderedList = new();
