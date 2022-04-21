@@ -12,10 +12,10 @@ from jsonpath_rw import parse
 
 
 def prepare_ssp_response(ssp_response: dict) -> dict:
-    __transform_allergy_local_references(ssp_response)
-    operationoutcome = __filter_warnings_to_operationoutcome(ssp_response)
-    __filter_non_allergy_intolerance(ssp_response)
-    __remove_fhir_comment(ssp_response)
+    _transform_allergy_local_references(ssp_response)
+    operationoutcome = _filter_warnings_to_operationoutcome(ssp_response)
+    _filter_non_allergy_intolerance(ssp_response)
+    _remove_fhir_comment(ssp_response)
 
     if operationoutcome:
         operationoutcome_object = {"resource": operationoutcome.as_json()}
@@ -25,7 +25,7 @@ def prepare_ssp_response(ssp_response: dict) -> dict:
     return ssp_response
 
 
-def __filter_warnings_to_operationoutcome(ssp_response: dict) -> OperationOutcome:
+def _filter_warnings_to_operationoutcome(ssp_response: dict) -> OperationOutcome:
     query = parse("`this`.entry[*].resource.resourceType")
     matches = query.find(ssp_response)
 
@@ -41,14 +41,14 @@ def __filter_warnings_to_operationoutcome(ssp_response: dict) -> OperationOutcom
                     "-ListWarningCode-1"
                 ):
                     operation_outcome_list.append(
-                        __build_operationoutcome_issue(extension)
+                        _build_operationoutcome_issue(extension)
                     )
 
     if operation_outcome_list:
-        return __build_operationoutcome(operation_outcome_list)
+        return _build_operationoutcome(operation_outcome_list)
 
 
-def __build_operationoutcome_issue(extension: Extension) -> OperationOutcomeIssue:
+def _build_operationoutcome_issue(extension: Extension) -> OperationOutcomeIssue:
     op_outcome_issue = OperationOutcomeIssue()
     codeable_concept = CodeableConcept()
     coding_list = []
@@ -94,7 +94,7 @@ def __build_operationoutcome_issue(extension: Extension) -> OperationOutcomeIssu
     return op_outcome_issue
 
 
-def __build_operationoutcome(operation_outcome_list) -> OperationOutcome:
+def _build_operationoutcome(operation_outcome_list) -> OperationOutcome:
     operationoutcome = OperationOutcome()
     meta = Meta()
     fhir_date = FHIRDate()
@@ -111,7 +111,7 @@ def __build_operationoutcome(operation_outcome_list) -> OperationOutcome:
     return operationoutcome
 
 
-def __transform_patient(ssp_response: dict) -> dict:
+def _transform_patient(ssp_response: dict) -> dict:
     patient_dict_to_return = {}
     query = parse("`this`.entry[*].resource.resourceType")
     matches = query.find(ssp_response)
@@ -135,8 +135,8 @@ def __transform_patient(ssp_response: dict) -> dict:
     return patient_dict_to_return
 
 
-def __transform_allergy_local_references(ssp_response: dict):
-    patient_list = __transform_patient(ssp_response)
+def _transform_allergy_local_references(ssp_response: dict):
+    patient_list = _transform_patient(ssp_response)
 
     query = parse("`this`.entry[*].resource.resourceType")
     matches = query.find(ssp_response)
@@ -154,7 +154,7 @@ def __transform_allergy_local_references(ssp_response: dict):
                 ] = patient_list.get(patient_id[1], patient_ref)
 
 
-def __filter_non_allergy_intolerance(ssp_response: dict):
+def _filter_non_allergy_intolerance(ssp_response: dict):
     query = parse("`this`.entry[*].resource.resourceType")
     matches = query.find(ssp_response)
 
@@ -168,7 +168,7 @@ def __filter_non_allergy_intolerance(ssp_response: dict):
         ssp_response["entry"].remove(item)
 
 
-def __remove_fhir_comment(ssp_response: dict):
+def _remove_fhir_comment(ssp_response: dict):
     query = parse("`this`..fhir_comments")
     matches = query.find(ssp_response)
 

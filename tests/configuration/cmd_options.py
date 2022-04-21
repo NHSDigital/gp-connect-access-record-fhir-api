@@ -49,12 +49,12 @@ def create_cmd_options(get_cmd_opt_value) -> dict:
         if opt["required"] and not value:
             raise Exception(f"Option {opt_name} is required but it's value is empty or null")
 
-    __validate_options(cmd_options)
+    _validate_options(cmd_options)
 
     return cmd_options
 
 
-def __validate_options(cmd_options):
+def _validate_options(cmd_options):
     """Whether some values are required or not might change depending on deployment environment"""
     current_env = cmd_options["--apigee-environment"]
     access_token = cmd_options["--access-token"]

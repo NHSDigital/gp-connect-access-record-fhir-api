@@ -3,11 +3,11 @@ from request_helpers import make_post_request
 
 class FhirConverter:
     def __init__(self, url: str, env: str):
-        self.__env = env
-        self.__url = url
+        self._env = env
+        self._url = url
 
     def convert(self, bundle: dict, access_token: str):
-        url = f"https://{self.__url}/fhir-converter/$convert"
+        url = f"https://{self._url}/fhir-converter/$convert"
 
         headers = {
             "Authorization": f"Bearer {access_token}",
