@@ -17,11 +17,13 @@
 
 <h1>Allergies and adverse reactions</h1>
 
-<button class="tablink" onclick="openPage('Active', this)" id="defaultOpen">Active</button>
-<button class="tablink" onclick="openPage('Resolved', this)">Resolved</button>
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#active">Active Allergies</a></li>
+    <li><a data-toggle="tab" href="#resolved">Resolved Allergies</a></li>
+</ul>
 
-<div id="Active" class="tabcontent">
-    <div class="container">
+<div class="tab-content">
+    <div id="active" class="tab-pane fade in active">
         @if (Model.OrderedActiveList.Count != 0)
         {
             @foreach (var item in Model.OrderedActiveList)
@@ -31,7 +33,7 @@
                         <h3 class="nhsuk-card__heading nhsuk-heading-s">
                             @item.AssertedDate?.ToString("dd MMM yyyy")
                             <br />
-                            <a class="nhsuk-card__link" asp-page="AllergyDetails" asp-route-id="@Model.OrderedActiveList.IndexOf(item)" asp-route-allergyType = "active">
+                            <a class="nhsuk-card__link" asp-page="AllergyDetails" asp-route-id="@Model.OrderedActiveList.IndexOf(item)" asp-route-allergyType="active">
                                 @item.AssertedTitle
                             </a>
                         </h3>
@@ -50,10 +52,8 @@
             </div>
         }
     </div>
-</div>
 
-<div id="Resolved" class="tabcontent">
-    <div class="container">
+    <div id="resolved" class="tab-pane fade">
         @if (Model.OrderedResolvedList.Count != 0)
         {
             @foreach (var item in Model.OrderedResolvedList)
@@ -63,7 +63,7 @@
                         <h3 class="nhsuk-card__heading nhsuk-heading-s">
                             @item.AssertedDate?.ToString("dd MMM yyyy")
                             <br />
-                            <a class="nhsuk-card__link" asp-page="AllergyDetails" asp-route-id="@Model.OrderedResolvedList.IndexOf(item)" asp-route-allergyType = "resolved">
+                            <a class="nhsuk-card__link" asp-page="AllergyDetails" asp-route-id="@Model.OrderedResolvedList.IndexOf(item)" asp-route-allergyType="resolved">
                                 @item.AssertedTitle
                             </a>
                         </h3>
@@ -85,8 +85,6 @@
 </div>
 
 
-
-
 <div class="nhsuk-action-link">
     <a class="nhsuk-action-link__link" asp-page="/AllergiesDataDump">
         <svg class="nhsuk-icon nhsuk-icon__arrow-right-circle" xmlns="http://www.w3.org/2000/svg"
@@ -98,30 +96,3 @@
         <span class="nhsuk-action-link__text">View Allergies Data Dump</span>
     </a>
 </div>
-
-<script type="text/javascript">
-    function openPage(pageName, elmnt) {
-      // Hide all elements with class="tabcontent" by default */
-      var i, tabcontent, tablinks;
-      tabcontent = document.getElementsByClassName("tabcontent");
-      for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-      }
-
-      // Remove the background color of all tablinks/buttons
-      tablinks = document.getElementsByClassName("tablink");
-      for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].style.backgroundColor = "";
-      }
-
-      // Show the specific tab content
-      document.getElementById(pageName).style.display = "block";
-
-      // Add the specific color to the button used to open the tab content
-      elmnt.style.backgroundColor = "#d8dde0";
-    }
-
-    // Get the element with id="defaultOpen" and click on it
-    document.getElementById("defaultOpen").click();
-
-</script>
