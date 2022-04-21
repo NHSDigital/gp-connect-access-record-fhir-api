@@ -1,5 +1,6 @@
 from copy import deepcopy
 from mediation_service.mediation.prepare_ssp_response import (
+    ALLERGIES_AND_ADVERSE_REACTION_LIST_CODE,
     ENDED_ALLERGIES_LIST_CODE,
     prepare_ssp_response,
     _extract_resolved_allergies,
@@ -20,7 +21,7 @@ def test_list_selection():
                         "coding": [
                             {
                                 "system": "http://snomed.info/sct",
-                                "code": "1103671000000101",
+                                "code": ENDED_ALLERGIES_LIST_CODE,
                                 "display": "Ended allergies",
                             }
                         ]
@@ -35,7 +36,7 @@ def test_list_selection():
                         "coding": [
                             {
                                 "system": "http://snomed.info/sct",
-                                "code": "886921000000105",
+                                "code": ALLERGIES_AND_ADVERSE_REACTION_LIST_CODE,
                                 "display": "Allergies and adverse reactions",
                             }
                         ]
@@ -53,7 +54,7 @@ def test_list_selection():
                 "coding": [
                     {
                         "system": "http://snomed.info/sct",
-                        "code": "1103671000000101",
+                        "code": ENDED_ALLERGIES_LIST_CODE,
                         "display": "Ended allergies",
                     }
                 ]
@@ -130,7 +131,7 @@ def test_return_active_and_resolved_allergy():
                         "coding": [
                             {
                                 "system": "http://snomed.info/sct",
-                                "code": "1103671000000101",
+                                "code": ENDED_ALLERGIES_LIST_CODE,
                                 "display": "Ended allergies",
                             }
                         ]
@@ -215,7 +216,7 @@ def test_extract_resolved_allergies():
                         "coding": [
                             {
                                 "system": "http://snomed.info/sct",
-                                "code": "1103671000000101",
+                                "code": ENDED_ALLERGIES_LIST_CODE,
                                 "display": "Ended allergies",
                             }
                         ]
@@ -394,7 +395,7 @@ def test_warning_filter():
                         "coding": [
                             {
                                 "system": "http://snomed.info/sct",
-                                "code": "886921000000105",
+                                "code": ALLERGIES_AND_ADVERSE_REACTION_LIST_CODE,
                                 "display": "Allergies and adverse reactions",
                             }
                         ]
