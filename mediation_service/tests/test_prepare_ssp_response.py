@@ -1,11 +1,71 @@
 from copy import deepcopy
 from mediation_service.mediation.prepare_ssp_response import (
+    ENDED_ALLERGIES_LIST_CODE,
     prepare_ssp_response,
-    _filter_non_allergy_intolerance,
     _extract_resolved_allergies,
+    _select_lists_with_code,
 )
 import re
-import json
+
+
+def test_list_selection():
+    fhir_res = {
+        "entry": [
+            {"resource": {"resourceType": "Bar"}},
+            {
+                "resource": {
+                    "resourceType": "List",
+                    "title": "Ended allergies",
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "1103671000000101",
+                                "display": "Ended allergies",
+                            }
+                        ]
+                    },
+                }
+            },
+            {
+                "resource": {
+                    "resourceType": "List",
+                    "title": "Allergies and adverse reactions",
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "886921000000105",
+                                "display": "Allergies and adverse reactions",
+                            }
+                        ]
+                    },
+                }
+            },
+        ]
+    }
+
+    expected = [
+        {
+            "resourceType": "List",
+            "title": "Ended allergies",
+            "code": {
+                "coding": [
+                    {
+                        "system": "http://snomed.info/sct",
+                        "code": "1103671000000101",
+                        "display": "Ended allergies",
+                    }
+                ]
+            },
+        }
+    ]
+
+    # when
+    selected_list = _select_lists_with_code(ENDED_ALLERGIES_LIST_CODE, fhir_res)
+
+    # then
+    assert selected_list == expected
 
 
 def test_remove_comments():
@@ -137,7 +197,6 @@ def test_return_active_and_resolved_allergy():
 
     # When
     actual = prepare_ssp_response(fhir_res)
-    print(actual)
 
     assert expected_res == actual
 
@@ -331,6 +390,15 @@ def test_warning_filter():
                 "resource": {
                     "resourceType": "List",
                     "title": "Allergies and adverse reactions",
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": "886921000000105",
+                                "display": "Allergies and adverse reactions",
+                            }
+                        ]
+                    },
                     "extension": [
                         {
                             "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-ListWarningCode-1",
@@ -348,7 +416,6 @@ def test_warning_filter():
 
     # When
     result = prepare_ssp_response(fhir_res)
-    print(result)
 
     # Then
     assert result["entry"][0]["resource"]["resourceType"] == "AllergyIntolerance"

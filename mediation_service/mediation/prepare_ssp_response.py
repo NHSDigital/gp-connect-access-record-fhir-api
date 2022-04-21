@@ -1,4 +1,3 @@
-from copy import deepcopy
 from datetime import datetime, timezone
 from functools import reduce
 
@@ -13,6 +12,7 @@ from jsonpath_rw import parse
 
 ALLERGIES_AND_ADVERSE_REACTION_LIST_CODE = "886921000000105"
 ENDED_ALLERGIES_LIST_CODE = "1103671000000101"
+
 
 def prepare_ssp_response(ssp_response: dict) -> dict:
     __transform_allergy_local_references(ssp_response)
@@ -33,30 +33,20 @@ def prepare_ssp_response(ssp_response: dict) -> dict:
 
 
 def __filter_warnings_to_operationoutcome(ssp_response: dict) -> OperationOutcome:
-    query = parse("`this`.entry[*].resource.resourceType")
-    matches = query.find(ssp_response)
-
+    """
+    Convert warnings to Operation Outcome resources.
+    """
     operation_outcome_list = []
-    for match in matches:
-        if match.value == "List":
-            index = match.full_path.left.left.right.index
-            list = ssp_response["entry"][index]["resource"]
 
-            # search the resource for the snomed code
-            code_query = parse("`this`.code.coding[*].code")  # Q: should search for 0?
-            code_matches = code_query.find(list)
-
-            for code_match in code_matches:
-                if code_match.value == ALLERGIES_AND_ADVERSE_REACTION_LIST_CODE:
-                    for extension in list["extension"]:
-                        if (
-                            extension["url"]
-                            == "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC"
-                            "-ListWarningCode-1"
-                        ):
-                            operation_outcome_list.append(
-                                __build_operationoutcome_issue(extension)
-                            )
+    allergies_list_resources = _select_lists_with_code(ALLERGIES_AND_ADVERSE_REACTION_LIST_CODE, ssp_response)
+    for list_resource in allergies_list_resources:
+        for extension in list_resource["extension"]:
+            if (
+                extension["url"]
+                == "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC"
+                "-ListWarningCode-1"
+            ):
+                operation_outcome_list.append(__build_operationoutcome_issue(extension))
 
     if operation_outcome_list:
         return __build_operationoutcome(operation_outcome_list)
@@ -168,48 +158,28 @@ def __transform_allergy_local_references(ssp_response: dict):
                 ] = patient_list.get(patient_id[1], patient_ref)
 
 
-def _extract_resolved_allergies(ssp_response: dict):
+def _extract_resolved_allergies(ssp_response: dict) -> list:
     """
     Select resolved allergy intolerance resources from Ended allergies list
     Return them as a list of Bundle Entry objects
     """
-    query = parse("`this`.entry[*].resource.resourceType")
-    matches = query.find(ssp_response)
-
     resolved_allergy_intolerance_entries = []
 
-    for match in matches:
-        if match.value == "List":
-            index = match.full_path.left.left.right.index
-            list_resource = ssp_response["entry"][index]["resource"]
-
-            # search the resource for the snomed code
-            code_query = parse("`this`.code.coding[*].code")
-            code_matches = code_query.find(list_resource)
-
-            for code_match in code_matches:
-                if code_match.value == ENDED_ALLERGIES_LIST_CODE:
-                    contained = list_resource.get("contained")
-                    for resource in contained:
-                        resource_entry = {"resource": resource}
-                        resolved_allergy_intolerance_entries.append(resource_entry)
+    ended_allergies_lists = _select_lists_with_code(
+        ENDED_ALLERGIES_LIST_CODE, ssp_response
+    )
+    for ended_allergies_list in ended_allergies_lists:
+        contained = ended_allergies_list.get("contained")
+        for resource in contained:
+            resource_entry = {"resource": resource}
+            resolved_allergy_intolerance_entries.append(resource_entry)
 
     return resolved_allergy_intolerance_entries
 
 
-def _is_list_of_code(code: str, list_resource: dict) -> bool:
-    """Check if a List is of certain code"""
-    code_query = parse("`this`.code.coding[0].code")
-    code_matches = code_query.find(list_resource)
-
-    if code_matches[0].value == code:
-        return True
-    return False
-
-
 def _filter_non_allergy_intolerance(ssp_response: dict):
     """
-    Select only active allergy intolerance resources
+    Remove any non allergy intolerance resource entries from the bundle
     """
     query = parse("`this`.entry[*].resource.resourceType")
     matches = query.find(ssp_response)
@@ -236,3 +206,30 @@ def __remove_fhir_comment(ssp_response: dict):
             lambda o, p: o[p], segments, ssp_response
         )
         parent_obj_containing_comment.pop("fhir_comments")
+
+
+def _select_lists_with_code(code: str, ssp_response: dict) -> list:
+    """
+    Return List resources that match given code
+    """
+    selected_list_resources = []
+
+    query = parse("`this`.entry[*].resource.resourceType")
+    matches = query.find(ssp_response)
+
+    for match in matches:
+        if match.value != "List":
+            continue
+
+        index = match.full_path.left.left.right.index
+        list_resource = ssp_response["entry"][index]["resource"]
+
+        # search the resource for the code
+        code_query = parse("`this`.code.coding[*].code")
+        code_matches = code_query.find(list_resource)
+
+        for code_match in code_matches:
+            if code_match.value == code:
+                selected_list_resources.append(list_resource)
+
+    return selected_list_resources
