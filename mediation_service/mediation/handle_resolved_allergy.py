@@ -1,5 +1,4 @@
 from jsonpath_rw import parse
-import json
 
 RESOLVED_CLINICAL_STATUS = {
     "coding": [

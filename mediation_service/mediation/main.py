@@ -16,6 +16,7 @@ from sds_client import SdsClient
 from ssp_client import SspClient
 from handle_resolved_allergy import handle_resolved_allergies
 
+
 def init_env():
     try:
         private_key = os.environ["GPC_PRIVATE_KEY_INT"]

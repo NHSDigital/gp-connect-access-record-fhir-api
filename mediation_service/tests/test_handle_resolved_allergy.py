@@ -2,7 +2,6 @@ from mediation_service.mediation.handle_resolved_allergy import (
     RESOLVED_CLINICAL_STATUS,
     handle_resolved_allergies,
 )
-import json
 
 
 def test_resolved_clinical_status_added():
