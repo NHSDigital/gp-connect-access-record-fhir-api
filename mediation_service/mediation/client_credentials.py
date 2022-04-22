@@ -10,8 +10,7 @@ class AuthClientCredentials:
     _client_assertion_type: str = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
 
     def __init__(self, auth_url: str, private_key_content: str = "", client_id: str = "", aud: str = "",
-                 headers: dict = None,
-                 alg="RS512") -> None:
+                 headers: dict = None, alg="RS512") -> None:
         self._auth_url = auth_url
         self._client_id = client_id
         self._aud = aud
