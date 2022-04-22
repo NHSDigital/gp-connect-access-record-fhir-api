@@ -13,7 +13,7 @@
       "part": [
         {
           "name": "includeResolvedAllergies",
-          "valueBoolean": false
+          "valueBoolean": true
         }
       ]
     }
