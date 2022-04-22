@@ -1,17 +1,22 @@
-const apiproxy_revision = context.getVariable('apiproxy.revision');
+const apiproxy_revision = context.getVariable('apiproxy.revision')
 
-const healthcheck_status_code = context.getVariable('healthcheckResponse.status.code');
-const healthcheck_request_url = context.getVariable('healthcheckRequest.url');
-const healthcheck_failed = context.getVariable("servicecallout.ServiceCallout.CallHealthcheckEndpoint.failed");
+const healthcheck_status_code = context.getVariable('healthcheckResponse.status.code')
+const healthcheck_request_url = context.getVariable('healthcheckRequest.url')
+const healthcheck_failed = context.getVariable('servicecallout.ServiceCallout.CallHealthcheckEndpoint.failed')
 
-const PDS_healthcheck_status_code = context.getVariable('PDShealthcheckResponse.status.code');
-const SDS_healthcheck_status_code = context.getVariable('SDShealthcheckResponse.status.code');
-const orange_healthcheck_status_code = context.getVariable('orangeHealthcheckResponse.status.code');
-const fhir_converter_healthcheck_status_code = context.getVariable('fhirConverterHealthcheckResponse.status.code');
+function is_healthy(service_name) {
+    const content = context.getVariable('' + 'content')
+    return content['']
+}
+
+const PDS_healthcheck_status_code = context.getVariable('PDShealthcheckResponse.status.code')
+const SDS_healthcheck_status_code = context.getVariable('SDShealthcheckResponse.status.code')
+const orange_healthcheck_status_code = context.getVariable('orangeHealthcheckResponse.status.code')
+const fhir_converter_healthcheck_status_code = context.getVariable('fhirConverterHealthcheckResponse.status.code')
 
 function json_tryparse(raw) {
     try {
-        return JSON.parse(raw);
+        return JSON.parse(raw)
     }
     catch (e) {
         return raw;
