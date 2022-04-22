@@ -157,7 +157,7 @@ def _transform_allergy_local_references(ssp_response: dict):
                     "reference"
                 ] = patient_list.get(patient_id[1], patient_ref)
 
-                
+
 def _extract_resolved_allergies(ssp_response: dict) -> list:
     """
     Select resolved allergy intolerance resources from Ended allergies list
