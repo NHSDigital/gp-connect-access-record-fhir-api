@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Allergies";
 }
-@using Newtonsoft.Json
 
 
 <div class="nhsuk-back-link">
@@ -23,15 +22,12 @@
 <div class="container">
     @foreach (var item in Model.OrderedActiveList)
     {
-        Dictionary<string, string> passingDict = new Dictionary<string, string> { { "passedObject", JsonConvert.SerializeObject(item) } };
-        var date = item.AssertedDate?.ToString("dd MMM yyyy");
-
         <div class="nhsuk-card nhsuk-card--clickable">
             <div class="nhsuk-card__content">
                 <h3 class="nhsuk-card__heading nhsuk-heading-s">
-                    @date
+                    @item.AssertedDate?.ToString("dd MMM yyyy")
                     <br/>
-                    <a class="nhsuk-card__link" asp-page="AllergyDetails" asp-all-route-data="passingDict">
+                    <a class="nhsuk-card__link" asp-page="AllergyDetails" asp-route-id="@Model.OrderedActiveList.IndexOf(item)">
                         @item.AssertedTitle
                     </a>
                 </h3>
@@ -41,7 +37,7 @@
     }
 </div>
 <div class="nhsuk-action-link">
-    <a class="nhsuk-action-link__link" asp-page="/AllergiesDataDump" >
+    <a class="nhsuk-action-link__link" asp-page="/AllergiesDataDump">
         <svg class="nhsuk-icon nhsuk-icon__arrow-right-circle" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24" aria-hidden="true" width="36" height="36">
             <path d="M0 0h24v24H0z" fill="none"></path>
