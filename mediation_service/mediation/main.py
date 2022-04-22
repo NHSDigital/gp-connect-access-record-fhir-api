@@ -14,7 +14,7 @@ from pds_client import PdsClient
 from prepare_ssp_response import prepare_ssp_response
 from sds_client import SdsClient
 from ssp_client import SspClient
-
+from handle_resolved_allergy import handle_resolved_allergies
 
 def init_env():
     try:
@@ -149,10 +149,12 @@ def allergy_intolerance(
 
     converted_bundle = _fhir_convert_client.convert(prepared_bundle, access_token)
 
+    updated_bundle = handle_resolved_allergies(converted_bundle)
+
     response_for_test_while_using_orange_test = {
         "to_ASID": to_ASID,
         "GPConnect_URL": GPConnect_URL,
-        "response": json.dumps(converted_bundle),
+        "response": json.dumps(updated_bundle),
     }
 
     return Response(

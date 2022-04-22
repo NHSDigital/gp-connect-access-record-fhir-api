@@ -48,8 +48,10 @@ class TestAllergyIntolerance:
         patient_reference = bundleObj["entry"][2]["resource"]["patient"]["reference"]
         allergy_url = bundleObj["entry"][2]["resource"]["meta"]["profile"][0]
 
-        resourceType_resolved_allergy = bundleObj["entry"][27]["resource"]["resourceType"]
-        # check clinical status
+        # One of two resolved allergies
+        resolved_allergy = bundleObj["entry"][28]["resource"]
+        resourceType_resolved_allergy = resolved_allergy["resourceType"]
+        resolved_allergy_clinical_status = resolved_allergy["clinicalStatus"]["coding"][0]["code"]
 
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
@@ -71,6 +73,7 @@ class TestAllergyIntolerance:
         ).is_equal_to(allergy_url)
 
         assert_that("AllergyIntolerance").is_equal_to(resourceType_resolved_allergy)
+        assert_that("resolved").is_equal_to(resolved_allergy_clinical_status)
 
     @pytest.mark.mediation
     @pytest.mark.debug
