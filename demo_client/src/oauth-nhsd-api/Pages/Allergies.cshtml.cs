@@ -85,7 +85,7 @@ namespace oauth_nhsd_api.Pages
 
             HttpResponseMessage NHSAPIresponse = await new HttpClient().SendAsync(req);
             
-            if (NHSAPIresponse.StatusCode == HttpStatusCode.OK)
+            if (NHSAPIresponse.StatusCode != HttpStatusCode.Unauthorized)
 
                 {
                     var ApiResponse = await NHSAPIresponse.Content.ReadAsStringAsync();
