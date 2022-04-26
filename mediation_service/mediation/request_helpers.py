@@ -8,9 +8,7 @@ def make_get_request(call_name: str, url, headers=None, params=None):
     return res
 
 
-def make_post_request(
-    call_name: str, url, headers=None, data=None, json=None, verify=True
-):
+def make_post_request(call_name: str, url, headers=None, data=None, json=None, verify=True):
     res = requests.post(url, headers=headers, data=data, json=json, verify=verify)
     handle_error(res, call_name)
     return res
