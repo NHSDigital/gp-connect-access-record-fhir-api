@@ -73,8 +73,6 @@ namespace oauth_nhsd_api
                 options.IdleTimeout = System.TimeSpan.FromMinutes(10);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
-
-
             });
         }
 
