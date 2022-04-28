@@ -49,8 +49,6 @@ namespace oauth_nhsd_api
                     options.LoginPath = "/Index";
                     options.SlidingExpiration = true;
                 })
-
-                
                 .AddOAuth("NHSD", options =>
                 {
                     // The first oAuth endpoint - where user log in
@@ -75,7 +73,7 @@ namespace oauth_nhsd_api
                 options.IdleTimeout = System.TimeSpan.FromMinutes(10);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
-                
+
 
             });
         }
@@ -107,7 +105,7 @@ namespace oauth_nhsd_api
 
             app.UseAuthentication();
             app.UseAuthorization();
-          
+
             app.UseSession();
 
             app.UseEndpoints(endpoints =>

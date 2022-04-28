@@ -169,9 +169,5 @@ namespace oauth_nhsd_api.Pages
             // True: When both session entries are present, False: Missing either session
             return isActiveSessionAvailable & isResolvedSessionAvailable;
         }
-    
-                 
-
-
     }
 }
