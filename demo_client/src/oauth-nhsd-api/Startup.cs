@@ -73,11 +73,7 @@ namespace oauth_nhsd_api
                 options.IdleTimeout = System.TimeSpan.FromMinutes(10);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
-
-
             });
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
