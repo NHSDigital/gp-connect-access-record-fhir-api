@@ -25,7 +25,6 @@ namespace oauth_nhsd_api.Helpers
         public string OnSetDate { get; set; } //onsetDateTime = ####
         [DisplayName("Asserted Date")]
         public string AssertedDate { get; set; } //recoredDate = ####
-
         [DisplayName("End Date")]
         public string EndDate { get; set; }
         [DisplayName("End Reason")]
