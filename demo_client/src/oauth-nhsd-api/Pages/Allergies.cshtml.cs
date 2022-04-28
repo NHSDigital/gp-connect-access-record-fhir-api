@@ -21,9 +21,7 @@ namespace oauth_nhsd_api.Pages
     public class AllergiesModel : PageModel
     {
         public List<DateNameJsonBundle> OrderedActiveList { get; set; } = new List<DateNameJsonBundle>();
-      
         private readonly IsoDateTimeConverter _dateTimeConverter = new() { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
-      
         private readonly IConfiguration _configuration;
 
         public AllergiesModel(IConfiguration configuration)
@@ -31,48 +29,37 @@ namespace oauth_nhsd_api.Pages
             _configuration = configuration;
         }
 
-        
-         public async Task OnGet()
-           {
-                  if (IsSessionPopulatedByApiResponse())
+        public async Task OnGet()
+        {
+            if (IsSessionPopulatedByApiResponse())
+            {
+                OrderedActiveList = GetListFromSessionData();
+            }
+            else
+            {
+                var ApiResponse = await GetApiResponse();
+
+                if (ApiResponse == "Failed")
+                {
+                    Response.Redirect("/Index");
+
+                    foreach (var cookie in HttpContext.Request.Cookies)
                     {
-                        OrderedActiveList = GetListFromSessionData();
-                       
+                        Response.Cookies.Delete(cookie.Key);
                     }
-                    else
-                    {
+                }
+                else
+                {
+                    var UnorderedActiveList = CreateListFromJsonResponse(ApiResponse, "active");
 
-                        var ApiResponse = await GetApiResponse();
-                        if (ApiResponse == "Failed")
-            
-                                {
-                                   
-                                 
-                                    Response.Redirect("/Index");
-                                    
-                            
-                                    foreach(var cookie in HttpContext.Request.Cookies)
-                                    {
+                    OrderedActiveList = UnorderedActiveList.OrderByDescending(listItem => listItem.AssertedDate).ToList();
+                }
+            }
 
-                                        Response.Cookies.Delete(cookie.Key);
-                                    } 
-                                }
-                        else{
+            SetSessionDataFromList(OrderedActiveList);
+        }
 
-                            var UnorderedActiveList = CreateListFromJsonResponse(ApiResponse, "active");
 
-                            OrderedActiveList = UnorderedActiveList.OrderByDescending(listItem => listItem.AssertedDate).ToList();
-                            
-                                    
-                            }
-                       
-                        }
-
-                    SetSessionDataFromList(OrderedActiveList);   
-                            
-                }    
-       
-        
         public async Task<string> GetApiResponse()
         {
             var tokenAccess = await HttpContext.GetTokenAsync("access_token");
@@ -84,26 +71,24 @@ namespace oauth_nhsd_api.Pages
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenAccess);
 
             HttpResponseMessage NHSAPIresponse = await new HttpClient().SendAsync(req);
-            
+
             if (NHSAPIresponse.StatusCode != HttpStatusCode.Unauthorized)
 
-                {
-                    var ApiResponse = await NHSAPIresponse.Content.ReadAsStringAsync();
-                    
-                    return ApiResponse;
-                }
+            {
+                var ApiResponse = await NHSAPIresponse.Content.ReadAsStringAsync();
+
+                return ApiResponse;
+            }
             else
-                {
-                   
-                   var ApiResponse  = "Failed";
-                   return ApiResponse;
- 
-                 }      
+            {
+                return "Failed";
+            }
         }
 
         public void SetSessionDataFromList(List<DateNameJsonBundle> dateNameBundleList)
         {
-            if (!IsSessionPopulatedByApiResponse()) {
+            if (!IsSessionPopulatedByApiResponse())
+            {
                 foreach (var dateNameJsonBundle in dateNameBundleList.Select((value, index) => new { value, index }))
                 {
                     var dateNameJsonBundleAsString = new Dictionary<string, string>()
@@ -170,14 +155,9 @@ namespace oauth_nhsd_api.Pages
         public Boolean IsSessionPopulatedByApiResponse()
         {
             var response = HttpContext.Session.GetString("0");
-        
+
             // True: When session entry is present, False: Missing session
             return (response != null);
         }
-    
-                 
-
-
     }
-   
 }

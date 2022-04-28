@@ -10,7 +10,7 @@ using oauth_nhsd_api.Helpers;
 namespace oauth_nhsd_api.Pages
 {
     [Authorize]
-    public class AllergyDetailsModel :  PageModel
+    public class AllergyDetailsModel : PageModel
     {
         public AllergyResource? ParsedModel { get; set; }
         private readonly IsoDateTimeConverter _dateTimeConverter = new() { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
