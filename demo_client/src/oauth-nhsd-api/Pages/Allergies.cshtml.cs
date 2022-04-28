@@ -118,8 +118,8 @@ namespace oauth_nhsd_api.Pages
 
             foreach (JToken resource in EntriesAsJson)
             {
-                if (resource.SelectToken("resource.resourceType").ToString() == "AllergyIntolerance"
-                    && resource.SelectToken("resource.clinicalStatus.coding[0].code").ToString() == activeStatus)
+                if (Convert.ToString(resource.SelectToken("resource.resourceType")) == "AllergyIntolerance"
+                    && Convert.ToString(resource.SelectToken("resource.clinicalStatus.coding[0].code")) == activeStatus)
                 {
                     var resourceCode = resource.SelectToken("resource.code");
 
