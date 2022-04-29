@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace oauth_nhsd_api.Pages
     [Authorize]
     public class AllergiesModel : PageModel
     {
-        public List<DateNameJsonBundle> OrderedActiveList { get; set; }
+        public List<DateNameJsonBundle> OrderedActiveList { get; set; } = new List<DateNameJsonBundle>();
         private readonly IsoDateTimeConverter _dateTimeConverter = new() { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
         private readonly IConfiguration _configuration;
 
@@ -27,6 +28,7 @@ namespace oauth_nhsd_api.Pages
         {
             _configuration = configuration;
         }
+
         public async Task OnGet()
         {
             if (IsSessionPopulatedByApiResponse())
@@ -37,20 +39,32 @@ namespace oauth_nhsd_api.Pages
             {
                 var ApiResponse = await GetApiResponse();
 
-                var UnorderedActiveList = CreateListFromJsonResponse(ApiResponse, "active");
+                if (ApiResponse == "Failed")
+                {
+                    Response.Redirect("/Index");
 
-                OrderedActiveList = UnorderedActiveList.OrderByDescending(listItem => listItem.AssertedDate).ToList();
+                    foreach (var cookie in HttpContext.Request.Cookies)
+                    {
+                        Response.Cookies.Delete(cookie.Key);
+                    }
+                }
+                else
+                {
+                    var UnorderedActiveList = CreateListFromJsonResponse(ApiResponse, "active");
+
+                    OrderedActiveList = UnorderedActiveList.OrderByDescending(listItem => listItem.AssertedDate).ToList();
+                }
             }
-            
+
             SetSessionDataFromList(OrderedActiveList);
         }
+
 
         public async Task<string> GetApiResponse()
         {
             var tokenAccess = await HttpContext.GetTokenAsync("access_token");
             var tokenRefresh = await HttpContext.GetTokenAsync("refresh_token");
             var tokenExpiresAt = await HttpContext.GetTokenAsync("expires_at");
-
             HttpRequestMessage req = new HttpRequestMessage(System.Net.Http.HttpMethod.Get,
                 _configuration["NHSD:APIEndpoint"] + _configuration["NHSD:NhsNumber"]);
 
@@ -58,14 +72,23 @@ namespace oauth_nhsd_api.Pages
 
             HttpResponseMessage NHSAPIresponse = await new HttpClient().SendAsync(req);
 
-            var ApiResponse = await NHSAPIresponse.Content.ReadAsStringAsync();
+            if (NHSAPIresponse.StatusCode != HttpStatusCode.Unauthorized)
 
-            return ApiResponse;
+            {
+                var ApiResponse = await NHSAPIresponse.Content.ReadAsStringAsync();
+
+                return ApiResponse;
+            }
+            else
+            {
+                return "Failed";
+            }
         }
 
         public void SetSessionDataFromList(List<DateNameJsonBundle> dateNameBundleList)
         {
-            if (!IsSessionPopulatedByApiResponse()) {
+            if (!IsSessionPopulatedByApiResponse())
+            {
                 foreach (var dateNameJsonBundle in dateNameBundleList.Select((value, index) => new { value, index }))
                 {
                     var dateNameJsonBundleAsString = new Dictionary<string, string>()
@@ -137,5 +160,4 @@ namespace oauth_nhsd_api.Pages
             return (response != null);
         }
     }
-   
 }

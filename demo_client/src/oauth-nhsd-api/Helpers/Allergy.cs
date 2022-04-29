@@ -54,7 +54,8 @@ namespace oauth_nhsd_api.Helpers
         [DisplayName("Last Occurance Date")]
         public string LastOccurrenceDate { get; set; }
     }
-    public class ParseResourceToObjectClass{
+    public class ParseResourceToObjectClass
+    {
         public AllergyResource ParseResourceToObject(DateNameJsonBundle resourceBundle)
         {
             var resourceJtoken = JObject.Parse(resourceBundle.JtokenBundle);
@@ -66,7 +67,7 @@ namespace oauth_nhsd_api.Helpers
                 Profile = Convert.ToString(resourceJtoken.SelectToken("meta.profile[0]")),
                 OnSetDate = Convert.ToString(resourceJtoken.SelectToken("onsetDateTime")),
                 AssertedDate = Convert.ToString(resourceBundle.AssertedDate),
-                EndDate =  Convert.ToString(resourceBundle.EndDate), //This will be added to the bundle upon implementation of "inactive" 
+                EndDate = Convert.ToString(resourceBundle.EndDate), //This will be added to the bundle upon implementation of "inactive" 
                 EndReason = "",
                 Identifier = Convert.ToString(resourceJtoken.SelectToken("identifier[0].value")),
                 ClinicalStatus = Convert.ToString(resourceJtoken.SelectToken("resource.clinicalStatus.coding[0].code")),

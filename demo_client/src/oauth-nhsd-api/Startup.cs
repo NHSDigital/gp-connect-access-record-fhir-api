@@ -46,6 +46,7 @@ namespace oauth_nhsd_api
                     options.Cookie.SameSite = SameSiteMode.Lax;
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                     options.ExpireTimeSpan = new System.TimeSpan(0, 10, 0);
+                    options.LoginPath = "/Index";
                     options.SlidingExpiration = true;
                 })
                 .AddOAuth("NHSD", options =>
@@ -64,6 +65,7 @@ namespace oauth_nhsd_api
                     options.TokenEndpoint = Configuration["NHSD:OAuthEndpoint"] + "/token";
                     options.SaveTokens = true;
                 });
+
             services.AddDistributedMemoryCache();
 
             services.AddSession(options =>
@@ -72,8 +74,6 @@ namespace oauth_nhsd_api
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -98,6 +98,7 @@ namespace oauth_nhsd_api
                 MinimumSameSitePolicy = SameSiteMode.Lax,
                 Secure = CookieSecurePolicy.Always
             });
+
             app.UseRouting();
 
             app.UseAuthentication();

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -7,7 +9,8 @@ using oauth_nhsd_api.Helpers;
 
 namespace oauth_nhsd_api.Pages
 {
-    public class AllergyDetailsModel :  PageModel
+    [Authorize]
+    public class AllergyDetailsModel : PageModel
     {
         public AllergyResource? ParsedModel { get; set; }
         private readonly IsoDateTimeConverter _dateTimeConverter = new() { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
