@@ -22,14 +22,14 @@ class SspClient:
             "Authorization": f"Bearer {create_orange_jwt(ods['to_ASID'])}"
         }
 
-        _body = self.__get_orange_payload()
+        _body = self._get_orange_payload()
         # ODS code on the request is hardcoded --- need to be changed
         res = make_post_request(call_name="SSP get allergy intolerance bundle", url=url, headers=headers, data=_body, verify=False)
 
         return res.json()
 
     @staticmethod
-    def __get_orange_payload() -> str:
+    def _get_orange_payload() -> str:
         dir_path = os.path.dirname(os.path.realpath(__file__))
         file_path = os.path.join(dir_path, 'getstructuredrecord_payload.json')
 

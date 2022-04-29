@@ -40,13 +40,18 @@ class TestAllergyIntolerance:
         bundle_url = bundleObj["meta"]["profile"][0]
         response_number_of_entries = len(bundleObj["entry"])
 
-        resourceType_operationoutcome = bundleObj["entry"][28]["resource"][
+        resourceType_operationoutcome = bundleObj["entry"][30]["resource"][
             "resourceType"
         ]
 
         resourceType_allergy = bundleObj["entry"][0]["resource"]["resourceType"]
         patient_reference = bundleObj["entry"][2]["resource"]["patient"]["reference"]
         allergy_url = bundleObj["entry"][2]["resource"]["meta"]["profile"][0]
+
+        # One of two resolved allergies
+        resolved_allergy = bundleObj["entry"][28]["resource"]
+        resourceType_resolved_allergy = resolved_allergy["resourceType"]
+        resolved_allergy_clinical_status = resolved_allergy["clinicalStatus"]["coding"][0]["code"]
 
         # Then
         assert_that(expected_status_code).is_equal_to(response.status_code)
@@ -55,7 +60,7 @@ class TestAllergyIntolerance:
         assert_that(
             "https://fhir.hl7.org.uk/StructureDefinition/UKCore-Bundle"
         ).is_equal_to(bundle_url)
-        assert_that(29).is_equal_to(response_number_of_entries)
+        assert_that(31).is_equal_to(response_number_of_entries)
 
         assert_that("OperationOutcome").is_equal_to(resourceType_operationoutcome)
 
@@ -66,6 +71,9 @@ class TestAllergyIntolerance:
         assert_that(
             "https://fhir.hl7.org.uk/StructureDefinition/UKCore-AllergyIntolerance"
         ).is_equal_to(allergy_url)
+
+        assert_that("AllergyIntolerance").is_equal_to(resourceType_resolved_allergy)
+        assert_that("resolved").is_equal_to(resolved_allergy_clinical_status)
 
     @pytest.mark.mediation
     @pytest.mark.debug

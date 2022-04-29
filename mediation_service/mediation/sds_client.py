@@ -3,13 +3,13 @@ from request_helpers import make_get_request
 
 class SdsClient:
     def __init__(self, client_id: str, apigee_url: str) -> None:
-        self.__client_id = client_id
-        self.__apigee_url = apigee_url
+        self._client_id = client_id
+        self._apigee_url = apigee_url
 
     def get_toASID(self, ods_code):
-        url = f"https://{self.__apigee_url}/spine-directory/FHIR/R4/Device"
+        url = f"https://{self._apigee_url}/spine-directory/FHIR/R4/Device"
 
-        headers = {"apikey": self.__client_id}
+        headers = {"apikey": self._client_id}
 
         params = {
             "organization": f"https://fhir.nhs.uk/Id/ods-organization-code|{ods_code}",
@@ -20,9 +20,9 @@ class SdsClient:
             call_name="SDS get_toASID", url=url, headers=headers, params=params
         )
 
-        return self.__get_toAsid(res.json())
+        return self._get_toAsid(res.json())
 
-    def __get_toAsid(self, bundle) -> str:
+    def _get_toAsid(self, bundle) -> str:
         if bundle["total"] == 0:
             return None
         else:
@@ -36,9 +36,9 @@ class SdsClient:
             return asidId
 
     def get_URL(self, ods_code):
-        url = f"https://{self.__apigee_url}/spine-directory/FHIR/R4/Endpoint"
+        url = f"https://{self._apigee_url}/spine-directory/FHIR/R4/Endpoint"
 
-        headers = {"apikey": self.__client_id}
+        headers = {"apikey": self._client_id}
 
         params = {
             "organization": f"https://fhir.nhs.uk/Id/ods-organization-code|{ods_code}",
@@ -49,9 +49,9 @@ class SdsClient:
             call_name="SDS get_URL", url=url, headers=headers, params=params
         )
 
-        return self.__get_URL(res.json())
+        return self._get_URL(res.json())
 
-    def __get_URL(self, bundle) -> str:
+    def _get_URL(self, bundle) -> str:
         if bundle["total"] == 0:
             return None
         else:

@@ -1,6 +1,72 @@
 from copy import deepcopy
-from mediation_service.mediation.prepare_ssp_response import prepare_ssp_response
+from mediation_service.mediation.prepare_ssp_response import (
+    ALLERGIES_AND_ADVERSE_REACTION_LIST_CODE,
+    ENDED_ALLERGIES_LIST_CODE,
+    prepare_ssp_response,
+    _extract_resolved_allergies,
+    _select_lists_with_code,
+)
 import re
+
+
+def test_list_selection():
+    fhir_res = {
+        "entry": [
+            {"resource": {"resourceType": "Bar"}},
+            {
+                "resource": {
+                    "resourceType": "List",
+                    "title": "Ended allergies",
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": ENDED_ALLERGIES_LIST_CODE,
+                                "display": "Ended allergies",
+                            }
+                        ]
+                    },
+                }
+            },
+            {
+                "resource": {
+                    "resourceType": "List",
+                    "title": "Allergies and adverse reactions",
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": ALLERGIES_AND_ADVERSE_REACTION_LIST_CODE,
+                                "display": "Allergies and adverse reactions",
+                            }
+                        ]
+                    },
+                }
+            },
+        ]
+    }
+
+    expected = [
+        {
+            "resourceType": "List",
+            "title": "Ended allergies",
+            "code": {
+                "coding": [
+                    {
+                        "system": "http://snomed.info/sct",
+                        "code": ENDED_ALLERGIES_LIST_CODE,
+                        "display": "Ended allergies",
+                    }
+                ]
+            },
+        }
+    ]
+
+    # when
+    selected_list = _select_lists_with_code(ENDED_ALLERGIES_LIST_CODE, fhir_res)
+
+    # then
+    assert selected_list == expected
 
 
 def test_remove_comments():
@@ -47,6 +113,190 @@ def test_remove_non_allergy_intolerance():
 
     # Then
     assert expected_res == act
+
+
+def test_return_active_and_resolved_allergy():
+    # Given
+    fhir_res = {
+        "entry": [
+            {"resource": {"resourceType": "Foo"}},
+            {"resource": {"resourceType": "Bar"}},
+            {"resource": {"resourceType": "AllergyIntolerance"}},
+            {"resource": {"resourceType": "AllergyIntolerance"}},
+            {
+                "resource": {
+                    "resourceType": "List",
+                    "title": "Ended allergies",
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": ENDED_ALLERGIES_LIST_CODE,
+                                "display": "Ended allergies",
+                            }
+                        ]
+                    },
+                    "contained": [
+                        {
+                            "resourceType": "AllergyIntolerance",
+                            "id": "1",
+                            "extension": [
+                                {
+                                    "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                                }
+                            ],
+                            "clinicalStatus": "resolved",
+                        },
+                        {
+                            "resourceType": "AllergyIntolerance",
+                            "id": "2",
+                            "extension": [
+                                {
+                                    "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                                }
+                            ],
+                            "clinicalStatus": "resolved",
+                        },
+                    ],
+                }
+            },
+            {"resource": {"resourceType": "Baz"}},
+        ]
+    }
+
+    expected_res = {
+        "type": "searchset",
+        "entry": [
+            {"resource": {"resourceType": "AllergyIntolerance"}},
+            {"resource": {"resourceType": "AllergyIntolerance"}},
+            {
+                "resource": {
+                    "resourceType": "AllergyIntolerance",
+                    "id": "1",
+                    "extension": [
+                        {
+                            "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                        }
+                    ],
+                    "clinicalStatus": "resolved",
+                },
+            },
+            {
+                "resource": {
+                    "resourceType": "AllergyIntolerance",
+                    "id": "2",
+                    "extension": [
+                        {
+                            "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                        }
+                    ],
+                    "clinicalStatus": "resolved",
+                }
+            },
+        ],
+    }
+
+    # When
+    actual = prepare_ssp_response(fhir_res)
+
+    assert expected_res == actual
+
+
+def test_extract_resolved_allergies():
+    # Given
+    fhir_res = {
+        "entry": [
+            {"resource": {"resourceType": "Foo"}},
+            {"resource": {"resourceType": "AllergyIntolerance"}},
+            {
+                "resource": {
+                    "resourceType": "List",
+                    "title": "Ended allergies",
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": ENDED_ALLERGIES_LIST_CODE,
+                                "display": "Ended allergies",
+                            }
+                        ]
+                    },
+                    "contained": [
+                        {
+                            "resourceType": "AllergyIntolerance",
+                            "id": "1",
+                            "extension": [
+                                {
+                                    "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                                }
+                            ],
+                            "clinicalStatus": "resolved",
+                        },
+                        {
+                            "resourceType": "AllergyIntolerance",
+                            "id": "2",
+                            "extension": [
+                                {
+                                    "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                                }
+                            ],
+                            "clinicalStatus": "resolved",
+                        },
+                    ],
+                }
+            },
+            {"resource": {"resourceType": "Baz"}},
+        ]
+    }
+
+    expected = [
+        {
+            "resource": {
+                "resourceType": "AllergyIntolerance",
+                "id": "1",
+                "extension": [
+                    {
+                        "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                    }
+                ],
+                "clinicalStatus": "resolved",
+            },
+        },
+        {
+            "resource": {
+                "resourceType": "AllergyIntolerance",
+                "id": "2",
+                "extension": [
+                    {
+                        "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-AllergyIntoleranceEnd-1"
+                    }
+                ],
+                "clinicalStatus": "resolved",
+            },
+        },
+    ]
+
+    # When
+    actual = _extract_resolved_allergies(fhir_res)
+
+    # Then
+    assert actual == expected
+
+
+def test_extract_resolved_allergies_when_none():
+    fhir_res = {
+        "entry": [
+            {"resource": {"resourceType": "Foo"}},
+            {"resource": {"resourceType": "AllergyIntolerance"}},
+            {"resource": {"resourceType": "Baz"}},
+        ]
+    }
+
+    # When
+    actual = _extract_resolved_allergies(fhir_res)
+
+    # Then
+    assert actual == []
 
 
 def test_transform_references_for_patient():
@@ -140,6 +390,16 @@ def test_warning_filter():
             {
                 "resource": {
                     "resourceType": "List",
+                    "title": "Allergies and adverse reactions",
+                    "code": {
+                        "coding": [
+                            {
+                                "system": "http://snomed.info/sct",
+                                "code": ALLERGIES_AND_ADVERSE_REACTION_LIST_CODE,
+                                "display": "Allergies and adverse reactions",
+                            }
+                        ]
+                    },
                     "extension": [
                         {
                             "url": "https://fhir.nhs.uk/STU3/StructureDefinition/Extension-CareConnect-GPC-ListWarningCode-1",

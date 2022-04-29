@@ -5,8 +5,8 @@ from request_helpers import make_get_request
 
 class PdsClient:
     def __init__(self, url: str, env: str) -> None:
-        self.__env = env
-        self.__url = url
+        self._env = env
+        self._url = url
 
     def get_ods_for_nhs_number(self, nhs_number, access_token):
 
@@ -14,14 +14,14 @@ class PdsClient:
             "X-Request-ID": str(uuid4()),
             "Authorization": f"Bearer {access_token}",
         }
-        url = f"https://{self.__url}/personal-demographics/FHIR/R4/Patient/{nhs_number}"
+        url = f"https://{self._url}/personal-demographics/FHIR/R4/Patient/{nhs_number}"
 
         res = make_get_request(call_name="PDS", url=url, headers=headers)
 
-        return self.__get_ods(res.json())
+        return self._get_ods(res.json())
 
     @staticmethod
-    def __get_ods(patient: dict) -> str:
+    def _get_ods(patient: dict) -> str:
         def is_ods_extension(gp):
             return (gp["identifier"]["system"] == "https://fhir.nhs.uk/Id/ods-organization-code")
 
