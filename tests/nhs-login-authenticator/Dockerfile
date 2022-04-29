@@ -16,9 +16,8 @@ RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-ke
     && apt-get -y install google-chrome-stable
 
 # INSTALL CHROMEDRIVER
-#https://chromedriver.storage.googleapis.com/101.0.4951.41/chromedriver_linux64.zip
 ARG chrome_driver_version="101.0.4951.41"
-RUN wget -N https://chromedriver.storage.googleapis.com/99.0.4844.51/chromedriver_linux64.zip -P ~/ \
+RUN wget -N https://chromedriver.storage.googleapis.com/${chrome_driver_version}/chromedriver_linux64.zip -P ~/ \
     && unzip ~/chromedriver_linux64.zip -d ~/ \
     && rm ~/chromedriver_linux64.zip \
     && mv -f ~/chromedriver /usr/local/bin/chromedriver \
