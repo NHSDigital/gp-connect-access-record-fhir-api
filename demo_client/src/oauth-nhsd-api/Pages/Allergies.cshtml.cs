@@ -78,6 +78,7 @@ namespace oauth_nhsd_api.Pages
                 {
                     {"AssertedTitle",  dateNameJsonBundle.value.AssertedTitle},
                     {"AssertedDate", Convert.ToString(dateNameJsonBundle.value.AssertedDate)},
+                    {"EndDate", Convert.ToString(dateNameJsonBundle.value.EndDate)},
                     {"JtokenBundle", dateNameJsonBundle.value.JtokenBundle}
                 };
 
@@ -130,7 +131,7 @@ namespace oauth_nhsd_api.Pages
                     activeList.Add(new DateNameJsonBundle
                     {
                         AssertedDate = (DateTime?)resource.SelectToken("resource.recordedDate"),
-                        EndDate = null,
+                        EndDate = (DateTime?)resource.SelectToken("resource.extension[0].extension[0].valueDateTime"),
                         AssertedTitle = allergyText.ToString(),
                         JtokenBundle = JsonConvert.SerializeObject(resource.SelectToken("resource"))
                     });
@@ -145,8 +146,8 @@ namespace oauth_nhsd_api.Pages
             var isActiveSessionAvailable = HttpContext.Session.GetString("active_0") != null;
             var isResolvedSessionAvailable = HttpContext.Session.GetString("resolved_0") != null ;
 
-            // True: When session entry is present, False: Missing session
-            return isActiveSessionAvailable | isResolvedSessionAvailable;
+            // True: When both session entries are present, False: Missing either session
+            return isActiveSessionAvailable & isResolvedSessionAvailable;
         }
     }
    

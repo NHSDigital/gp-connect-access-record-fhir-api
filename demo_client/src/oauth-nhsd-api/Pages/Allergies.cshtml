@@ -60,7 +60,7 @@
                 <div class="nhsuk-card nhsuk-card--clickable">
                     <div class="nhsuk-card__content">
                         <h3 class="nhsuk-card__heading nhsuk-heading-s">
-                            @item.AssertedDate?.ToString("dd MMM yyyy")
+                            @item.AssertedDate?.ToString("dd MMM yyyy") - @item.EndDate?.ToString("dd MMM yyyy")  
                             <br />
                             <a class="nhsuk-card__link" asp-page="AllergyDetails" asp-route-id="@Model.OrderedResolvedList.IndexOf(item)" asp-route-allergyType="resolved">
                                 @item.AssertedTitle

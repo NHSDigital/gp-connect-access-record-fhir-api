@@ -66,10 +66,10 @@ namespace oauth_nhsd_api.Helpers
                 Profile = Convert.ToString(resourceJtoken.SelectToken("meta.profile[0]")),
                 OnSetDate = Convert.ToString(resourceJtoken.SelectToken("onsetDateTime")),
                 AssertedDate = Convert.ToString(resourceBundle.AssertedDate),
-                EndDate =  Convert.ToString(resourceBundle.EndDate), //This will be added to the bundle upon implementation of "inactive" 
-                EndReason = "",
+                EndDate =  Convert.ToString(resourceBundle.EndDate),
+                EndReason = Convert.ToString(resourceJtoken.SelectToken("extension[0].extension[1].valueString")),
                 Identifier = Convert.ToString(resourceJtoken.SelectToken("identifier[0].value")),
-                ClinicalStatus = Convert.ToString(resourceJtoken.SelectToken("resource.clinicalStatus.coding[0].code")),
+                ClinicalStatus = Convert.ToString(resourceJtoken.SelectToken("clinicalStatus.coding[0].code")),
                 VerificationStatus = Convert.ToString(resourceJtoken.SelectToken("verificationStatus.coding[0].code")),
                 AssetType = Convert.ToString(resourceJtoken.SelectToken("type")),
                 Category = Convert.ToString(resourceJtoken.SelectToken("category[0]")),
