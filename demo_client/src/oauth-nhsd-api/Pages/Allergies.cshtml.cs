@@ -59,7 +59,7 @@ namespace oauth_nhsd_api.Pages
                     OrderedResolvedList = UnorderedResolvedList.OrderByDescending(listItem => listItem.AssertedDate).ToList();
                 }
             }
-            
+
             SetSessionDataFromList(OrderedActiveList, "active");
             SetSessionDataFromList(OrderedResolvedList, "resolved");
         }
@@ -163,7 +163,7 @@ namespace oauth_nhsd_api.Pages
         public Boolean IsSessionPopulatedByApiResponse()
         {
             var isActiveSessionAvailable = HttpContext.Session.GetString("active_0") != null;
-            var isResolvedSessionAvailable = HttpContext.Session.GetString("resolved_0") != null ;
+            var isResolvedSessionAvailable = HttpContext.Session.GetString("resolved_0") != null;
 
             // True: When both session entries are present, False: Missing either session
             return isActiveSessionAvailable & isResolvedSessionAvailable;
