@@ -53,6 +53,7 @@ namespace oauth_nhsd_api.Pages
                 else
                 {
                     var UnorderedActiveList = CreateListFromJsonResponse(ApiResponse, "active");
+                    var UnorderedResolvedList = CreateListFromJsonResponse(ApiResponse, "resolved");
 
                     OrderedActiveList = UnorderedActiveList.OrderByDescending(listItem => listItem.AssertedDate).ToList();
                     OrderedResolvedList = UnorderedResolvedList.OrderByDescending(listItem => listItem.AssertedDate).ToList();
