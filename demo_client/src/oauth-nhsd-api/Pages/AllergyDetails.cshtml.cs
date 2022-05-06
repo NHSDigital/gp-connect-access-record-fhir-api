@@ -25,7 +25,7 @@ namespace oauth_nhsd_api.Pages
             }
 
             // If Query string manually added out of range 
-            var sessionData = HttpContext.Session.GetString(allergyType+"_"+id);
+            var sessionData = HttpContext.Session.GetString(allergyType + "_" + id);
             if (sessionData == null)
             {
                 return RedirectToPage("Allergies");
