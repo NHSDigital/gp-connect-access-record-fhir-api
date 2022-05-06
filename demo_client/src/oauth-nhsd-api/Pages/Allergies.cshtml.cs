@@ -15,7 +15,6 @@ using Newtonsoft.Json.Linq;
 using oauth_nhsd_api.Helpers;
 using Newtonsoft.Json.Converters;
 
-
 namespace oauth_nhsd_api.Pages
 {
     [Authorize]
@@ -122,8 +121,6 @@ namespace oauth_nhsd_api.Pages
                     var passedJsonObject = JsonConvert.DeserializeObject<DateNameJsonBundle>(sessionData, _dateTimeConverter);
                     allergyList.Add(passedJsonObject);
                 }
-
-                
             }
             return allergyList;
         }
