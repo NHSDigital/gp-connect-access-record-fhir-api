@@ -1,6 +1,5 @@
 import os
 from common.auth import Auth
-from random import randint
 from locust import HttpUser, task, between, run_single_user
 
 
@@ -27,27 +26,9 @@ class LoadTestUser(HttpUser):
         }
 
     @task
-    def index(self):
-        """Open the index page."""
-        self.client.get("/", headers=self.headers)
-
-    @task
-    def home(self):
-        """Open the home page."""
-        self.client.get("/Home", headers=self.headers)
-
-    @task(3)
     def allergies(self):
         """Open the allergies overview page."""
         self.client.get("/Allergies", headers=self.headers)
-
-    @task(5)
-    def allergy_detail(self):
-        """Open the detail page for a random allergy."""
-        # Pick a random allergy index from the list of allergies in the API response data
-        # TODO - base the length off of the size of the actual dataset
-        allergy_idx = randint(0, 27)
-        self.client.get(f"/AllergyDetails?id={allergy_idx}", headers=self.headers)
 
 
 if __name__ == "__main__":
