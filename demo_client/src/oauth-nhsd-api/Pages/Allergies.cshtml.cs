@@ -20,6 +20,7 @@ namespace oauth_nhsd_api.Pages
     [Authorize]
     public class AllergiesModel : PageModel
     {
+        public List<DateNameJsonBundle> OrderedResolvedList { get; set; }
         public List<DateNameJsonBundle> OrderedActiveList { get; set; } = new List<DateNameJsonBundle>();
         private readonly IsoDateTimeConverter _dateTimeConverter = new() { DateTimeFormat = "dd/MM/yyyy HH:mm:ss" };
         private readonly IConfiguration _configuration;
@@ -33,7 +34,8 @@ namespace oauth_nhsd_api.Pages
         {
             if (IsSessionPopulatedByApiResponse())
             {
-                OrderedActiveList = GetListFromSessionData();
+                OrderedActiveList = GetListFromSessionData("active");
+                OrderedResolvedList = GetListFromSessionData("resolved");
             }
             else
             {
@@ -51,14 +53,16 @@ namespace oauth_nhsd_api.Pages
                 else
                 {
                     var UnorderedActiveList = CreateListFromJsonResponse(ApiResponse, "active");
+                    var UnorderedResolvedList = CreateListFromJsonResponse(ApiResponse, "resolved");
 
                     OrderedActiveList = UnorderedActiveList.OrderByDescending(listItem => listItem.AssertedDate).ToList();
+                    OrderedResolvedList = UnorderedResolvedList.OrderByDescending(listItem => listItem.AssertedDate).ToList();
                 }
             }
 
-            SetSessionDataFromList(OrderedActiveList);
+            SetSessionDataFromList(OrderedActiveList, "active");
+            SetSessionDataFromList(OrderedResolvedList, "resolved");
         }
-
 
         public async Task<string> GetApiResponse()
         {
@@ -85,7 +89,7 @@ namespace oauth_nhsd_api.Pages
             }
         }
 
-        public void SetSessionDataFromList(List<DateNameJsonBundle> dateNameBundleList)
+        public void SetSessionDataFromList(List<DateNameJsonBundle> dateNameBundleList, string allergyType)
         {
             if (!IsSessionPopulatedByApiResponse())
             {
@@ -95,26 +99,32 @@ namespace oauth_nhsd_api.Pages
                 {
                     {"AssertedTitle",  dateNameJsonBundle.value.AssertedTitle},
                     {"AssertedDate", Convert.ToString(dateNameJsonBundle.value.AssertedDate)},
+                    {"EndDate", Convert.ToString(dateNameJsonBundle.value.EndDate)},
                     {"JtokenBundle", dateNameJsonBundle.value.JtokenBundle}
                 };
 
-                    HttpContext.Session.SetString(dateNameJsonBundle.index.ToString(), JsonConvert.SerializeObject(dateNameJsonBundleAsString));
+                    HttpContext.Session.SetString(allergyType + "_" + dateNameJsonBundle.index.ToString(), JsonConvert.SerializeObject(dateNameJsonBundleAsString));
                 }
             }
         }
 
-        public List<DateNameJsonBundle> GetListFromSessionData()
+        public List<DateNameJsonBundle> GetListFromSessionData(string allergyType)
         {
-            var activeList = new List<DateNameJsonBundle>();
+            var allergyList = new List<DateNameJsonBundle>();
             foreach (var sessionKey in HttpContext.Session.Keys)
             {
-                var sessionData = HttpContext.Session.GetString(sessionKey);
+                if (sessionKey.Split("_")[0] == allergyType)
+                {
+                    var sessionData = HttpContext.Session.GetString(sessionKey);
 
-                // Custom converter (_dateTimeConverter) required to parse date
-                var passedJsonObject = JsonConvert.DeserializeObject<DateNameJsonBundle>(sessionData, _dateTimeConverter);
-                activeList.Add(passedJsonObject);
+                    // Custom converter (_dateTimeConverter) required to parse date
+                    var passedJsonObject = JsonConvert.DeserializeObject<DateNameJsonBundle>(sessionData, _dateTimeConverter);
+                    allergyList.Add(passedJsonObject);
+                }
+
+                
             }
-            return activeList;
+            return allergyList;
         }
 
         public List<DateNameJsonBundle> CreateListFromJsonResponse(string apiResponse, string activeStatus)
@@ -142,7 +152,7 @@ namespace oauth_nhsd_api.Pages
                     activeList.Add(new DateNameJsonBundle
                     {
                         AssertedDate = (DateTime?)resource.SelectToken("resource.recordedDate"),
-                        EndDate = null,
+                        EndDate = (DateTime?)resource.SelectToken("resource.extension[0].extension[0].valueDateTime"),
                         AssertedTitle = allergyText.ToString(),
                         JtokenBundle = JsonConvert.SerializeObject(resource.SelectToken("resource"))
                     });
@@ -154,10 +164,11 @@ namespace oauth_nhsd_api.Pages
 
         public Boolean IsSessionPopulatedByApiResponse()
         {
-            var response = HttpContext.Session.GetString("0");
+            var isActiveSessionAvailable = HttpContext.Session.GetString("active_0") != null;
+            var isResolvedSessionAvailable = HttpContext.Session.GetString("resolved_0") != null;
 
-            // True: When session entry is present, False: Missing session
-            return (response != null);
+            // True: When both session entries are present, False: Missing either session
+            return isActiveSessionAvailable & isResolvedSessionAvailable;
         }
     }
 }
