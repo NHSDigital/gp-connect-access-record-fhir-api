@@ -1,15 +1,15 @@
+import gevent.monkey
+import requests
+import json
+import urllib.parse as urlparse
+from urllib.parse import parse_qs
+
 """
 Based on NHSDigital/personal-demographics-service-api/blob/master/tests/performance/auth.py
 """
 # If gevent is installed, it needs to monkey-patch the python sockets to cooperate (see documentation or this
 # github issue https://github.com/gevent/gevent/issues/941).
-import gevent.monkey
 gevent.monkey.patch_all()
-#
-import requests
-import json
-import urllib.parse as urlparse
-from urllib.parse import parse_qs
 
 
 class Auth:
