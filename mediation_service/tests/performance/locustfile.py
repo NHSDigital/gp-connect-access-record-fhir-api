@@ -6,7 +6,7 @@ from locust import HttpUser, task, between, run_single_user
 class LoadTestUser(HttpUser):
     cookie = ""
     wait_time = between(1, 5)
-    host = "https://internal-dev.api.service.nhs.uk/gp-connect-access-record-pr-94/AllergyIntolerance"
+    host = os.environ["SERVICE_BASE_PATH"]
 
     def auth(self):
         return Auth(
@@ -25,10 +25,15 @@ class LoadTestUser(HttpUser):
             "NHSD-Session-URID": "1234567890",
         }
 
+    # @task
+    # def allergies(self):
+    #     """Open the allergies overview page."""
+    #     self.client.get("?patient=https://fhir.nhs.uk/Id/9690937286", headers=self.headers)
+
     @task
     def allergies(self):
         """Open the allergies overview page."""
-        self.client.get("?patient=https://fhir.nhs.uk/Id/9690937286", headers=self.headers)
+        self.client.get("/Allergies", headers=self.headers)
 
 
 if __name__ == "__main__":
