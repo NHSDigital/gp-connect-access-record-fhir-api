@@ -25,15 +25,10 @@ class LoadTestUser(HttpUser):
             "NHSD-Session-URID": "1234567890",
         }
 
-    # @task
-    # def allergies(self):
-    #     """Open the allergies overview page."""
-    #     self.client.get("?patient=https://fhir.nhs.uk/Id/9690937286", headers=self.headers)
-
     @task
     def allergies(self):
         """Open the allergies overview page."""
-        self.client.get("/Allergies", headers=self.headers)
+        self.client.get("/Allergies?patient=https://fhir.nhs.uk/Id/9690937286", headers=self.headers)
 
 
 if __name__ == "__main__":
