@@ -28,7 +28,13 @@ class LoadTestUser(HttpUser):
     @task
     def allergies(self):
         """Open the allergies overview page."""
-        self.client.get("/Allergies?patient=https://fhir.nhs.uk/Id/9690937286", headers=self.headers)
+        if "localhost" in self.host:
+            allergy_endpoint = "/Allergies"
+        else:
+            allergy_endpoint = "/AllergyIntolerance"
+        patient_querystring = "?patient=https://fhir.nhs.uk/Id/9690937286"
+
+        self.client.get(allergy_endpoint + patient_querystring, headers=self.headers)
 
 
 if __name__ == "__main__":
