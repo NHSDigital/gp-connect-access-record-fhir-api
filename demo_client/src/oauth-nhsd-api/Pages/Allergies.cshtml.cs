@@ -59,7 +59,6 @@ namespace oauth_nhsd_api.Pages
             SetSessionDataFromList(OrderedActiveList);
         }
 
-
         public async Task<string> GetApiResponse()
         {
             var tokenAccess = await HttpContext.GetTokenAsync("access_token");
