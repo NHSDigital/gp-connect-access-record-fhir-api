@@ -1,6 +1,8 @@
 import os
-from common.auth import Auth
 from locust import HttpUser, task, between, run_single_user
+from locust.exception import RescheduleTask
+
+RETRY_ON_FAIL = False
 
 
 class LoadTestUser(HttpUser):
@@ -8,33 +10,15 @@ class LoadTestUser(HttpUser):
     wait_time = between(1, 5)
     host = os.environ["SERVICE_BASE_PATH"]
 
-    def auth(self):
-        return Auth(
-            url=os.environ["LOCUST_HOST"],
-            callback_url=os.environ["CALLBACK_URL"],
-            client_id=os.environ["CLIENT_ID"],
-            client_secret=os.environ["CLIENT_SECRET"]
-        )
-
-    def on_start(self):
-        authenticator = self.auth()
-        self.credentials = authenticator.login()
-        self.headers = {
-            "Authorization": self.credentials["token_type"] + " " + self.credentials["access_token"],
-            "NHSD-Identity-UUID": "1234567890",
-            "NHSD-Session-URID": "1234567890",
-        }
-
     @task
     def allergies(self):
-        """Open the allergies overview page."""
-        if "localhost" in self.host:
-            allergy_endpoint = "/Allergies"
-        else:
-            allergy_endpoint = "/AllergyIntolerance"
+        """Hit the AllergyIntolerance endpoint."""
+        allergy_endpoint = "/AllergyIntolerance"
         patient_querystring = "?patient=https://fhir.nhs.uk/Id/9690937286"
 
-        self.client.get(allergy_endpoint + patient_querystring, headers=self.headers)
+        with self.client.get(allergy_endpoint + patient_querystring, catch_response=True) as response:
+            if response.status_code != 200 and RETRY_ON_FAIL:
+                raise RescheduleTask()
 
 
 if __name__ == "__main__":
