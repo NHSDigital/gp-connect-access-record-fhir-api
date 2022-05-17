@@ -9,6 +9,10 @@ from urllib.parse import parse_qs
 
 """
 Based on NHSDigital/personal-demographics-service-api/blob/master/tests/performance/auth.py
+
+This class is useful for authenticating Locust simulated users that need to hit endpoints that require NHS Login
+authorisation, instantiate an Auth object within your TestUser Locust class, call `Auth.login()` within the
+Locust HttpUser's `on_start()` method, and pass the auth headers in your requests.
 """
 
 
